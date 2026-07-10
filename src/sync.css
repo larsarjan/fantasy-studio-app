@@ -1,0 +1,91 @@
+.database-control {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+
+.database-status-text {
+  text-align: right;
+}
+
+.database-status-text span {
+  display: block;
+  font-weight: 900;
+}
+
+.database-status-text small {
+  display: block;
+  margin-top: 3px;
+  color: #9faac0;
+  font-size: 11px;
+}
+
+#sync-database {
+  min-height: 44px;
+  padding: 0 17px;
+  color: white;
+  background: #ef4444;
+  border: 0;
+  border-radius: 12px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+#sync-database:hover {
+  background: #dc2626;
+}
+
+#sync-database:disabled {
+  cursor: wait;
+  opacity: .65;
+}
+
+.sync-notice {
+  margin-bottom: 18px;
+  padding: 13px 16px;
+  border-radius: 12px;
+  font-weight: 800;
+}
+
+.sync-notice.success {
+  color: #bbf7d0;
+  background: rgba(22, 101, 52, .45);
+  border: 1px solid #166534;
+}
+
+.sync-notice.error {
+  color: #fecaca;
+  background: rgba(153, 27, 27, .45);
+  border: 1px solid #991b1b;
+}
+
+.sync-notice.hidden {
+  display: none;
+}
+
+body[data-sync-state="success"] #database-state {
+  color: #65d98b;
+}
+
+body[data-sync-state="error"] #database-state {
+  color: #fca5a5;
+}
+
+body[data-sync-state="loading"] #database-state {
+  color: #fde68a;
+}
+
+.database-card-status {
+  font-size: 20px !important;
+}
+
+@media (max-width: 760px) {
+  .database-control {
+    align-items: flex-end;
+    flex-direction: column;
+  }
+
+  .database-status-text {
+    text-align: right;
+  }
+}

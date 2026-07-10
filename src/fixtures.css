@@ -1,0 +1,749 @@
+.fixtures-module {
+  overflow: hidden;
+}
+
+.fixtures-heading {
+  gap: 20px;
+}
+
+.fixture-mode-switch {
+  display: flex;
+  gap: 8px;
+  padding: 6px;
+  background: #111722;
+  border: 1px solid #303a4d;
+  border-radius: 14px;
+}
+
+.fixture-mode {
+  padding: 10px 16px;
+  color: #9faac0;
+  background: transparent;
+  border: 0;
+  border-radius: 10px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.fixture-mode.active {
+  color: #fff;
+  background: #ef4444;
+}
+
+.fixture-controls {
+  display: grid;
+  grid-template-columns: 220px 180px minmax(420px, 1fr);
+  gap: 16px;
+  align-items: end;
+  margin: 24px 0;
+}
+
+.fixture-controls label,
+.count-control {
+  display: grid;
+  gap: 8px;
+  color: #9faac0;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .8px;
+  text-transform: uppercase;
+}
+
+.fixture-controls select {
+  min-height: 46px;
+  padding: 0 14px;
+  color: #fff;
+  background: #111722;
+  border: 1px solid #303a4d;
+  border-radius: 12px;
+}
+
+.count-buttons {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 6px;
+}
+
+.count-button {
+  min-height: 46px;
+  color: #cbd5e1;
+  background: #111722;
+  border: 1px solid #303a4d;
+  border-radius: 10px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.count-button.active {
+  color: #fff;
+  background: #ef4444;
+  border-color: #ef4444;
+}
+
+.compare-club-selectors {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.fixture-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 330px;
+  gap: 20px;
+  min-height: 520px;
+}
+
+.fixture-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+  padding: 20px;
+  background: #111722;
+  border: 1px solid #2d3748;
+  border-radius: 16px;
+}
+
+.fixture-summary-club {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.average-score {
+  min-width: 160px;
+  padding: 14px 18px;
+  text-align: center;
+  background: #202838;
+  border-radius: 14px;
+}
+
+.average-score span {
+  display: block;
+  margin-bottom: 4px;
+  color: #9faac0;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.average-score strong {
+  font-size: 32px;
+}
+
+.club-logo,
+.summary-club-logo,
+.round-club-logo,
+.compare-club-logo,
+.compare-opponent-logo,
+.detail-club-logo,
+.detail-difficulty-logo {
+  display: block;
+  flex: 0 0 auto;
+  object-fit: contain;
+  filter: drop-shadow(0 3px 5px rgba(0, 0, 0, .24));
+}
+
+.club-logo {
+  width: 38px;
+  height: 38px;
+}
+
+.summary-club-logo {
+  width: 54px;
+  height: 54px;
+}
+
+.round-club-logo {
+  width: 30px;
+  height: 30px;
+}
+
+.compare-club-logo {
+  width: 40px;
+  height: 40px;
+}
+
+.compare-opponent-logo {
+  width: 25px;
+  height: 25px;
+}
+
+.detail-club-logo {
+  width: 44px;
+  height: 44px;
+}
+
+.detail-difficulty-logo {
+  width: 30px;
+  height: 30px;
+}
+
+.club-logo-fallback {
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: rgba(17, 24, 39, .35);
+  border-radius: 50%;
+  font-weight: 900;
+}
+
+.fixture-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 12px;
+}
+
+.fixture-card {
+  min-height: 176px;
+  padding: 16px;
+  color: #111827;
+  text-align: left;
+  border: 2px solid transparent;
+  border-radius: 16px;
+  cursor: pointer;
+  transition:
+    transform .16s ease,
+    box-shadow .16s ease,
+    border-color .16s ease;
+}
+
+.fixture-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(255, 255, 255, .72);
+}
+
+.fixture-card-top {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.fixture-opponent {
+  display: flex;
+  gap: 11px;
+  align-items: center;
+  min-height: 45px;
+  margin-bottom: 8px;
+}
+
+.fixture-card strong {
+  display: block;
+  font-size: 17px;
+  line-height: 1.18;
+}
+
+.fixture-card small {
+  display: block;
+  min-height: 34px;
+  opacity: .76;
+}
+
+.venue-pill {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  background: rgba(255, 255, 255, .64);
+  border-radius: 999px;
+}
+
+.difficulty-label {
+  margin-top: 15px;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.round-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.round-match {
+  padding: 16px;
+  color: #fff;
+  text-align: left;
+  background: #111722;
+  border: 1px solid #303a4d;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: border-color .16s ease, transform .16s ease;
+}
+
+.round-match:hover {
+  border-color: #64748b;
+  transform: translateY(-2px);
+}
+
+.round-date {
+  display: block;
+  margin-bottom: 12px;
+  color: #9faac0;
+  font-size: 12px;
+}
+
+.round-club-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.round-club-row strong {
+  font-size: 15px;
+}
+
+.versus {
+  display: block;
+  margin: 5px 0 5px 40px;
+  color: #64748b;
+  font-size: 10px;
+  text-transform: uppercase;
+}
+
+.round-difficulty-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.round-difficulty-row span {
+  padding: 6px 10px;
+  color: #111827;
+  border: 1px solid rgba(17, 24, 39, .12);
+  border-radius: 8px;
+  font-weight: 900;
+}
+
+.compare-fixtures-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(var(--compare-columns), minmax(235px, 1fr));
+  gap: 12px;
+  overflow-x: auto;
+}
+
+.compare-club-card {
+  min-width: 235px;
+  padding: 16px;
+  background: #111722;
+  border: 1px solid #303a4d;
+  border-radius: 16px;
+}
+
+.compare-club-card header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.compare-club-heading {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.compare-club-heading h3 {
+  margin-top: 2px;
+}
+
+.mini-average {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  background: #202838;
+  border-radius: 14px;
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.compare-fixture-list {
+  display: grid;
+  gap: 8px;
+}
+
+.compare-fixture-row {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) 24px 24px;
+  gap: 7px;
+  align-items: center;
+  width: 100%;
+  padding: 9px;
+  color: #111827;
+  text-align: left;
+  border: 1px solid rgba(17, 24, 39, .10);
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.compare-opponent {
+  display: flex;
+  gap: 7px;
+  align-items: center;
+  min-width: 0;
+}
+
+.compare-opponent strong {
+  overflow: hidden;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fixture-detail-panel {
+  height: 100%;
+  padding: 22px;
+  background: #111722;
+  border: 1px solid #303a4d;
+  border-radius: 16px;
+}
+
+.fixture-detail-panel h3 {
+  margin-bottom: 8px;
+  font-size: 22px;
+}
+
+.fixture-detail-panel p {
+  color: #9faac0;
+}
+
+.fixture-detail-panel.empty {
+  display: grid;
+  align-content: center;
+  text-align: center;
+}
+
+.detail-match-heading {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin: 13px 0 9px;
+}
+
+.detail-match-heading > span {
+  color: #64748b;
+  font-size: 20px;
+}
+
+.detail-club {
+  display: grid;
+  gap: 6px;
+  justify-items: center;
+  flex: 1;
+  text-align: center;
+}
+
+.detail-club strong {
+  font-size: 13px;
+}
+
+.detail-difficulty-grid {
+  display: grid;
+  gap: 10px;
+  margin: 24px 0;
+}
+
+.detail-difficulty-grid > div {
+  display: grid;
+  gap: 4px;
+  padding: 14px;
+  color: #111827;
+  border: 1px solid rgba(17, 24, 39, .10);
+  border-radius: 12px;
+}
+
+.detail-difficulty-club {
+  display: flex;
+  gap: 9px;
+  align-items: center;
+}
+
+.detail-difficulty-grid strong {
+  font-size: 24px;
+}
+
+.detail-note {
+  padding: 14px;
+  background: #202838;
+  border-radius: 12px;
+}
+
+.detail-note p {
+  margin-top: 6px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/*
+  Duidelijke, contrastrijke fixture difficulty:
+  1 = diepgroen
+  2 = fris mint/limoengroen
+  3 = fel geel
+  4 = diep oranje
+  5 = krachtig rood
+*/
+.difficulty-1 {
+  background: #08a84e;
+  box-shadow:
+    0 8px 22px rgba(8, 168, 78, .26),
+    inset 0 0 0 1px rgba(255, 255, 255, .18);
+}
+
+.difficulty-2 {
+  background: #a9e65c;
+  box-shadow:
+    0 7px 18px rgba(169, 230, 92, .18),
+    inset 0 0 0 1px rgba(255, 255, 255, .24);
+}
+
+.difficulty-3 {
+  background: #ffdb0a;
+  box-shadow:
+    0 7px 18px rgba(255, 219, 10, .20),
+    inset 0 0 0 1px rgba(255, 255, 255, .28);
+}
+
+.difficulty-4 {
+  background: #f47a13;
+  box-shadow:
+    0 7px 18px rgba(244, 122, 19, .22),
+    inset 0 0 0 1px rgba(255, 255, 255, .18);
+}
+
+.difficulty-5 {
+  color: #fff;
+  background: #d7192d;
+  box-shadow:
+    0 8px 23px rgba(215, 25, 45, .30),
+    inset 0 0 0 1px rgba(255, 255, 255, .16);
+}
+
+.difficulty-5 .venue-pill {
+  color: #111827;
+}
+
+.difficulty-5 small {
+  color: rgba(255, 255, 255, .84);
+  opacity: 1;
+}
+
+.difficulty-5 .club-logo-fallback {
+  color: #111827;
+  background: rgba(255, 255, 255, .68);
+}
+
+@media (max-width: 1200px) {
+  .fixture-controls {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .count-control {
+    grid-column: 1 / -1;
+  }
+
+  .fixture-workspace {
+    grid-template-columns: 1fr;
+  }
+
+  .fixture-detail-panel {
+    min-height: 220px;
+  }
+}
+
+@media (max-width: 760px) {
+  .fixtures-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .fixture-mode-switch {
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  .fixture-controls {
+    grid-template-columns: 1fr;
+  }
+
+  .count-control {
+    grid-column: auto;
+  }
+
+  .count-buttons {
+    grid-template-columns: repeat(5, 1fr);
+  }
+
+  .compare-club-selectors {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .round-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .fixture-summary {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .average-score {
+    width: 100%;
+  }
+}
+
+/* Fantasy Studio v0.9 — grotere clublogo's en luxere wedstrijdkaarten */
+
+.summary-club-logo {
+  width: 82px;
+  height: 82px;
+}
+
+.fixture-summary {
+  min-height: 124px;
+  padding: 22px 24px;
+}
+
+.fixture-summary-club {
+  gap: 20px;
+}
+
+.fixture-summary-club h2 {
+  font-size: 28px;
+}
+
+.fixture-strip {
+  grid-template-columns: repeat(auto-fit, minmax(185px, 1fr));
+  gap: 14px;
+}
+
+.fixture-card {
+  min-height: 252px;
+  padding: 15px 16px 16px;
+  overflow: hidden;
+}
+
+.fixture-card-top {
+  margin-bottom: 4px;
+}
+
+.fixture-opponent {
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 9px;
+  min-height: 126px;
+  margin-bottom: 3px;
+  text-align: center;
+}
+
+.fixture-opponent .club-logo {
+  width: 84px;
+  height: 84px;
+  filter: drop-shadow(0 6px 8px rgba(0, 0, 0, .28));
+}
+
+.fixture-opponent strong {
+  display: -webkit-box;
+  min-height: 40px;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  font-size: 17px;
+  line-height: 1.15;
+  text-align: center;
+}
+
+.fixture-card small {
+  min-height: 24px;
+  text-align: center;
+  font-weight: 700;
+}
+
+.difficulty-label {
+  margin-top: 9px;
+  padding: 8px 9px;
+  background: rgba(17, 24, 39, .13);
+  border-radius: 9px;
+  text-align: center;
+}
+
+.difficulty-5 .difficulty-label {
+  background: rgba(17, 24, 39, .22);
+}
+
+.round-club-logo {
+  width: 40px;
+  height: 40px;
+}
+
+.compare-club-logo {
+  width: 54px;
+  height: 54px;
+}
+
+.compare-opponent-logo {
+  width: 34px;
+  height: 34px;
+}
+
+.detail-club-logo {
+  width: 62px;
+  height: 62px;
+}
+
+.detail-difficulty-logo {
+  width: 42px;
+  height: 42px;
+}
+
+.detail-match-heading {
+  margin-top: 18px;
+}
+
+.detail-club {
+  gap: 9px;
+}
+
+.detail-club strong {
+  font-size: 14px;
+}
+
+@media (max-width: 1450px) {
+  .fixture-strip {
+    grid-template-columns: repeat(auto-fit, minmax(165px, 1fr));
+  }
+
+  .fixture-card {
+    min-height: 232px;
+  }
+
+  .fixture-opponent {
+    min-height: 110px;
+  }
+
+  .fixture-opponent .club-logo {
+    width: 70px;
+    height: 70px;
+  }
+}
+
+@media (max-width: 760px) {
+  .summary-club-logo {
+    width: 66px;
+    height: 66px;
+  }
+
+  .fixture-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
