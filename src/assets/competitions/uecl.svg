@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Conference League">
+  <rect x="3" y="3" width="58" height="58" rx="16" fill="#052f29" stroke="#35d67a" stroke-width="2"/>
+  <path d="M20 9h24l-3 31-9 15-9-15Z" fill="#24b968"/>
+  <path d="M25 14h14l-2 23-5 10-5-10Z" fill="#eafff2"/>
+  <path d="M18 20h28M16 44h32" fill="none" stroke="#63ee9c" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="32" cy="28" r="6" fill="#063d32" stroke="#35d67a" stroke-width="2"/>
+</svg>

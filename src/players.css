@@ -1,4 +1,3 @@
-
 /* Fantasy Studio — Sprint 3 spelersmodule */
 .players-heading {
   gap: 20px;
@@ -72,26 +71,53 @@
 }
 
 .players-table-wrap {
+  position: relative;
   max-height: 620px;
   overflow: auto;
+  scroll-behavior: smooth;
   background: #111722;
   border: 1px solid #303a4d;
   border-radius: 15px;
+  scrollbar-color: #475569 #111722;
+  scrollbar-width: thin;
+}
+
+.players-table-wrap::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+.players-table-wrap::-webkit-scrollbar-track {
+  background: #111722;
+}
+
+.players-table-wrap::-webkit-scrollbar-thumb {
+  background: #475569;
+  border: 3px solid #111722;
+  border-radius: 999px;
+}
+
+.players-table-wrap::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
 }
 
 .players-table {
-  width: 100%;
-  border-collapse: collapse;
+  width: max-content;
+  min-width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
   white-space: nowrap;
 }
 
 .players-table thead {
   position: sticky;
   top: 0;
-  z-index: 2;
+  z-index: 20;
 }
 
 .players-table th {
+  position: relative;
+  min-width: 118px;
   padding: 13px 14px;
   color: #9faac0;
   background: #161e2b;
@@ -102,24 +128,111 @@
 }
 
 .players-table td {
+  min-width: 118px;
   padding: 13px 14px;
   border-bottom: 1px solid #252f40;
   color: #cbd5e1;
+  background: #111722;
   font-size: 13px;
 }
 
 .players-table tbody tr {
   cursor: pointer;
-  transition: .16s ease;
 }
 
-.players-table tbody tr:hover,
-.players-table tbody tr.selected {
+.players-table tbody tr:hover td,
+.players-table tbody tr.selected td {
   background: #222b3a;
 }
 
-.players-table tbody tr.selected {
+.players-table tbody tr.selected td:first-child {
   box-shadow: inset 4px 0 0 #ef4444;
+}
+
+/* Sticky kolommen */
+.players-table th:nth-child(1),
+.players-table td:nth-child(1) {
+  position: sticky;
+  left: 0;
+  z-index: 12;
+
+  width: 56px;
+  min-width: 56px;
+  max-width: 56px;
+}
+
+.players-table th:nth-child(2),
+.players-table td:nth-child(2) {
+  position: sticky;
+  left: 56px;
+  z-index: 11;
+
+  width: 190px;
+  min-width: 190px;
+  max-width: 190px;
+
+  border-right: 1px solid #354052;
+  box-shadow: 10px 0 18px rgba(0, 0, 0, .16);
+}
+
+/*
+ * De losse clubkolom blijft onderdeel van de tabel,
+ * maar is niet langer sticky.
+ *
+ * De club staat al subtiel onder de spelersnaam,
+ * waardoor deze kolom niet mee hoeft te schuiven.
+ */
+.players-table th:nth-child(3),
+.players-table td:nth-child(3) {
+  position: static;
+
+  width: 185px;
+  min-width: 185px;
+  max-width: 185px;
+
+  border-right: 0;
+  box-shadow: none;
+}
+
+/* Alleen rangnummer en spelersinformatie blijven sticky */
+.players-table thead th:nth-child(-n+2) {
+  z-index: 30;
+  background: #161e2b;
+}
+
+.players-table tbody tr:hover td:nth-child(-n+2),
+.players-table tbody tr.selected td:nth-child(-n+2) {
+  background: #222b3a;
+}
+
+/* Actieve sorteerkolom */
+.players-table th.is-active-sort {
+  color: #fff;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(239, 68, 68, .26),
+      rgba(239, 68, 68, .10)
+    ),
+    #161e2b;
+  box-shadow: inset 0 -3px 0 #ef4444;
+}
+
+.players-table td.is-active-sort {
+  color: #fff;
+  background: rgba(239, 68, 68, .075);
+  font-weight: 800;
+}
+
+.players-table tbody tr:hover td.is-active-sort,
+.players-table tbody tr.selected td.is-active-sort {
+  background: rgba(239, 68, 68, .16);
+}
+
+.sort-indicator {
+  margin-left: 5px;
+  color: #f87171;
+  font-size: 12px;
 }
 
 .position-badge {
@@ -246,4 +359,4504 @@
   .players-table-wrap {
     max-height: 520px;
   }
+
+  .players-table th:nth-child(2),
+  .players-table td:nth-child(2) {
+    width: 160px;
+    min-width: 160px;
+    max-width: 160px;
+  }
+
+  .players-table th:nth-child(3),
+  .players-table td:nth-child(3) {
+    left: 216px;
+    width: 160px;
+    min-width: 160px;
+    max-width: 160px;
+  }
+}
+
+/* Fantasy Studio v1.4 — profielfoto's in spelersprofiel */
+
+.player-photo-wrap {
+  position: relative;
+  flex: 0 0 72px;
+  width: 72px;
+  height: 72px;
+}
+
+.player-photo,
+.player-photo-fallback {
+  width: 72px;
+  height: 72px;
+  border-radius: 18px;
+}
+
+.player-photo {
+  display: block;
+  object-fit: cover;
+  object-position: center top;
+  background:
+    radial-gradient(circle at 50% 25%, #293448 0%, #171f2c 72%);
+  border: 1px solid rgba(255, 255, 255, .12);
+  box-shadow:
+    0 10px 24px rgba(0, 0, 0, .26),
+    inset 0 0 0 1px rgba(255, 255, 255, .05);
+}
+
+.player-photo-fallback {
+  flex: none;
+  border: 1px solid rgba(255, 255, 255, .08);
+}
+
+.player-photo-fallback[hidden],
+.player-photo[hidden] {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  .player-photo-wrap,
+  .player-photo,
+  .player-photo-fallback {
+    width: 64px;
+    height: 64px;
+  }
+
+  .player-photo-wrap {
+    flex-basis: 64px;
+  }
+}
+
+/* =========================================================
+   SPELERS — DETAILPANEEL MET TABS
+   ========================================================= */
+
+.player-detail-header {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+
+  padding-bottom: 18px;
+
+  border-bottom:
+    1px solid
+    rgba(71, 85, 105, 0.55);
+}
+
+.player-detail-photo {
+  display: grid;
+  place-items: center;
+
+  width: 92px;
+  height: 92px;
+  flex: 0 0 92px;
+}
+
+.player-detail-photo.has-image img {
+  width: 82px;
+  height: 86px;
+
+  object-fit: contain;
+  object-position: center bottom;
+
+  display: block;
+}
+
+.player-detail-photo-studio {
+  position: relative;
+  isolation: isolate;
+
+  width: 84px;
+  height: 84px;
+
+  overflow: hidden;
+
+  border:
+    1px solid
+    rgba(104, 127, 164, 0.38);
+
+  border-radius: 15px;
+
+  background:
+    radial-gradient(
+      circle at 50% 15%,
+      rgba(198, 216, 255, 0.2),
+      rgba(77, 101, 145, 0.08) 28%,
+      transparent 56%
+    ),
+    linear-gradient(
+      145deg,
+      #1c2638,
+      #111827 55%,
+      #0b101b
+    );
+}
+
+.player-detail-photo-studio::before,
+.player-detail-photo-studio::after {
+  content: '';
+
+  position: absolute;
+  z-index: -1;
+
+  top: 5px;
+  bottom: 8px;
+
+  width: 34px;
+
+  filter: blur(13px);
+  opacity: 0.5;
+}
+
+.player-detail-photo-studio::before {
+  left: -19px;
+
+  background:
+    radial-gradient(
+      ellipse,
+      rgba(239, 68, 68, 0.72),
+      transparent 70%
+    );
+}
+
+.player-detail-photo-studio::after {
+  right: -19px;
+
+  background:
+    radial-gradient(
+      ellipse,
+      rgba(59, 130, 246, 0.7),
+      transparent 70%
+    );
+}
+
+.player-detail-photo-light {
+  position: absolute;
+
+  top: -12px;
+  left: 50%;
+
+  width: 62px;
+  height: 48px;
+
+  transform: translateX(-50%);
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      ellipse,
+      rgba(231, 239, 255, 0.25),
+      transparent 72%
+    );
+}
+
+.player-detail-photo-floor {
+  position: absolute;
+
+  right: 9px;
+  bottom: 8px;
+  left: 9px;
+
+  height: 14px;
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      ellipse,
+      rgba(104, 130, 176, 0.22),
+      transparent 75%
+    );
+
+  transform:
+    perspective(40px)
+    rotateX(58deg);
+}
+
+.player-detail-photo-logo {
+  position: absolute;
+
+  right: 7px;
+  bottom: 7px;
+
+  display: grid;
+  place-items: center;
+
+  min-width: 27px;
+  min-height: 27px;
+  padding: 3px 5px;
+
+  border:
+    1px solid
+    rgba(248, 113, 113, 0.45);
+
+  border-radius: 50%;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(239, 68, 68, 0.22),
+      rgba(30, 41, 59, 0.9)
+    );
+}
+
+.player-detail-photo-logo strong {
+  color: #fca5a5;
+  font-size: 8px;
+  line-height: 1;
+}
+
+.player-detail-photo-logo small {
+  color: #94a3b8;
+  font-size: 4px;
+  line-height: 1;
+}
+
+.player-detail-identity {
+  min-width: 0;
+}
+
+.player-detail-identity h3 {
+  margin: 4px 0;
+
+  color: #ffffff;
+  font-size: 23px;
+  line-height: 1.05;
+}
+
+.player-detail-identity p {
+  color: #9faac0;
+  font-size: 12px;
+}
+
+.player-detail-tabs {
+  display: grid;
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  gap: 6px;
+
+  margin: 17px 0;
+  padding: 5px;
+
+  border:
+    1px solid
+    #303a4d;
+
+  border-radius: 12px;
+
+  background: #111722;
+}
+
+.player-detail-tab {
+  min-width: 0;
+  min-height: 38px;
+  padding: 0 8px;
+
+  overflow: hidden;
+
+  color: #9faac0;
+  background: transparent;
+  border: 0;
+  border-radius: 8px;
+
+  font-size: 10px;
+  font-weight: 900;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  cursor: pointer;
+}
+
+.player-detail-tab:hover {
+  color: #ffffff;
+  background: #202838;
+}
+
+.player-detail-tab.active {
+  color: #ffffff;
+  background: #ef4444;
+}
+
+.player-detail-tab-content {
+  min-height: 320px;
+}
+
+.player-detail-placeholder {
+  display: grid;
+  place-items: center;
+
+  min-height: 310px;
+  padding: 30px;
+
+  text-align: center;
+
+  border:
+    1px dashed
+    #3a465c;
+
+  border-radius: 14px;
+
+  background:
+    radial-gradient(
+      circle at 50% 5%,
+      rgba(239, 68, 68, 0.1),
+      transparent 38%
+    ),
+    #111722;
+}
+
+.player-detail-placeholder h3 {
+  margin: 8px 0 6px;
+
+  color: #ffffff;
+  font-size: 22px;
+}
+
+.player-detail-placeholder p {
+  max-width: 300px;
+
+  color: #9faac0;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.player-detail-placeholder-badge {
+  margin-top: 16px;
+  padding: 6px 10px;
+
+  color: #fecaca;
+  background:
+    rgba(239, 68, 68, 0.14);
+
+  border:
+    1px solid
+    rgba(239, 68, 68, 0.32);
+
+  border-radius: 999px;
+
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+/* =========================================================
+   SPELERS — FANTASY OUTLOOK
+   ========================================================= */
+
+.player-outlook {
+  display: grid;
+  gap: 14px;
+}
+
+.player-outlook-score {
+  display: grid;
+  place-items: center;
+
+  padding: 20px 16px;
+
+  border: 1px solid #334155;
+  border-radius: 14px;
+
+  background:
+    radial-gradient(
+      circle at 50% 0%,
+      rgba(239, 68, 68, 0.16),
+      transparent 48%
+    ),
+    linear-gradient(
+      145deg,
+      #182131,
+      #111722
+    );
+
+  text-align: center;
+}
+
+.player-outlook-score .eyebrow {
+  margin-bottom: 8px;
+}
+
+.player-outlook-score strong {
+  color: #ffffff;
+  font-size: 50px;
+  font-weight: 950;
+  line-height: 0.95;
+}
+
+.player-outlook-score small {
+  margin-top: 4px;
+
+  color: #94a3b8;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.player-outlook-tier {
+  padding: 10px 12px;
+
+  color: #ffffff;
+  background: #20293a;
+
+  border: 1px solid #344057;
+  border-radius: 10px;
+
+  font-size: 14px;
+  font-weight: 900;
+  text-align: center;
+}
+
+.player-outlook-advice {
+  padding: 12px;
+
+  color: #fecaca;
+  background: rgba(239, 68, 68, 0.12);
+
+  border: 1px solid rgba(239, 68, 68, 0.32);
+  border-radius: 10px;
+
+  font-size: 13px;
+  font-weight: 900;
+  text-align: center;
+}
+
+.player-outlook-confidence {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+
+  padding: 11px 12px;
+
+  color: #9faac0;
+  background: #111722;
+
+  border: 1px solid #303a4d;
+  border-radius: 10px;
+
+  font-size: 11px;
+}
+
+.player-outlook-confidence strong {
+  color: #ffffff;
+}
+
+.player-outlook-strengths,
+.player-outlook-concerns {
+  padding: 13px;
+
+  border: 1px solid #303a4d;
+  border-radius: 12px;
+
+  background: #111722;
+}
+
+.player-outlook-strengths h4,
+.player-outlook-concerns h4 {
+  margin: 0 0 10px;
+
+  color: #ffffff;
+  font-size: 12px;
+}
+
+.player-outlook-strengths ul,
+.player-outlook-concerns ul {
+  display: grid;
+  gap: 7px;
+
+  margin: 0;
+  padding: 0;
+
+  list-style: none;
+}
+
+.player-outlook-strengths li,
+.player-outlook-concerns li {
+  position: relative;
+
+  padding-left: 20px;
+
+  color: #dbe7ff;
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.player-outlook-strengths li::before {
+  content: '✓';
+
+  position: absolute;
+  left: 0;
+
+  color: #22c55e;
+  font-weight: 900;
+}
+
+.player-outlook-concerns li::before {
+  content: '!';
+  
+  position: absolute;
+  left: 2px;
+
+  color: #f59e0b;
+  font-weight: 900;
+}
+
+.player-outlook-strengths p,
+.player-outlook-concerns p {
+  margin: 0;
+
+  color: #94a3b8;
+  font-size: 11px;
+  line-height: 1.4;
+}
+/* =========================================================
+   FANTASY OUTLOOK — ONDERLIGGENDE PIJLERS
+   ========================================================= */
+
+.player-outlook-breakdown {
+  display: grid;
+  gap: 13px;
+
+  padding: 14px;
+
+  border: 1px solid #303a4d;
+  border-radius: 12px;
+
+  background: #111722;
+}
+
+.player-outlook-factor {
+  display: grid;
+  gap: 6px;
+}
+
+.player-outlook-factor-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.player-outlook-factor-heading span {
+  color: #c7d2e5;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.player-outlook-factor-heading strong {
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.player-outlook-factor-track {
+  width: 100%;
+  height: 7px;
+
+  overflow: hidden;
+
+  border-radius: 999px;
+
+  background: #293449;
+}
+
+.player-outlook-factor-fill {
+  height: 100%;
+
+  border-radius: inherit;
+
+  background:
+    linear-gradient(
+      90deg,
+      #ef4444,
+      #f59e0b,
+      #84cc16
+    );
+
+  transition: width 220ms ease;
+}
+
+.player-outlook-factor-fill.risk {
+  background:
+    linear-gradient(
+      90deg,
+      #84cc16,
+      #f59e0b,
+      #ef4444
+    );
+}
+/* =========================================================
+   PLAYER HISTORY — EXPERIENCE
+   ========================================================= */
+
+.player-experience-card {
+  display: grid;
+  gap: 14px;
+
+  padding: 16px;
+
+  border: 1px solid #303a4d;
+  border-radius: 14px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #111722,
+      #161d2a
+    );
+}
+
+.player-experience-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.player-experience-heading h3 {
+  margin: 4px 0 0;
+
+  color: #ffffff;
+  font-size: 16px;
+}
+
+.player-experience-score {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.player-experience-score strong {
+  color: #ffffff;
+  font-size: 28px;
+  font-weight: 900;
+}
+
+.player-experience-score small {
+  color: #94a3b8;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.player-experience-breakdown {
+  display: grid;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.player-experience-breakdown > div {
+  display: grid;
+  gap: 4px;
+
+  padding: 10px 12px;
+
+  border-radius: 10px;
+
+  background: #0d131d;
+}
+
+.player-experience-breakdown span {
+  color: #94a3b8;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.player-experience-breakdown strong {
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 900;
+}
+/* =========================================================
+   PLAYER PROFILE — DATA CONFIDENCE
+   ========================================================= */
+
+.player-data-confidence {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  padding: 10px 12px;
+
+  border-radius: 10px;
+
+  background: #0d131d;
+}
+
+.player-data-confidence > span {
+  color: #94a3b8;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.player-data-confidence-value {
+  padding: 5px 9px;
+
+  border-radius: 999px;
+
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.player-data-confidence-value.high {
+  color: #bbf7d0;
+  background: rgba(34, 197, 94, 0.16);
+}
+
+.player-data-confidence-value.medium {
+  color: #fde68a;
+  background: rgba(245, 158, 11, 0.16);
+}
+
+.player-data-confidence-value.low {
+  color: #fecaca;
+  background: rgba(239, 68, 68, 0.16);
+}
+/* =========================================================
+   FANTASY SCOUT REPORT
+   ========================================================= */
+
+.player-scout-report {
+  display: grid;
+  gap: 14px;
+}
+
+.player-scout-hero {
+  display: grid;
+  gap: 14px;
+
+  padding: 16px;
+
+  border: 1px solid #303a4d;
+  border-radius: 14px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #111722,
+      #161d2a
+    );
+}
+
+.player-scout-hero.elite {
+  border-color:
+    rgba(34, 197, 94, 0.5);
+}
+
+.player-scout-hero.strong {
+  border-color:
+    rgba(132, 204, 22, 0.45);
+}
+
+.player-scout-hero.interesting {
+  border-color:
+    rgba(245, 158, 11, 0.45);
+}
+
+.player-scout-hero.doubt {
+  border-color:
+    rgba(249, 115, 22, 0.45);
+}
+
+.player-scout-hero.avoid {
+  border-color:
+    rgba(239, 68, 68, 0.5);
+}
+
+.player-scout-hero-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.player-scout-stars {
+  margin-top: 5px;
+
+  color: #facc15;
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: 2px;
+}
+
+.player-scout-hero h3 {
+  margin: 5px 0 0;
+
+  color: #ffffff;
+  font-size: 18px;
+}
+
+.player-scout-score {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.player-scout-score strong {
+  color: #ffffff;
+  font-size: 30px;
+  font-weight: 900;
+}
+
+.player-scout-score small {
+  color: #94a3b8;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.player-scout-score-track {
+  width: 100%;
+  height: 8px;
+
+  overflow: hidden;
+
+  border-radius: 999px;
+
+  background: #293449;
+}
+
+.player-scout-score-fill {
+  height: 100%;
+
+  border-radius: inherit;
+
+  background:
+    linear-gradient(
+      90deg,
+      #ef4444,
+      #f59e0b,
+      #84cc16
+    );
+}
+
+.player-scout-quick-facts {
+  display: grid;
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.player-scout-quick-facts > div {
+  display: grid;
+  gap: 4px;
+
+  padding: 9px;
+
+  border-radius: 10px;
+
+  background: #0d131d;
+}
+
+.player-scout-quick-facts span {
+  color: #94a3b8;
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.player-scout-quick-facts strong {
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.player-scout-section {
+  display: grid;
+  gap: 10px;
+
+  padding: 14px;
+
+  border: 1px solid #303a4d;
+  border-radius: 12px;
+
+  background: #111722;
+}
+
+.player-scout-section-heading {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.player-scout-section-heading h4 {
+  margin: 0;
+
+  color: #ffffff;
+  font-size: 12px;
+}
+
+.player-scout-section-icon {
+  display: grid;
+  place-items: center;
+
+  width: 22px;
+  height: 22px;
+
+  border-radius: 7px;
+
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.player-scout-section-icon.positive {
+  color: #bbf7d0;
+  background:
+    rgba(34, 197, 94, 0.16);
+}
+
+.player-scout-section-icon.warning {
+  color: #fed7aa;
+  background:
+    rgba(249, 115, 22, 0.16);
+}
+
+.player-scout-list {
+  display: grid;
+  gap: 8px;
+
+  margin: 0;
+  padding: 0;
+
+  list-style: none;
+}
+
+.player-scout-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.player-scout-list li > span {
+  flex: 0 0 auto;
+
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.player-scout-list.positive li > span {
+  color: #4ade80;
+}
+
+.player-scout-list.warning li > span {
+  color: #fb923c;
+}
+
+.player-scout-list p {
+  margin: 0;
+
+  color: #c7d2e5;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.player-scout-empty {
+  margin: 0;
+
+  color: #94a3b8;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.player-scout-verdict {
+  display: grid;
+  gap: 8px;
+
+  padding: 15px;
+
+  border: 1px solid
+    rgba(239, 68, 68, 0.35);
+  border-radius: 12px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(239, 68, 68, 0.12),
+      rgba(17, 23, 34, 0.95)
+    );
+}
+
+.player-scout-verdict p {
+  margin: 0;
+
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 750;
+  line-height: 1.55;
+}
+/* =========================================================
+   FANTASY OUTLOOK — SCOREBEREKENING
+   ========================================================= */
+
+.player-outlook-calculation {
+  overflow: hidden;
+
+  border: 1px solid #303a4d;
+  border-radius: 12px;
+
+  background: #111722;
+}
+
+.player-outlook-calculation summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  padding: 12px 14px;
+
+  color: #c7d2e5;
+  font-size: 10px;
+  font-weight: 900;
+
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+
+.player-outlook-calculation summary::-webkit-details-marker {
+  display: none;
+}
+
+.player-outlook-calculation summary::after {
+  content: '⌄';
+
+  color: #94a3b8;
+  font-size: 14px;
+  line-height: 1;
+
+  transition:
+    transform 180ms ease;
+}
+
+.player-outlook-calculation[open]
+  summary::after {
+  transform: rotate(180deg);
+}
+
+.player-outlook-calculation[open]
+  summary {
+  border-bottom: 1px solid #303a4d;
+}
+
+.player-outlook-calculation-content {
+  display: grid;
+  gap: 9px;
+
+  padding: 12px 14px;
+}
+
+.player-outlook-calculation-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.player-outlook-calculation-row span {
+  color: #94a3b8;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.player-outlook-calculation-row strong {
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.player-outlook-calculation-row.total {
+  margin-top: 3px;
+  padding-top: 10px;
+
+  border-top: 1px solid #303a4d;
+}
+
+.player-outlook-calculation-row.total span,
+.player-outlook-calculation-row.total strong {
+  color: #ffffff;
+}
+/* =========================================================
+   FANTASY DNA — TIJDELIJKE PREVIEW
+   ========================================================= */
+
+.player-dna-preview {
+  display: grid;
+  gap: 8px;
+
+  padding: 12px 14px;
+
+  border: 1px solid #303a4d;
+  border-radius: 12px;
+
+  background: #111722;
+}
+
+.player-dna-preview > strong {
+  color: #ffffff;
+  font-size: 24px;
+  line-height: 1;
+}
+
+.player-dna-preview > small {
+  color: #94a3b8;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.player-dna-preview-modifiers {
+  display: grid;
+  gap: 7px;
+
+  margin-top: 3px;
+  padding-top: 10px;
+
+  border-top: 1px solid #303a4d;
+}
+
+.player-dna-preview-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.player-dna-preview-row span {
+  color: #94a3b8;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.player-dna-preview-row strong {
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 900;
+}
+/* =========================================================
+   SPELERSPROFIEL — WEDSTRIJDEN
+   ========================================================= */
+
+.player-match-profile {
+  display: grid;
+  gap: 14px;
+}
+
+.player-match-section {
+  display: grid;
+  gap: 14px;
+
+  padding: 14px;
+
+  border: 1px solid #2f394c;
+  border-radius: 14px;
+
+  background: #111722;
+}
+
+.player-match-section-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.player-match-section-heading h3 {
+  margin: 5px 0 0;
+
+  font-size: 18px;
+  line-height: 1.15;
+}
+
+.player-match-total {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 58px;
+  min-height: 42px;
+  padding: 0 10px;
+
+  border: 1px solid
+    rgba(
+      239,
+      68,
+      68,
+      0.35
+    );
+  border-radius: 10px;
+
+  background:
+    rgba(
+      239,
+      68,
+      68,
+      0.1
+    );
+
+  color: #ffffff;
+
+  font-size: 17px;
+  font-weight: 900;
+}
+
+/* Samenvatting */
+
+.player-match-summary-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(0, 1fr)
+    );
+  gap: 8px;
+}
+
+.player-match-summary-grid > div,
+.player-match-average-grid > div {
+  display: grid;
+  gap: 4px;
+
+  min-width: 0;
+  padding: 10px;
+
+  border: 1px solid #293346;
+  border-radius: 10px;
+
+  background: #151d2a;
+}
+
+.player-match-summary-grid span,
+.player-match-average-grid span {
+  color: #96a5c4;
+
+  font-size: 9px;
+  font-weight: 800;
+  line-height: 1.25;
+  text-transform: uppercase;
+}
+
+.player-match-summary-grid strong {
+  color: #ffffff;
+
+  font-size: 20px;
+  line-height: 1;
+}
+
+.player-match-average-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(0, 1fr)
+    );
+  gap: 8px;
+}
+
+.player-match-average-grid strong {
+  color: #ffffff;
+
+  font-size: 15px;
+}
+
+/* Algemene prestatielijst binnen de wedstrijdtab */
+
+.player-match-profile .player-stat-list {
+  gap: 7px;
+}
+
+.player-match-profile .player-stat-list > div {
+  min-height: 38px;
+  padding: 9px 10px;
+
+  border: 1px solid #293346;
+  border-radius: 9px;
+
+  background: #151d2a;
+}
+
+.player-match-profile .player-stat-list span {
+  color: #96a5c4;
+
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.player-match-profile .player-stat-list strong {
+  color: #ffffff;
+
+  font-size: 14px;
+}
+
+/* Puntenopbouw */
+
+.player-match-points-list {
+  display: grid;
+  gap: 6px;
+}
+
+.player-match-points-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  min-height: 36px;
+  padding: 8px 10px;
+
+  border: 1px solid #293346;
+  border-radius: 9px;
+
+  background: #151d2a;
+}
+
+.player-match-points-row span {
+  color: #aab7d1;
+
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.player-match-points-row strong {
+  color: #ffffff;
+
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.player-match-points-row strong.positive {
+  color: #89d329;
+}
+
+.player-match-points-row strong.negative {
+  color: #ff6262;
+}
+
+.player-match-points-row.total {
+  margin-top: 4px;
+
+  border-color:
+    rgba(
+      239,
+      68,
+      68,
+      0.45
+    );
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(
+        239,
+        68,
+        68,
+        0.14
+      ),
+      rgba(
+        239,
+        68,
+        68,
+        0.04
+      )
+    );
+}
+
+.player-match-points-row.total span {
+  color: #ffffff;
+
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.player-match-points-row.total strong {
+  color: #ffffff;
+
+  font-size: 18px;
+}
+
+/* Lege status */
+
+.player-match-profile
+  + .player-detail-placeholder,
+.player-detail-placeholder {
+  padding: 24px 16px;
+
+  border: 1px dashed #344057;
+  border-radius: 14px;
+
+  background:
+    rgba(
+      17,
+      23,
+      34,
+      0.6
+    );
+
+  text-align: center;
+}
+
+.player-detail-placeholder h3 {
+  margin: 8px 0 10px;
+
+  font-size: 18px;
+  line-height: 1.25;
+}
+
+.player-detail-placeholder p {
+  margin: 0;
+
+  color: #96a5c4;
+
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+/* Smalle detailkolom */
+
+@media (
+  max-width: 1500px
+) {
+  .player-match-summary-grid,
+  .player-match-average-grid {
+    grid-template-columns:
+      1fr;
+  }
+}
+
+/* =========================================================
+   SPELERSPROFIEL — RECENTE SPEELRONDES
+   ========================================================= */
+
+.player-match-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 32px;
+  height: 32px;
+  padding: 0 9px;
+
+  border: 1px solid #303b50;
+  border-radius: 9px;
+
+  background: #151d2a;
+  color: #ffffff;
+
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.player-recent-matches {
+  display: grid;
+  gap: 7px;
+}
+
+.player-recent-match {
+  display: grid;
+  grid-template-columns:
+    38px
+    minmax(0, 1fr)
+    auto;
+  align-items: center;
+  gap: 9px;
+
+  padding: 9px;
+
+  border: 1px solid #293346;
+  border-radius: 10px;
+
+  background: #151d2a;
+}
+
+.player-recent-match.played {
+  border-left:
+    3px solid
+    #8ed62e;
+}
+
+.player-recent-match.not-played {
+  border-left:
+    3px solid
+    #63708a;
+}
+
+.player-recent-match.unavailable {
+  border-left:
+    3px solid
+    #ff6262;
+}
+
+.player-recent-match-round {
+  display: grid;
+  justify-items: center;
+  gap: 1px;
+
+  padding: 5px;
+
+  border-radius: 8px;
+
+  background: #101722;
+}
+
+.player-recent-match-round span {
+  color: #8292b3;
+
+  font-size: 7px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.player-recent-match-round strong {
+  color: #ffffff;
+
+  font-size: 14px;
+}
+
+.player-recent-match-main {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+
+.player-recent-match-main strong {
+  overflow: hidden;
+
+  color: #ffffff;
+
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.player-recent-match-main span {
+  color: #91a1bf;
+
+  font-size: 9px;
+}
+
+.player-recent-match-points {
+  display: grid;
+  justify-items: end;
+  gap: 1px;
+}
+
+.player-recent-match-points strong {
+  color: #ffffff;
+
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.player-recent-match-points strong.positive {
+  color: #8ed62e;
+}
+
+.player-recent-match-points strong.negative {
+  color: #ff6262;
+}
+
+.player-recent-match-points span {
+  color: #8292b3;
+
+  font-size: 7px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.player-match-empty {
+  padding: 16px;
+
+  border: 1px dashed #344057;
+  border-radius: 10px;
+
+  text-align: center;
+}
+
+.player-match-empty p {
+  margin: 0;
+
+  color: #91a1bf;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+/* =====================================================
+   SPELERSLIJST — SPELERIDENTITEIT
+   ===================================================== */
+
+.player-table-identity {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  min-width: 0;
+}
+
+.player-table-avatar {
+  position: relative;
+
+  flex: 0 0 auto;
+
+  width: 50px;
+  height: 50px;
+
+  overflow: hidden;
+
+  border: 1px solid #36465d;
+  border-radius: 50%;
+
+  background: #16202f;
+
+  box-shadow:
+    0 4px 12px
+    rgba(0, 0, 0, 0.22);
+}
+
+.player-table-avatar img {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+  object-position: center top;
+
+  /*
+   * Eerst horizontaal naar links verschuiven,
+   * daarna dezelfde vergroting behouden.
+   */
+  transform:
+    translateX(-8%)
+    scale(1.3);
+
+  transform-origin: center top;
+}
+
+.player-table-avatar.has-placeholder {
+  display: grid;
+  place-items: center;
+
+  background:
+    linear-gradient(
+      135deg,
+      #1d2939,
+      #111925
+    );
+}
+
+.player-table-avatar.has-placeholder > span {
+  color: #c6d2e3;
+
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.player-table-avatar-status {
+  position: absolute;
+
+  right: 1px;
+  bottom: 1px;
+
+  width: 10px;
+  height: 10px;
+
+  border: 2px solid #111925;
+  border-radius: 50%;
+
+  background: transparent;
+}
+
+.player-table-identity-copy {
+  display: grid;
+  gap: 4px;
+
+  min-width: 0;
+}
+
+.player-table-name {
+  overflow: hidden;
+
+  color: #ffffff;
+
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1.15;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.player-table-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  min-width: 0;
+}
+
+.player-table-club {
+  overflow: hidden;
+
+  color: #9cabca;
+
+  font-size: 9px;
+  line-height: 1.1;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.player-table-position {
+  flex: 0 0 auto;
+
+  padding: 2px 5px;
+
+  border: 1px solid #344057;
+  border-radius: 999px;
+
+  background: #161f2d;
+  color: #b9c6de;
+
+  font-size: 7px;
+  font-weight: 800;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.players-table td[data-column-key='name'],
+.players-table th[data-column-key='name'] {
+  min-width: 245px;
+}
+
+.players-table tbody tr {
+  min-height: 64px;
+}
+
+/* =====================================================
+   SPELERSLIJST — KOLOMGROEPEN
+   ===================================================== */
+
+.player-column-groups {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  margin-bottom: 10px;
+  padding: 5px;
+
+  overflow-x: auto;
+
+  border: 1px solid #2d384b;
+  border-radius: 12px;
+
+  background:
+    rgba(
+      15,
+      22,
+      33,
+      0.78
+    );
+
+  scrollbar-width: thin;
+}
+
+.player-column-group {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+
+  flex: 0 0 auto;
+
+  min-height: 36px;
+  padding: 0 12px;
+
+  border: 1px solid transparent;
+  border-radius: 8px;
+
+  background: transparent;
+  color: #8f9ebb;
+
+  font: inherit;
+  font-size: 10px;
+  font-weight: 800;
+
+  cursor: pointer;
+
+  transition:
+    background 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease,
+    transform 160ms ease;
+}
+
+.player-column-group:hover {
+  border-color: #36445b;
+
+  background: #182231;
+  color: #ffffff;
+
+  transform:
+    translateY(-1px);
+}
+
+.player-column-group.active {
+  border-color:
+    rgba(
+      239,
+      68,
+      68,
+      0.5
+    );
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(
+        239,
+        68,
+        68,
+        0.2
+      ),
+      rgba(
+        239,
+        68,
+        68,
+        0.07
+      )
+    );
+
+  color: #ffffff;
+
+  box-shadow:
+    inset 0 0 0 1px
+    rgba(
+      255,
+      255,
+      255,
+      0.025
+    );
+}
+
+.player-column-group span {
+  font-size: 12px;
+}
+
+/* =====================================================
+   SPELERSLIJST — KOLOMTOOLTIPS
+   ===================================================== */
+
+.player-column-heading {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.player-column-tooltip {
+  position: relative;
+  z-index: 20;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  flex: 0 0 auto;
+
+  cursor: help;
+}
+
+.player-column-tooltip-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 15px;
+  height: 15px;
+
+  border: 1px solid #52617b;
+  border-radius: 50%;
+
+  background: #1b2638;
+  color: #b8c7df;
+
+  font-family: Georgia, serif;
+  font-size: 9px;
+  font-weight: 900;
+  font-style: italic;
+  line-height: 1;
+
+  transition:
+    border-color 150ms ease,
+    background 150ms ease,
+    color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.player-column-tooltip-content {
+  position: absolute;
+  z-index: 999;
+
+  /*
+   * De kaart opent onder het icoon.
+   * Daardoor wordt hij niet tegen de bovenkant
+   * van de tabel afgesneden.
+   */
+  top: calc(100% + 12px);
+  left: 50%;
+
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  width: 290px;
+  padding: 14px 15px 15px;
+
+  border: 1px solid #46536a;
+  border-top: 3px solid #ef4444;
+  border-radius: 11px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #172131,
+      #0e1520
+    );
+
+  color: #b9c6db;
+
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.5;
+  text-align: left;
+  text-transform: none;
+  white-space: normal;
+
+  box-shadow:
+    0 18px 42px
+    rgba(0, 0, 0, 0.5);
+
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+
+  transform:
+    translateX(-50%)
+    translateY(-5px);
+
+  transition:
+    opacity 150ms ease,
+    visibility 150ms ease,
+    transform 150ms ease;
+}
+
+/*
+ * Pijltje richting het informatie-icoon.
+ */
+.player-column-tooltip-content::before {
+  content: '';
+
+  position: absolute;
+
+  left: 50%;
+  bottom: 100%;
+
+  width: 10px;
+  height: 10px;
+
+  border-top: 1px solid #46536a;
+  border-left: 1px solid #46536a;
+
+  background: #172131;
+
+  transform:
+    translateX(-50%)
+    translateY(5px)
+    rotate(45deg);
+}
+
+/*
+ * Duidelijke categorie boven de titel.
+ */
+.player-column-tooltip-content::after {
+  content: 'UITLEG STATISTIEK';
+
+  order: -2;
+
+  display: block;
+
+  color: #ff7b7b;
+
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.player-column-tooltip-content strong {
+  order: -1;
+
+  display: block;
+
+  color: #ffffff;
+
+  font-size: 13px;
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+.player-column-tooltip-content > span {
+  display: block;
+
+  color: #b9c6db;
+}
+
+/*
+ * Tonen met muis én toetsenbord.
+ */
+.player-column-tooltip:hover
+  .player-column-tooltip-content,
+.player-column-tooltip:focus
+  .player-column-tooltip-content,
+.player-column-tooltip:focus-within
+  .player-column-tooltip-content {
+  opacity: 1;
+  visibility: visible;
+
+  transform:
+    translateX(-50%)
+    translateY(0);
+}
+
+.player-column-tooltip:hover
+  .player-column-tooltip-icon,
+.player-column-tooltip:focus
+  .player-column-tooltip-icon,
+.player-column-tooltip:focus-within
+  .player-column-tooltip-icon {
+  border-color: #ef4444;
+
+  background:
+    rgba(
+      239,
+      68,
+      68,
+      0.2
+    );
+
+  color: #ffffff;
+
+  box-shadow:
+    0 0 0 3px
+    rgba(
+      239,
+      68,
+      68,
+      0.08
+    );
+}
+
+/*
+ * Voorkomt dat de tooltip binnen de
+ * tabelkop zelf wordt afgesneden.
+ */
+.players-table thead,
+.players-table thead tr,
+.players-table thead th {
+  overflow: visible;
+}
+
+/* =====================================================
+   FVT FANTASY SCORE
+   ===================================================== */
+
+.player-fvt-score-card {
+  display: grid;
+  gap: 15px;
+
+  padding: 16px;
+
+  border: 1px solid #344057;
+  border-radius: 14px;
+
+  background:
+    radial-gradient(
+      circle at top right,
+      rgba(239, 68, 68, 0.13),
+      transparent 42%
+    ),
+    linear-gradient(
+      145deg,
+      #172131,
+      #0e1520
+    );
+
+  box-shadow:
+    0 16px 34px
+    rgba(0, 0, 0, 0.25);
+}
+
+.player-fvt-score-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.player-fvt-score-heading h3 {
+  margin: 4px 0 0;
+
+  color: #ffffff;
+
+  font-size: 14px;
+  line-height: 1.25;
+}
+
+.player-fvt-score-info {
+  position: relative;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  flex: 0 0 auto;
+
+  width: 20px;
+  height: 20px;
+
+  border: 1px solid #52617b;
+  border-radius: 50%;
+
+  background: #1b2638;
+  color: #c6d2e5;
+
+  font-family: Georgia, serif;
+  font-size: 11px;
+  font-weight: 900;
+  font-style: italic;
+
+  cursor: help;
+}
+
+/* =====================================================
+   FVT FANTASY SCORE — DETAILAFWERKING
+   ===================================================== */
+
+.player-fvt-score-title-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.player-fvt-score-info {
+  position: relative;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  flex: 0 0 auto;
+
+  width: 17px;
+  height: 17px;
+
+  border: 1px solid #52617b;
+  border-radius: 50%;
+
+  background: #1b2638;
+  color: #c6d2e5;
+
+  font-family: Georgia, serif;
+  font-size: 9px;
+  font-weight: 900;
+  font-style: italic;
+  line-height: 1;
+
+  cursor: help;
+
+  transition:
+    border-color 150ms ease,
+    background 150ms ease,
+    color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.player-fvt-score-tooltip {
+  position: absolute;
+  z-index: 100;
+
+  top: calc(100% + 10px);
+  left: 0;
+
+  display: grid;
+  gap: 7px;
+
+  width: 275px;
+  padding: 13px 14px;
+
+  border: 1px solid #46536a;
+  border-top: 3px solid #ef4444;
+  border-radius: 11px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #172131,
+      #0e1520
+    );
+
+  color: #b9c6db;
+
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1.45;
+  text-align: left;
+  text-transform: none;
+  white-space: normal;
+
+  box-shadow:
+    0 18px 42px
+    rgba(0, 0, 0, 0.5);
+
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+
+  transform:
+    translateY(-5px);
+
+  transition:
+    opacity 150ms ease,
+    visibility 150ms ease,
+    transform 150ms ease;
+}
+
+.player-fvt-score-tooltip::before {
+  content: '';
+
+  position: absolute;
+
+  left: 6px;
+  bottom: 100%;
+
+  width: 9px;
+  height: 9px;
+
+  border-top: 1px solid #46536a;
+  border-left: 1px solid #46536a;
+
+  background: #172131;
+
+  transform:
+    translateY(5px)
+    rotate(45deg);
+}
+
+.player-fvt-score-tooltip strong {
+  color: #ffffff;
+
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+.player-fvt-score-tooltip span {
+  color: #b9c6db;
+}
+
+.player-fvt-score-tooltip small {
+  color: #ff8b8b;
+
+  font-size: 9px;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.player-fvt-score-info:hover,
+.player-fvt-score-info:focus,
+.player-fvt-score-info:focus-within {
+  border-color: #ef4444;
+
+  background:
+    rgba(
+      239,
+      68,
+      68,
+      0.2
+    );
+
+  color: #ffffff;
+
+  box-shadow:
+    0 0 0 3px
+    rgba(
+      239,
+      68,
+      68,
+      0.08
+    );
+}
+
+.player-fvt-score-info:hover
+  .player-fvt-score-tooltip,
+.player-fvt-score-info:focus
+  .player-fvt-score-tooltip,
+.player-fvt-score-info:focus-within
+  .player-fvt-score-tooltip {
+  opacity: 1;
+  visibility: visible;
+
+  transform:
+    translateY(0);
+}
+
+.player-fvt-score-main {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.player-fvt-score-number {
+  display: flex;
+  align-items: flex-end;
+  gap: 5px;
+
+  min-width: 0;
+}
+
+.player-fvt-score-number strong {
+  color: #ffffff;
+
+  font-size: 48px;
+  font-weight: 950;
+  line-height: 0.9;
+  letter-spacing: -0.05em;
+}
+
+.player-fvt-score-number span {
+  padding-bottom: 4px;
+
+  color: #8190aa;
+
+  font-size: 10px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.player-fvt-score-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+
+  flex: 0 0 auto;
+
+  min-height: 28px;
+  padding: 7px 10px;
+
+  border: 1px solid #3b485f;
+  border-radius: 999px;
+
+  background: #182231;
+  color: #ffffff;
+
+  font-size: 9px;
+  font-weight: 900;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.player-fvt-score-label strong {
+  overflow: visible;
+
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+.player-fvt-score-label.must-have,
+.player-fvt-score-label.elite {
+  border-color:
+    rgba(
+      34,
+      197,
+      94,
+      0.5
+    );
+
+  background:
+    rgba(
+      34,
+      197,
+      94,
+      0.13
+    );
+}
+
+.player-fvt-score-label.strong,
+.player-fvt-score-label.good {
+  border-color:
+    rgba(
+      234,
+      179,
+      8,
+      0.5
+    );
+
+  background:
+    rgba(
+      234,
+      179,
+      8,
+      0.12
+    );
+}
+
+.player-fvt-score-label.interesting {
+  border-color:
+    rgba(
+      132,
+      204,
+      22,
+      0.45
+    );
+
+  background:
+    rgba(
+      132,
+      204,
+      22,
+      0.1
+    );
+}
+
+.player-fvt-score-label.situational {
+  border-color:
+    rgba(
+      249,
+      115,
+      22,
+      0.5
+    );
+
+  background:
+    rgba(
+      249,
+      115,
+      22,
+      0.12
+    );
+}
+
+.player-fvt-score-label.consider {
+  border-color:
+    rgba(
+      148,
+      163,
+      184,
+      0.45
+    );
+
+  background:
+    rgba(
+      148,
+      163,
+      184,
+      0.1
+    );
+}
+
+.player-fvt-score-label.risky {
+  border-color:
+    rgba(
+      239,
+      68,
+      68,
+      0.55
+    );
+
+  background:
+    rgba(
+      239,
+      68,
+      68,
+      0.13
+    );
+}
+
+.player-fvt-score-track {
+  height: 10px;
+
+  overflow: hidden;
+
+  border-radius: 999px;
+
+  background: #263248;
+}
+
+.player-fvt-score-fill {
+  height: 100%;
+
+  border-radius: inherit;
+
+  background:
+    linear-gradient(
+      90deg,
+      #ef4444,
+      #f59e0b,
+      #84cc16
+    );
+
+  transition:
+    width 260ms ease;
+}
+
+/* =====================================================
+   FVT FANTASY SCORE — GLOED PER SCORENIVEAU
+   ===================================================== */
+
+.player-fvt-score-card.must-have,
+.player-fvt-score-card.elite {
+  box-shadow:
+    0 16px 34px
+    rgba(0, 0, 0, 0.25),
+    0 0 28px
+    rgba(34, 197, 94, 0.12);
+}
+
+.player-fvt-score-card.strong,
+.player-fvt-score-card.good {
+  box-shadow:
+    0 16px 34px
+    rgba(0, 0, 0, 0.25),
+    0 0 28px
+    rgba(234, 179, 8, 0.1);
+}
+
+.player-fvt-score-card.interesting,
+.player-fvt-score-card.situational,
+.player-fvt-score-card.consider {
+  box-shadow:
+    0 16px 34px
+    rgba(0, 0, 0, 0.25),
+    0 0 28px
+    rgba(249, 115, 22, 0.1);
+}
+
+.player-fvt-score-card.risky {
+  box-shadow:
+    0 16px 34px
+    rgba(0, 0, 0, 0.25),
+    0 0 28px
+    rgba(239, 68, 68, 0.12);
+}
+
+.player-fvt-score-fill {
+  height: 100%;
+
+  border-radius: inherit;
+
+  background:
+    linear-gradient(
+      90deg,
+      #ef4444,
+      #f59e0b,
+      #84cc16
+    );
+
+  transition:
+    width 260ms ease;
+}
+
+.player-fvt-score-summary {
+  margin: 0;
+
+  color: #aebbd1;
+
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+/* =====================================================
+   FVT VORM — UITLEG EN ONDERBOUWING
+   ===================================================== */
+
+.player-outlook-factor.has-details {
+  padding-bottom: 0;
+}
+
+.player-outlook-factor-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.player-form-info {
+  position: relative;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 14px;
+  height: 14px;
+
+  border: 1px solid #52617b;
+  border-radius: 50%;
+
+  background: #1b2638;
+  color: #b8c7df;
+
+  font-family: Georgia, serif;
+  font-size: 8px;
+  font-weight: 900;
+  font-style: italic;
+  line-height: 1;
+
+  cursor: help;
+}
+
+.player-form-info:hover,
+.player-form-info:focus,
+.player-form-info:focus-within {
+  border-color: #ef4444;
+
+  background:
+    rgba(239, 68, 68, 0.18);
+
+  color: #ffffff;
+}
+
+.player-form-tooltip {
+  position: absolute;
+  z-index: 150;
+
+  top: 50%;
+right: calc(100% + 12px);
+
+left: auto;
+
+transform: translateY(-50%);
+
+  display: grid;
+  gap: 8px;
+
+  width: 285px;
+  padding: 13px 14px;
+
+  border: 1px solid #46536a;
+  border-top: 3px solid #ef4444;
+  border-radius: 11px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #172131,
+      #0e1520
+    );
+
+  color: #b9c6db;
+
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1.45;
+  text-align: left;
+  text-transform: none;
+  white-space: normal;
+
+  box-shadow:
+    0 18px 42px
+    rgba(0, 0, 0, 0.5);
+
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+
+  transform:
+    translateY(-5px);
+
+  transition:
+    opacity 150ms ease,
+    visibility 150ms ease,
+    transform 150ms ease;
+}
+
+.player-form-tooltip strong {
+  color: #ffffff;
+
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.player-form-tooltip b {
+  color: #ffffff;
+}
+
+.player-form-tooltip small {
+  color: #ff8b8b;
+
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.player-form-info:hover
+.player-form-tooltip,
+.player-form-info:focus
+.player-form-tooltip,
+.player-form-info:focus-within
+.player-form-tooltip {
+    opacity: 1;
+    visibility: visible;
+
+    transform: translateY(-50%);
+}
+
+.player-outlook-factor-fill.neutral {
+  background:
+    linear-gradient(
+      90deg,
+      #64748b,
+      #94a3b8
+    );
+}
+
+.player-form-details {
+  margin-top: 8px;
+
+  border-top: 1px solid #2f3a4e;
+}
+
+.player-form-details summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+
+  padding: 9px 0 2px;
+
+  color: #94a5c0;
+
+  font-size: 9px;
+  font-weight: 800;
+
+  cursor: pointer;
+
+  list-style: none;
+}
+
+.player-form-details summary::-webkit-details-marker {
+  display: none;
+}
+
+.player-form-details-chevron {
+  transition:
+    transform 150ms ease;
+}
+
+.player-form-details[open]
+  .player-form-details-chevron {
+  transform:
+    rotate(180deg);
+}
+
+.player-form-details-content {
+  display: grid;
+  gap: 11px;
+
+  padding: 10px 0 4px;
+}
+
+.player-form-components {
+  display: grid;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.player-form-components > div {
+  display: grid;
+  gap: 3px;
+
+  padding: 9px;
+
+  border: 1px solid #303c51;
+  border-radius: 9px;
+
+  background: #131c29;
+}
+
+.player-form-components span {
+  color: #8999b4;
+
+  font-size: 8px;
+  font-weight: 800;
+}
+
+.player-form-components strong {
+  color: #ffffff;
+
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.player-form-components small {
+  color: #ff8b8b;
+
+  font-size: 8px;
+  font-weight: 800;
+}
+
+.player-form-rounds {
+  display: grid;
+  gap: 5px;
+}
+
+.player-form-round {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+
+  padding: 7px 8px;
+
+  border-radius: 7px;
+
+  background: #131c29;
+}
+
+.player-form-round > div {
+  display: grid;
+  gap: 2px;
+}
+
+.player-form-round strong {
+  color: #ffffff;
+
+  font-size: 9px;
+  font-weight: 900;
+}
+
+.player-form-round span {
+  color: #8f9db5;
+
+  font-size: 8px;
+}
+
+.player-form-empty {
+  display: grid;
+  gap: 5px;
+
+  padding: 10px;
+
+  border: 1px dashed #3a465b;
+  border-radius: 9px;
+
+  background:
+    rgba(15, 23, 42, 0.45);
+}
+
+.player-form-empty strong {
+  color: #ffffff;
+
+  font-size: 9px;
+}
+
+.player-form-empty p {
+  margin: 0;
+
+  color: #93a2ba;
+
+  font-size: 9px;
+  line-height: 1.45;
+}
+
+/* =========================================================
+   FANTASY PROFIEL — PREMIUM CARDS
+   ========================================================= */
+
+.fantasy-profile-section {
+  display: grid;
+  gap: 14px;
+
+  margin-bottom: 16px;
+  padding: 14px;
+
+  overflow: visible;
+
+  border:
+    1px solid
+    rgba(71, 85, 105, 0.68);
+
+  border-radius: 15px;
+
+  background:
+    radial-gradient(
+      circle at 50% -20%,
+      rgba(99, 102, 241, 0.13),
+      transparent 45%
+    ),
+    linear-gradient(
+      145deg,
+      #151d2a,
+      #0d131d
+    );
+
+  box-shadow:
+    0 16px 34px
+    rgba(0, 0, 0, 0.2);
+}
+
+.fantasy-profile-section-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.fantasy-profile-section-heading h3 {
+  margin: 3px 0 0;
+
+  color: #ffffff;
+  font-size: 14px;
+  line-height: 1.25;
+}
+
+.fantasy-profile-section-heading .eyebrow {
+  margin: 0;
+
+  color: #9faac0;
+  font-size: 9px;
+  letter-spacing: 1.2px;
+}
+
+.fantasy-profile-section-badge {
+  flex: 0 0 auto;
+
+  padding: 5px 8px;
+
+  color: #cbd5e1;
+
+  border:
+    1px solid
+    rgba(148, 163, 184, 0.2);
+
+  border-radius: 999px;
+
+  background:
+    rgba(15, 23, 42, 0.74);
+
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+/* =========================================================
+   GRID
+   ========================================================= */
+
+.fantasy-profile-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(0, 1fr)
+    );
+
+  gap: 9px;
+}
+
+/* =========================================================
+   KAART
+   ========================================================= */
+
+.fantasy-profile-card {
+  --profile-accent: #94a3b8;
+  --profile-accent-soft:
+    rgba(148, 163, 184, 0.18);
+  --profile-accent-glow:
+    rgba(148, 163, 184, 0.25);
+
+  position: relative;
+  isolation: isolate;
+
+  min-width: 0;
+  min-height: 175px;
+
+  overflow: visible;
+
+  border:
+  1px solid
+  color-mix(
+    in srgb,
+    var(--profile-accent) 34%,
+    rgba(148, 163, 184, 0.18)
+  );
+
+  border-radius: 14px;
+
+  background:
+    linear-gradient(
+      165deg,
+      rgba(30, 41, 59, 0.97),
+      rgba(10, 15, 24, 0.99)
+    );
+
+  box-shadow:
+    inset 0 1px 0
+      rgba(255, 255, 255, 0.035),
+    0 10px 22px
+      rgba(0, 0, 0, 0.24);
+
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.fantasy-profile-card:hover,
+.fantasy-profile-card:focus-within {
+  z-index: 30;
+
+  transform:
+    translateY(-3px);
+
+  border-color:
+    var(--profile-accent);
+
+  box-shadow:
+    inset 0 1px 0
+      rgba(255, 255, 255, 0.07),
+    0 13px 28px
+      rgba(0, 0, 0, 0.34),
+    0 0 22px
+      var(--profile-accent-glow);
+}
+
+/*
+ * De kaart zelf is de verticale meter.
+ *
+ * De vulling loopt vanaf de onderzijde
+ * omhoog tot de profielscore.
+ */
+.fantasy-profile-card-fill {
+  position: absolute;
+  z-index: -1;
+
+  right: 0;
+  bottom: 0;
+  left: 0;
+
+  height:
+    var(
+      --fantasy-profile-score,
+      0%
+    );
+
+  background:
+  linear-gradient(
+    180deg,
+    color-mix(
+      in srgb,
+      white 18%,
+      var(--profile-accent)
+    ) 0%,
+
+    color-mix(
+      in srgb,
+      var(--profile-accent) 58%,
+      transparent
+    ) 10%,
+
+    color-mix(
+      in srgb,
+      var(--profile-accent) 34%,
+      #101827
+    ) 48%,
+
+    color-mix(
+      in srgb,
+      var(--profile-accent) 22%,
+      #09101a
+    ) 100%
+  );
+
+  border-top:
+  2px solid
+  color-mix(
+    in srgb,
+    white 40%,
+    var(--profile-accent)
+  );
+
+  box-shadow:
+  0 -2px 0
+    rgba(255, 255, 255, 0.22),
+
+  0 -8px 22px
+    var(--profile-accent-glow),
+
+  inset 0 1px 0
+    rgba(255, 255, 255, 0.16),
+
+  inset 0 -22px 30px
+    rgba(0, 0, 0, 0.16);
+
+border-radius: 0 0 13px 13px;
+clip-path: inset(0 round 13px);
+
+  opacity: 0.82;
+
+  transition:
+    height 700ms
+    cubic-bezier(
+      0.2,
+      0.75,
+      0.25,
+      1
+    );
+}
+
+/*
+ * Zachte gloed boven in iedere kaart.
+ */
+.fantasy-profile-card::before {
+  content: '';
+
+  position: absolute;
+  z-index: -2;
+
+  top: -38px;
+  left: 50%;
+
+  width: 105px;
+  height: 85px;
+
+  transform:
+    translateX(-50%);
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      circle,
+      var(--profile-accent-glow),
+      transparent 72%
+    );
+
+  opacity: 0.58;
+}
+
+/*
+ * Zeer subtiele verticale glans.
+ */
+.fantasy-profile-card::after {
+  content: '';
+
+  position: absolute;
+  z-index: -1;
+
+  inset: 0;
+
+  pointer-events: none;
+
+  background:
+    linear-gradient(
+      115deg,
+      rgba(255, 255, 255, 0.045),
+      transparent 30%,
+      transparent 70%,
+      rgba(255, 255, 255, 0.025)
+    );
+}
+
+/* =========================================================
+   INHOUD VAN DE KAART
+   ========================================================= */
+
+.fantasy-profile-card-content {
+  position: relative;
+  z-index: 2;
+
+  display: flex;
+  flex-direction: column;
+
+  min-height: 175px;
+  padding: 14px;
+}
+
+.fantasy-profile-card-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.fantasy-profile-card-icon {
+  display: grid;
+  place-items: center;
+
+  width: 28px;
+  height: 28px;
+
+  border:
+    1px solid
+    color-mix(
+      in srgb,
+      var(--profile-accent) 42%,
+      transparent
+    );
+
+  border-radius: 9px;
+
+  background:
+    var(--profile-accent-soft);
+
+  box-shadow:
+    0 0 15px
+    var(--profile-accent-glow);
+
+  font-size: 15px;
+  line-height: 1;
+}
+
+.fantasy-profile-card-score {
+  display: grid;
+  place-items: center;
+
+  flex: 1;
+
+  padding: 8px 0 5px;
+
+  text-align: center;
+}
+
+.fantasy-profile-card-score strong {
+  color:
+  rgba(255, 255, 255, 0.98);
+
+  font-size: 50px;
+  font-weight: 950;
+  line-height: 0.95;
+
+  letter-spacing: -3px;
+
+  text-shadow:
+  0 1px 0
+    rgba(255, 255, 255, 0.16),
+
+  0 3px 6px
+    rgba(0, 0, 0, 0.72),
+
+  0 8px 24px
+    rgba(0, 0, 0, 0.34);
+}
+
+/*
+ * De profielnaam staat al in de footer.
+ * De dubbele tekst uit de HTML verbergen we.
+ */
+.fantasy-profile-card-score > span {
+  display: none;
+}
+
+.fantasy-profile-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 25px;
+  padding-top: 8px;
+
+  border-top:
+    1px solid
+    rgba(255, 255, 255, 0.075);
+}
+
+.fantasy-profile-card-footer strong {
+  min-width: 0;
+
+  overflow: hidden;
+
+  color: #eef2ff;
+
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* =========================================================
+   GEEN DATA
+   ========================================================= */
+
+.fantasy-profile-card.has-no-data {
+  opacity: 0.58;
+  filter: grayscale(0.5);
+}
+
+.fantasy-profile-card.has-no-data
+.fantasy-profile-card-fill {
+  height: 0;
+  opacity: 0;
+}
+
+.fantasy-profile-card.has-no-data
+.fantasy-profile-card-score strong {
+  color: #64748b;
+}
+
+/* =========================================================
+   EIGEN ACCENTKLEUR PER PROFIEL
+   ========================================================= */
+
+.fantasy-profile-card-gold {
+  --profile-accent: #facc15;
+  --profile-accent-soft:
+    rgba(250, 204, 21, 0.18);
+  --profile-accent-glow:
+    rgba(250, 204, 21, 0.27);
+}
+
+.fantasy-profile-card-purple {
+  --profile-accent: #a78bfa;
+  --profile-accent-soft:
+    rgba(167, 139, 250, 0.18);
+  --profile-accent-glow:
+    rgba(167, 139, 250, 0.27);
+}
+
+.fantasy-profile-card-green {
+  --profile-accent: #4ade80;
+  --profile-accent-soft:
+    rgba(74, 222, 128, 0.17);
+  --profile-accent-glow:
+    rgba(74, 222, 128, 0.25);
+}
+
+.fantasy-profile-card-orange {
+  --profile-accent: #fb923c;
+  --profile-accent-soft:
+    rgba(251, 146, 60, 0.18);
+  --profile-accent-glow:
+    rgba(251, 146, 60, 0.27);
+}
+
+.fantasy-profile-card-blue {
+  --profile-accent: #60a5fa;
+  --profile-accent-soft:
+    rgba(96, 165, 250, 0.18);
+  --profile-accent-glow:
+    rgba(96, 165, 250, 0.27);
+}
+
+.fantasy-profile-card-red {
+  --profile-accent: #f87171;
+  --profile-accent-soft:
+    rgba(248, 113, 113, 0.18);
+  --profile-accent-glow:
+    rgba(248, 113, 113, 0.28);
+}
+
+/* =========================================================
+   INFO-KNOP
+   ========================================================= */
+
+.fantasy-profile-info {
+  position: relative;
+
+  display: grid;
+  place-items: center;
+
+  width: 21px;
+  height: 21px;
+  flex: 0 0 21px;
+
+  color: #dbe4f3;
+
+  border:
+    1px solid
+    rgba(148, 163, 184, 0.32);
+
+  border-radius: 50%;
+
+  background:
+    rgba(15, 23, 42, 0.82);
+
+  font-size: 10px;
+  font-weight: 950;
+  font-style: normal;
+
+  cursor: help;
+
+  outline: none;
+
+  transition:
+    color 160ms ease,
+    border-color 160ms ease,
+    background 160ms ease,
+    transform 160ms ease;
+}
+
+.fantasy-profile-info:hover,
+.fantasy-profile-info:focus {
+  color: #0b1018;
+
+  border-color:
+    var(--profile-accent);
+
+  background:
+    var(--profile-accent);
+
+  transform:
+    scale(1.07);
+}
+
+/* =========================================================
+   TOOLTIP
+   ========================================================= */
+
+.fantasy-profile-tooltip {
+  position: absolute;
+  z-index: 100;
+
+  top: 50%;
+right: calc(100% + 12px);
+left: auto;
+
+transform: translateY(-50%);
+
+  display: none;
+
+  width: 270px;
+  padding: 13px;
+
+  color: #cbd5e1;
+
+  border:
+    1px solid
+    rgba(100, 116, 139, 0.75);
+
+  border-radius: 12px;
+
+  background:
+    rgba(10, 15, 24, 0.985);
+
+  box-shadow:
+    0 20px 45px
+    rgba(0, 0, 0, 0.58);
+
+  text-align: left;
+
+  pointer-events: none;
+}
+
+.fantasy-profile-info:hover
+.fantasy-profile-tooltip,
+.fantasy-profile-info:focus
+.fantasy-profile-tooltip,
+.fantasy-profile-info:focus-within
+.fantasy-profile-tooltip {
+  display: grid;
+  gap: 9px;
+}
+
+.fantasy-profile-tooltip::before {
+  content: '';
+
+  position: absolute;
+
+  top: 16px;
+  right: -5px;
+
+  width: 9px;
+  height: 9px;
+
+  border-top:
+    1px solid
+    rgba(100, 116, 139, 0.75);
+
+  border-right:
+    1px solid
+    rgba(100, 116, 139, 0.75);
+
+  background: #0a0f18;
+
+  transform: rotate(45deg);
+}
+
+.fantasy-profile-tooltip > strong {
+  color: #ffffff;
+
+  font-size: 12px;
+  font-weight: 950;
+}
+
+.fantasy-profile-tooltip > span {
+  color: #c7d2e5;
+
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.fantasy-profile-tooltip-heading {
+  display: grid;
+  justify-items: start;
+  gap: 7px;
+}
+
+.fantasy-profile-tooltip-heading > strong {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+
+  color: #ffffff;
+
+  font-size: 13px;
+  font-weight: 950;
+  line-height: 1.2;
+}
+
+.fantasy-profile-tooltip-heading > strong span {
+  font-size: 12px;
+  line-height: 1;
+}
+
+.fantasy-profile-tooltip-assessment {
+  display: inline-flex;
+  align-items: center;
+
+  min-height: 22px;
+  padding: 4px 8px;
+
+  border:
+    1px solid
+    rgba(148, 163, 184, 0.32);
+
+  border-radius: 999px;
+
+  background:
+    rgba(51, 65, 85, 0.46);
+
+  color: #e2e8f0;
+
+  font-size: 9px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.fantasy-profile-tooltip-assessment.is-gold {
+  border-color:
+    rgba(250, 204, 21, 0.5);
+
+  background:
+    rgba(250, 204, 21, 0.12);
+
+  color: #fde68a;
+}
+
+.fantasy-profile-tooltip-assessment.is-purple {
+  border-color:
+    rgba(167, 139, 250, 0.5);
+
+  background:
+    rgba(167, 139, 250, 0.12);
+
+  color: #ddd6fe;
+}
+
+.fantasy-profile-tooltip-assessment.is-green {
+  border-color:
+    rgba(74, 222, 128, 0.5);
+
+  background:
+    rgba(74, 222, 128, 0.12);
+
+  color: #bbf7d0;
+}
+
+.fantasy-profile-tooltip-assessment.is-orange {
+  border-color:
+    rgba(251, 146, 60, 0.5);
+
+  background:
+    rgba(251, 146, 60, 0.12);
+
+  color: #fed7aa;
+}
+
+.fantasy-profile-tooltip-assessment.is-blue {
+  border-color:
+    rgba(96, 165, 250, 0.5);
+
+  background:
+    rgba(96, 165, 250, 0.12);
+
+  color: #bfdbfe;
+}
+
+.fantasy-profile-tooltip-assessment.is-red {
+  border-color:
+    rgba(248, 113, 113, 0.5);
+
+  background:
+    rgba(248, 113, 113, 0.12);
+
+  color: #fecaca;
+}
+
+.fantasy-profile-tooltip-description {
+  display: block;
+
+  padding-bottom: 9px;
+
+  border-bottom:
+    1px solid
+    rgba(71, 85, 105, 0.58);
+
+  color: #c7d2e5 !important;
+
+  font-size: 10px !important;
+  font-weight: 600 !important;
+  line-height: 1.5 !important;
+}
+
+.fantasy-profile-tooltip-title {
+  padding-top: 8px;
+
+  border-top:
+    1px solid
+    rgba(71, 85, 105, 0.58);
+
+  color:
+    var(--profile-accent) !important;
+
+  font-size: 9px !important;
+  font-weight: 950 !important;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.fantasy-profile-tooltip-components {
+  display: grid;
+  gap: 6px;
+}
+
+.fantasy-profile-tooltip-component {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    34px
+    88px;
+
+  align-items: center;
+  column-gap: 10px;
+
+  min-height: 32px;
+  padding: 7px 9px;
+
+  border:
+    1px solid
+    rgba(71, 85, 105, 0.28);
+
+  border-radius: 8px;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(30, 41, 59, 0.72),
+      rgba(22, 31, 46, 0.56)
+    );
+}
+
+.fantasy-profile-component-label {
+  min-width: 0;
+
+  overflow: hidden;
+
+  color: #cbd5e1;
+
+  font-size: 9px;
+  font-weight: 750;
+  line-height: 1.2;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fantasy-profile-component-score {
+  color: #ffffff;
+
+  font-size: 11px;
+  font-weight: 950;
+  line-height: 1;
+
+  text-align: center;
+
+  text-shadow:
+    0 2px 6px
+    rgba(0, 0, 0, 0.55);
+}
+
+.fantasy-profile-component-weight {
+  display: inline-flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 4px;
+
+  color: #95a3ba;
+
+  font-size: 8px;
+  font-weight: 750;
+  line-height: 1;
+
+  white-space: nowrap;
+}
+
+.fantasy-profile-component-weight strong {
+  color: #ffffff;
+
+  font-size: 9px;
+  font-weight: 950;
+}
+
+.fantasy-profile-component-missing {
+  grid-column: 2 / 4;
+
+  color: #7f8da3;
+
+  font-size: 8px;
+  font-weight: 800;
+
+  text-align: right;
+}
+
+.fantasy-profile-tooltip-component.is-unavailable {
+  opacity: 0.48;
+}
+
+.fantasy-profile-tooltip > small {
+  padding-top: 8px;
+
+  border-top:
+    1px solid
+    rgba(71, 85, 105, 0.58);
+
+  color: #7f8da3;
+
+  font-size: 8px;
+  font-weight: 650;
+  line-height: 1.45;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 1250px) {
+  .fantasy-profile-card {
+    min-height: 165px;
+  }
+
+  .fantasy-profile-card-content {
+    min-height: 165px;
+  }
+}
+
+@media (max-width: 760px) {
+  .fantasy-profile-grid {
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
+  }
+
+  .fantasy-profile-card {
+    min-height: 145px;
+  }
+
+  .fantasy-profile-card-content {
+    min-height: 145px;
+  }
+
+  .fantasy-profile-tooltip {
+    position: fixed;
+
+    top: 50%;
+    right: 18px !important;
+    left: 18px !important;
+
+    width: auto;
+    max-width: 360px;
+    margin: 0 auto;
+
+    transform:
+      translateY(-50%);
+  }
+
+  .fantasy-profile-tooltip::before {
+    display: none;
+  }
+}
+
+.player-pillar-details-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
+.player-pillar-details-heading strong {
+  font-size: 14px;
+}
+
+.player-pillar-details-score {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.player-pillar-details-score span {
+  font-size: 11px;
+  opacity: 0.75;
+}
+
+.player-pillar-details-score strong {
+  font-size: 15px;
+}
+
+.player-pillar-details-list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding-left: 18px;
+}
+
+.player-pillar-details-list li {
+  font-size: 11px;
+  line-height: 1.5;
+  opacity: 0.86;
+}
+
+.player-pillar-details-note {
+  margin: 12px 0 0;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 10px;
+  line-height: 1.5;
+  opacity: 0.7;
+}
+
+.player-pillar-details-empty {
+  margin: 0;
+  font-size: 11px;
+  opacity: 0.7;
+}
+
+.player-fixture-details-list {
+  display: grid;
+  gap: 8px;
+}
+
+.player-fixture-detail-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.player-fixture-detail-row > div {
+  display: grid;
+  gap: 3px;
+}
+
+.player-fixture-detail-row span,
+.player-fixture-detail-row small {
+  font-size: 10px;
+  opacity: 0.72;
+}
+
+.player-fixture-detail-row > strong {
+  font-size: 14px;
+}
+
+.player-fixture-detail-row.is-blank {
+  opacity: 0.65;
+}
+
+.player-fixture-weight-intro {
+  display: grid;
+  gap: 6px;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.player-fixture-weight-intro strong {
+  font-size: 12px;
+}
+
+.player-fixture-weight-intro p {
+  margin: 0;
+  font-size: 10px;
+  line-height: 1.5;
+  opacity: 0.72;
+}
+
+.player-fixture-weight-intro span {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.player-fixture-detail-card {
+  display: grid;
+  gap: 10px;
+  padding: 11px 12px;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.player-fixture-detail-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.player-fixture-detail-heading > div {
+  display: grid;
+  gap: 3px;
+}
+
+.player-fixture-detail-heading span,
+.player-fixture-detail-heading small {
+  font-size: 10px;
+  opacity: 0.72;
+}
+
+.player-fixture-detail-heading > strong {
+  font-size: 15px;
+}
+
+.player-fixture-detail-calculation {
+  display: grid;
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.player-fixture-detail-calculation > div {
+  display: grid;
+  gap: 3px;
+  padding: 7px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.14);
+}
+
+.player-fixture-detail-calculation span {
+  font-size: 9px;
+  opacity: 0.65;
+}
+
+.player-fixture-detail-calculation strong {
+  font-size: 11px;
+}
+
+.player-fixture-formula {
+  padding-top: 8px;
+  border-top:
+    1px solid
+    rgba(255, 255, 255, 0.07);
+  font-size: 10px;
+  text-align: right;
+  opacity: 0.68;
+}
+
+.player-fixture-total {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 11px 12px;
+  margin-top: 12px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.player-fixture-total span {
+  font-size: 11px;
+}
+
+.player-fixture-total strong {
+  font-size: 16px;
+}
+
+.player-fixture-detail-card.is-blank {
+  opacity: 0.62;
+}
+
+/* =========================================================
+   FANTASY PROFIEL — KLEUREN GELIJK AAN HET SPEELSCHEMA
+   ========================================================= */
+
+/*
+ * De kleur wordt vanuit players.js ingevuld via:
+ * --outlook-factor-color
+ *
+ * De gebruikte vijf kleuren zijn exact gelijk
+ * aan de difficulty-schaal van het speelschema.
+ */
+
+.player-outlook-factor {
+  --outlook-factor-color: #526078;
+}
+
+/*
+ * De score rechtsboven krijgt dezelfde accentkleur.
+ */
+
+.player-outlook-factor-value {
+  color: var(--outlook-factor-color);
+  transition:
+    color 0.25s ease;
+}
+
+/*
+ * Donkere neutrale achtergrond van de balk.
+ */
+
+.player-outlook-factor-track {
+  position: relative;
+  overflow: hidden;
+  background: #253147;
+  border-radius: 999px;
+}
+
+/*
+ * Dynamische kleurvulling.
+ */
+
+.player-outlook-factor-fill {
+  height: 100%;
+  border-radius: inherit;
+  background:
+    linear-gradient(
+      90deg,
+      color-mix(
+        in srgb,
+        var(--outlook-factor-color) 72%,
+        #111827
+      ),
+      var(--outlook-factor-color)
+    );
+
+  box-shadow:
+    0 0 14px
+    color-mix(
+      in srgb,
+      var(--outlook-factor-color) 38%,
+      transparent
+    );
+
+  transition:
+    width 0.35s ease,
+    background 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+/*
+ * Een subtiele kleuraccentlijn aan de linkerkant
+ * verbindt de pijler visueel met de balk.
+ */
+
+.player-outlook-factor:not(.has-no-data) {
+  border-left-color:
+    var(--outlook-factor-color);
+}
+
+/*
+ * Alleen toepassen wanneer het bestaande element
+ * daadwerkelijk een border gebruikt.
+ */
+
+.player-outlook-factor:not(.has-no-data)::before {
+  background:
+    var(--outlook-factor-color);
+}
+
+/*
+ * Geen data blijft bewust neutraal.
+ */
+
+.player-outlook-factor.has-no-data {
+  --outlook-factor-color: #526078;
+}
+
+.player-outlook-factor-fill.neutral {
+  background:
+    linear-gradient(
+      90deg,
+      #3b465b,
+      #526078
+    );
+
+  box-shadow: none;
+}
+
+.player-outlook-factor.has-no-data
+.player-outlook-factor-value {
+  color: #91a6c7;
+}
+
+/* =========================================================
+   SPELERSPROFIEL — PERSOONLIJK SPEELSCHEMA
+   ========================================================= */
+
+.player-schedule {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+
+.player-schedule-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: center;
+  padding: 14px;
+  border: 1px solid #303a4d;
+  border-radius: 12px;
+  background:
+    linear-gradient(
+      145deg,
+      #172133,
+      #101722
+    );
+}
+
+.player-schedule-heading h3 {
+  margin-top: 4px;
+  color: #f8fafc;
+  font-size: 17px;
+}
+
+.player-schedule-heading p {
+  margin-top: 3px;
+  color: #91a6c7;
+  font-size: 11px;
+}
+
+.player-schedule-average {
+  display: grid;
+  flex: 0 0 auto;
+  min-width: 92px;
+  gap: 3px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #202838;
+  text-align: center;
+}
+
+.player-schedule-average span {
+  color: #9faac0;
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.player-schedule-average strong {
+  color: #f8fafc;
+  font-size: 22px;
+}
+
+.player-schedule-controls {
+  padding: 12px;
+  border: 1px solid #303a4d;
+  border-radius: 12px;
+  background: #111722;
+}
+
+.player-schedule-controls > div {
+  display: grid;
+  gap: 8px;
+}
+
+.player-schedule-controls
+  > div
+  > span {
+  color: #9faac0;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.player-schedule-count-buttons {
+  display: grid;
+  grid-template-columns:
+    repeat(
+      5,
+      minmax(0, 1fr)
+    );
+  gap: 6px;
+}
+
+.player-schedule-count {
+  min-height: 32px;
+  padding: 0;
+  color: #aebbd3;
+  background: #1b2536;
+  border: 1px solid #344158;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 900;
+  cursor: pointer;
+  transition:
+    color 0.16s ease,
+    background 0.16s ease,
+    border-color 0.16s ease,
+    transform 0.16s ease;
+}
+
+.player-schedule-count:hover {
+  transform: translateY(-1px);
+  color: #ffffff;
+  border-color: #64748b;
+}
+
+.player-schedule-count.active {
+  color: #ffffff;
+  background: #ef4444;
+  border-color: #ef4444;
+}
+
+/*
+ * Dezelfde fixture-card als in het
+ * grote Speelschema, maar passend
+ * binnen het smallere spelerspaneel.
+ */
+
+.player-fixture-strip {
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.player-fixture-card {
+  min-height: 244px;
+  width: 100%;
+  cursor: default;
+}
+
+.player-fixture-card:hover {
+  transform: translateY(-2px);
+}
+
+.player-fixture-card
+.fixture-opponent {
+  min-height: 125px;
+}
+
+.player-fixture-card
+.fixture-opponent
+.club-logo {
+  width: 92px;
+  height: 92px;
+}
+
+.player-fixture-card
+.fixture-opponent
+strong {
+  font-size: 16px;
+}
+
+.player-fixture-card
+.difficulty-label {
+  margin-top: 8px;
+}
+
+.player-fixture-confidence {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: center;
+  margin-top: 9px;
+  padding-top: 8px;
+  color: rgba(
+    17,
+    24,
+    39,
+    0.75
+  );
+  border-top:
+    1px solid
+    rgba(
+      17,
+      24,
+      39,
+      0.16
+    );
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.player-fixture-confidence strong {
+  font-size: 10px;
+}
+
+.player-schedule-empty {
+  display: grid;
+  place-items: center;
+  min-height: 180px;
+  padding: 24px;
+  border: 1px dashed #344158;
+  border-radius: 12px;
+  background: #101722;
+  text-align: center;
+}
+
+.player-schedule-empty strong {
+  color: #f8fafc;
+  font-size: 14px;
+}
+
+.player-schedule-empty p {
+  max-width: 250px;
+  margin-top: 5px;
+  color: #91a6c7;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+/* =========================================================
+   PERSOONLIJK SPEELSCHEMA — WEDSTRIJDDETAILS
+   ========================================================= */
+
+.player-fixture-card {
+  appearance: none;
+  font-family: inherit;
+}
+
+.player-fixture-card {
+  cursor: pointer;
+}
+
+.player-fixture-card:focus-visible {
+  outline: 3px solid
+    rgba(
+      255,
+      255,
+      255,
+      0.82
+    );
+
+  outline-offset: 3px;
+}
+
+.player-schedule-detail {
+  display: grid;
+  gap: 12px;
+  margin-top: 4px;
+  padding-top: 16px;
+  border-top: 1px solid #303a4d;
+}
+
+.player-schedule-detail-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+}
+
+.player-schedule-detail-heading h3 {
+  margin-top: 3px;
+  color: #f8fafc;
+  font-size: 15px;
+}
+
+.player-schedule-detail-close {
+  display: grid;
+  place-items: center;
+  flex: 0 0 32px;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  color: #cbd5e1;
+  background: #1b2536;
+  border: 1px solid #3a4860;
+  border-radius: 9px;
+  font-size: 21px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.player-schedule-detail-close:hover {
+  color: #ffffff;
+  background: #ef4444;
+  border-color: #ef4444;
+}
+
+/*
+ * Het bestaande detailpaneel van het grote
+ * Speelschema wordt binnen het spelerspaneel
+ * compact en zonder vaste hoogte weergegeven.
+ */
+
+.player-schedule-detail
+.fixture-detail-panel {
+  height: auto;
+  padding: 14px;
+}
+
+.player-schedule-detail
+.fixture-detail-panel-analysis {
+  max-height: none;
+  overflow: visible;
+}
+
+.player-schedule-detail
+.detail-club-logo {
+  width: 54px;
+  height: 54px;
+}
+
+.player-schedule-detail
+.detail-difficulty-logo {
+  width: 34px;
+  height: 34px;
+}
+
+.player-schedule-detail
+.fixture-match-indicators {
+  grid-template-columns: 1fr;
+}
+
+.player-schedule-detail
+.fixture-analysis-kpis,
+.player-schedule-detail
+.fixture-h2h-grid,
+.player-schedule-detail
+.fixture-venue-form-grid {
+  grid-template-columns: 1fr;
 }

@@ -1,0 +1,9 @@
+Bevestig je e-mailadres
+
+Je hebt gevraagd je e-mailadres te wijzigen. Bevestig deze wijziging via de beveiligde link.
+
+E-mailadres bevestigen: {{ .ConfirmationURL }}
+
+Deze link is persoonlijk en beperkt geldig. Heb je dit niet aangevraagd? Negeer deze e-mail.
+
+Fantasy Voetbal Talk · Fantasy Studio

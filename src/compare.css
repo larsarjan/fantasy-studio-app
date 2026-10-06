@@ -360,6 +360,8 @@
 
 .analysis-player-grid-label,
 .analysis-player-card {
+  min-width: 0;
+padding-top: 8px;
   min-height: 210px;
   padding: 17px;
   background: #111722;
@@ -388,17 +390,21 @@
   border-style: dashed;
 }
 
-.analysis-avatar {
-  display: grid;
-  place-items: center;
-  width: 58px;
-  height: 58px;
-  margin-bottom: 11px;
-  color: #fff;
-  background: linear-gradient(135deg, #ef4444, #991b1b);
-  border-radius: 17px;
-  font-size: 25px;
-  font-weight: 900;
+.analysis-avatar{
+    position:relative;
+    z-index:2;
+
+    width:92px;
+    height:92px;
+    flex:0 0 92px;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    margin:0;
+
+    overflow:visible;
 }
 
 .analysis-card-main h3 {
@@ -810,4 +816,2329 @@
   .analysis-presets {
     grid-template-columns: 1fr;
   }
+}
+/* =========================================================
+   VERRIJKTE SPELERKAART — METADATA
+   ========================================================= */
+
+.analysis-player-card {
+  align-content: start;
+}
+
+.analysis-player-card-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.analysis-player-profile {
+  display: grid;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  width: 100%;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top:
+    1px solid rgba(71, 85, 105, 0.55);
+}
+
+.analysis-profile-item,
+.analysis-profile-setpieces {
+  min-width: 0;
+  padding: 10px 11px;
+  border: 1px solid #303a4d;
+  border-radius: 10px;
+  background: rgba(24, 32, 46, 0.78);
+}
+
+.analysis-profile-item > span,
+.analysis-profile-setpieces > span {
+  display: block;
+  margin-bottom: 5px;
+  color: #8fa3c1;
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.analysis-profile-item > strong {
+  display: block;
+  color: #ffffff;
+  font-size: 13px;
+  line-height: 1.25;
+}
+
+.analysis-profile-item > small {
+  display: block;
+  margin-top: 3px;
+  color: #9fb0ca;
+  font-size: 10px;
+  line-height: 1.25;
+}
+
+.analysis-profile-roles,
+.analysis-profile-setpieces {
+  grid-column: 1 / -1;
+}
+
+.analysis-profile-roles > div,
+.analysis-profile-setpieces > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.analysis-profile-roles strong,
+.analysis-profile-setpieces strong {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 4px 8px;
+  border: 1px solid #40506b;
+  border-radius: 999px;
+  color: #e8eef9;
+  background: #202a3d;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+/* Statusbadges */
+
+.analysis-status-badge {
+  display: inline-flex !important;
+  width: fit-content;
+  padding: 5px 8px;
+  border-radius: 999px;
+}
+
+.analysis-status-badge.status-fit {
+  color: #66ef99;
+  background: rgba(24, 181, 86, 0.13);
+  border: 1px solid rgba(42, 211, 111, 0.36);
+}
+
+.analysis-status-badge.status-doubt {
+  color: #ffd05c;
+  background: rgba(229, 167, 25, 0.14);
+  border: 1px solid rgba(239, 183, 47, 0.38);
+}
+
+.analysis-status-badge.status-injured {
+  color: #ff846f;
+  background: rgba(231, 74, 55, 0.15);
+  border: 1px solid rgba(239, 93, 74, 0.4);
+}
+
+.analysis-status-badge.status-suspended {
+  color: #d9c5ff;
+  background: rgba(126, 86, 192, 0.16);
+  border: 1px solid rgba(155, 112, 222, 0.42);
+}
+
+.analysis-status-badge.status-unknown {
+  color: #aab7ca;
+  background: rgba(129, 145, 169, 0.12);
+  border: 1px solid rgba(129, 145, 169, 0.32);
+}
+
+@media (max-width: 900px) {
+  .analysis-player-profile {
+    grid-template-columns: 1fr;
+  }
+
+  .analysis-profile-roles,
+  .analysis-profile-setpieces {
+    grid-column: 1;
+  }
+}
+/* =========================================================
+   VERGELIJKEN — INKLAPBARE ANALYSECATEGORIEËN
+   ========================================================= */
+
+.analysis-category-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 11px 15px;
+  color: #ffffff;
+  text-align: left;
+  background: #161e2b;
+  border: 0;
+  border-bottom: 1px solid #303a4d;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.9px;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.analysis-category-heading:hover {
+  background: #1b2534;
+}
+
+.analysis-category-chevron {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  flex: 0 0 28px;
+  color: #9faac0;
+  font-size: 18px;
+  line-height: 1;
+  transition:
+    transform 0.2s ease,
+    color 0.2s ease;
+}
+
+.analysis-category-heading:hover
+.analysis-category-chevron {
+  color: #ffffff;
+}
+
+.analysis-category-content {
+  display: grid;
+}
+
+.analysis-category.is-collapsed
+.analysis-category-content {
+  display: none;
+}
+
+.analysis-category.is-collapsed
+.analysis-category-heading {
+  border-bottom: 0;
+}
+
+.analysis-category.is-collapsed
+.analysis-category-chevron {
+  transform: rotate(-90deg);
+}
+/* =========================================================
+   VERGELIJKEN — FANTASY-PROFIELLABELS
+   ========================================================= */
+
+.analysis-fantasy-profile {
+  display: grid;
+  gap: 8px;
+  width: 100%;
+  margin-top: 15px;
+  padding: 12px;
+  border: 1px solid #303a4d;
+  border-radius: 11px;
+  background:
+    linear-gradient(
+      145deg,
+      rgba(31, 41, 57, 0.9),
+      rgba(18, 25, 38, 0.9)
+    );
+}
+
+.analysis-fantasy-profile-title {
+  color: #8fa3c1;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.analysis-fantasy-labels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.analysis-fantasy-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 28px;
+  padding: 5px 9px;
+  border: 1px solid #43516a;
+  border-radius: 999px;
+  background: #202a3d;
+  color: #e8eef9;
+  white-space: nowrap;
+}
+
+.analysis-fantasy-label b {
+  font-size: 12px;
+  line-height: 1;
+}
+
+.analysis-fantasy-label strong {
+  font-size: 10px;
+  font-weight: 850;
+  line-height: 1;
+}
+
+/* Must-have */
+
+.analysis-fantasy-label-must-have {
+  color: #fff1a8;
+  border-color: rgba(250, 204, 21, 0.46);
+  background: rgba(161, 98, 7, 0.22);
+}
+
+/* Stabiel */
+
+.analysis-fantasy-label-stable {
+  color: #86efac;
+  border-color: rgba(34, 197, 94, 0.42);
+  background: rgba(22, 101, 52, 0.22);
+}
+
+/* Hoog plafond */
+
+.analysis-fantasy-label-high-ceiling {
+  color: #fdba74;
+  border-color: rgba(249, 115, 22, 0.45);
+  background: rgba(154, 52, 18, 0.22);
+}
+
+/* Budget */
+
+.analysis-fantasy-label-budget {
+  color: #a7f3d0;
+  border-color: rgba(16, 185, 129, 0.43);
+  background: rgba(6, 95, 70, 0.22);
+}
+
+/* Differential */
+
+.analysis-fantasy-label-differential {
+  color: #c4b5fd;
+  border-color: rgba(139, 92, 246, 0.46);
+  background: rgba(91, 33, 182, 0.22);
+}
+
+/* Standaardsituaties */
+
+.analysis-fantasy-label-set-pieces {
+  color: #93c5fd;
+  border-color: rgba(59, 130, 246, 0.44);
+  background: rgba(30, 64, 175, 0.22);
+}
+
+/* Premium */
+
+.analysis-fantasy-label-premium {
+  color: #fde68a;
+  border-color: rgba(245, 158, 11, 0.46);
+  background: rgba(146, 64, 14, 0.22);
+}
+
+/* Risico */
+
+.analysis-fantasy-label-risk {
+  color: #fca5a5;
+  border-color: rgba(239, 68, 68, 0.46);
+  background: rgba(153, 27, 27, 0.22);
+}
+
+/* Onbekende toekomstige labels */
+
+.analysis-fantasy-label-unknown {
+  color: #cbd5e1;
+  border-color: #475569;
+  background: #263244;
+}
+/* =========================================================
+   VERGELIJKEN — SPELERFOTO
+   ========================================================= */
+
+.analysis-avatar {
+  overflow: hidden;
+}
+
+.analysis-avatar.has-image {
+  background: transparent;
+}
+
+.analysis-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+
+  display: block;
+}
+/* =========================================================
+   VERGELIJKEN — FANTASY STUDIO FOTO-PLACEHOLDER
+   ========================================================= */
+
+.analysis-avatar.has-studio-placeholder {
+  overflow: visible;
+  background: transparent;
+}
+
+/*
+ * De complete lege fotostudio.
+ * Alles wordt met CSS getekend; er is geen afbeelding nodig.
+ */
+
+.analysis-photo-studio {
+  position: relative;
+  isolation: isolate;
+
+  width: 92px;
+  height: 92px;
+
+  overflow: hidden;
+
+  border: 1px solid rgba(104, 127, 164, 0.38);
+  border-radius: 16px;
+
+  background:
+    radial-gradient(
+      circle at 50% 15%,
+      rgba(198, 216, 255, 0.2) 0%,
+      rgba(77, 101, 145, 0.08) 28%,
+      transparent 56%
+    ),
+    linear-gradient(
+      145deg,
+      #1c2638 0%,
+      #111827 55%,
+      #0b101b 100%
+    );
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.07),
+    0 8px 22px rgba(0, 0, 0, 0.22);
+}
+
+/*
+ * Rode en blauwe studiogloed.
+ */
+
+.analysis-photo-studio::before,
+.analysis-photo-studio::after {
+  content: '';
+
+  position: absolute;
+  z-index: -1;
+
+  top: 5px;
+  bottom: 8px;
+
+  width: 36px;
+
+  filter: blur(13px);
+  opacity: 0.5;
+}
+
+.analysis-photo-studio::before {
+  left: -20px;
+
+  background:
+    radial-gradient(
+      ellipse,
+      rgba(239, 68, 68, 0.72),
+      transparent 70%
+    );
+}
+
+.analysis-photo-studio::after {
+  right: -20px;
+
+  background:
+    radial-gradient(
+      ellipse,
+      rgba(59, 130, 246, 0.7),
+      transparent 70%
+    );
+}
+
+/*
+ * Zachte lamp bovenin.
+ */
+
+.analysis-photo-studio-light {
+  position: absolute;
+
+  top: -12px;
+  left: 50%;
+
+  width: 62px;
+  height: 48px;
+
+  transform: translateX(-50%);
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      ellipse,
+      rgba(231, 239, 255, 0.25) 0%,
+      rgba(147, 174, 221, 0.08) 42%,
+      transparent 72%
+    );
+}
+
+/*
+ * Studiovloer/podium onderin.
+ */
+
+.analysis-photo-studio-floor {
+  position: absolute;
+
+  right: 9px;
+  bottom: 8px;
+  left: 9px;
+
+  height: 14px;
+
+  border: 1px solid rgba(123, 146, 183, 0.18);
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      ellipse,
+      rgba(104, 130, 176, 0.2),
+      rgba(16, 24, 39, 0.08) 62%,
+      transparent 75%
+    );
+
+  transform: perspective(40px) rotateX(58deg);
+}
+
+/*
+ * Eigen Fantasy Studio-markering.
+ */
+
+.analysis-photo-studio-logo {
+  position: absolute;
+
+  right: 7px;
+  bottom: 7px;
+
+  display: grid;
+  place-items: center;
+
+  min-width: 28px;
+  min-height: 28px;
+  padding: 3px 5px;
+
+  border: 1px solid rgba(248, 113, 113, 0.45);
+  border-radius: 50%;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(239, 68, 68, 0.22),
+      rgba(30, 41, 59, 0.9)
+    );
+
+  box-shadow:
+    0 0 10px rgba(239, 68, 68, 0.15);
+}
+
+.analysis-photo-studio-logo strong {
+  color: #fca5a5;
+
+  font-size: 9px;
+  font-weight: 950;
+  line-height: 1;
+  letter-spacing: 0.03em;
+}
+
+.analysis-photo-studio-logo small {
+  margin-top: 1px;
+
+  color: #94a3b8;
+
+  font-size: 4px;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: 0.08em;
+}
+/* =========================================================
+   VERGELIJKEN — VERTICALE SPELERKAARTKOP
+   ========================================================= */
+
+.analysis-player-card-top {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+
+  width: 100%;
+  padding-bottom: 14px;
+
+  text-align: center;
+  border-bottom: 1px solid rgba(71, 85, 105, 0.55);
+}
+
+/*
+ * Echte foto en placeholder krijgen exact dezelfde ruimte.
+ */
+
+.analysis-avatar {
+  position: relative;
+  z-index: 1;
+
+  display: grid;
+  place-items: center;
+
+  width: 104px;
+  height: 104px;
+  flex: 0 0 104px;
+
+  margin: 0;
+
+  background: transparent;
+  overflow: visible;
+}
+
+.analysis-avatar img {
+  width: 100%;
+  height: 100%;
+
+  object-fit: contain;
+  object-position: center bottom;
+
+  display: block;
+}
+
+/*
+ * De CSS-placeholder groeit mee met de spelersfoto.
+ */
+
+.analysis-photo-studio {
+  width: 104px;
+  height: 104px;
+}
+
+/*
+ * Tekstblok onder de foto.
+ */
+
+.analysis-card-main {
+  display: grid;
+  justify-items: center;
+
+  width: 100%;
+  min-width: 0;
+  padding-top: 0;
+
+  text-align: center;
+}
+
+.analysis-position {
+  margin-bottom: 3px;
+
+  color: #fca5a5;
+  font-size: 10px;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: 0.9px;
+  text-transform: uppercase;
+}
+
+.analysis-card-main h3 {
+  margin: 0;
+
+  color: #ffffff;
+  font-size: 21px;
+  font-weight: 900;
+  line-height: 1.15;
+}
+
+.analysis-card-main p {
+  margin-top: 4px;
+
+  color: #9faac0;
+  font-size: 12px;
+  line-height: 1.2;
+}
+/* =========================================================
+   VERGELIJKEN — VERTICALE SPELERKAART V2
+   ========================================================= */
+
+.analysis-player-card-top {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+
+  width: 100%;
+  padding-bottom: 12px;
+
+  text-align: center;
+  border-bottom: 1px solid rgba(71, 85, 105, 0.55);
+}
+
+/* De foto krijgt minder ruimte dan in de vorige versie. */
+
+.analysis-avatar {
+  position: relative;
+  z-index: 1;
+
+  display: grid;
+  place-items: center;
+
+  width: 90px;
+  height: 90px;
+  flex: 0 0 90px;
+
+  margin: 0;
+
+  background: transparent;
+  overflow: visible;
+}
+
+/* Echte spelersfoto */
+
+.analysis-avatar img {
+  width: 100%;
+  height: 100%;
+
+  object-fit: contain;
+  object-position: center bottom;
+
+  display: block;
+
+  transform: translateY(-2px);
+}
+
+/* Placeholder even groot als een echte spelersfoto */
+
+.analysis-photo-studio {
+  width: 90px;
+  height: 90px;
+}
+
+/* Tekst onder de afbeelding */
+
+.analysis-card-main {
+  display: grid;
+  justify-items: center;
+
+  width: 100%;
+  min-width: 0;
+  padding-top: 0;
+
+  text-align: center;
+}
+
+.analysis-position {
+  margin: 1px 0 3px;
+
+  color: #fca5a5;
+  font-size: 9px;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: 0.9px;
+  text-transform: uppercase;
+}
+
+.analysis-card-main h3 {
+  margin: 0;
+
+  color: #ffffff;
+  font-size: 21px;
+  font-weight: 950;
+  line-height: 1.08;
+  letter-spacing: 0.01em;
+}
+
+.analysis-card-main p {
+  margin-top: 4px;
+
+  color: #9faac0;
+  font-size: 12px;
+  line-height: 1.2;
+}
+
+/* Metadata iets dichter onder de spelerkop */
+
+.analysis-player-profile,
+.analysis-fantasy-profile {
+  margin-top: 12px;
+}
+/* =========================================================
+   VERGELIJKEN — DEFINITIEVE FOTO-UITLIJNING
+   ========================================================= */
+
+/*
+ * De vaste ruimte voor foto of placeholder blijft 90 × 90.
+ */
+
+.analysis-avatar {
+  width: 90px;
+  height: 90px;
+  flex: 0 0 90px;
+
+  margin: 0;
+}
+
+/*
+ * Alleen echte spelersfoto's worden iets kleiner weergegeven.
+ * Zo loopt het shirt niet meer door achter positie en naam.
+ */
+
+.analysis-avatar.has-image img {
+  width: 78px;
+  height: 78px;
+
+  object-fit: contain;
+  object-position: center bottom;
+
+  transform: none;
+}
+
+/*
+ * De placeholder mag de volledige ruimte blijven gebruiken.
+ */
+
+.analysis-avatar.has-studio-placeholder
+.analysis-photo-studio {
+  width: 90px;
+  height: 90px;
+}
+
+/*
+ * Extra ruimte tussen foto en spelersgegevens.
+ */
+
+.analysis-player-card-top {
+  gap: 8px;
+}
+
+.analysis-card-main {
+  position: relative;
+  z-index: 2;
+
+  padding-top: 0;
+  background: #111722;
+}
+/* =========================================================
+   VERGELIJKEN — DEFINITIEVE SPELERKAARTKOP
+   ========================================================= */
+
+.analysis-player-card-top {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+
+  width: 100%;
+  padding-top: 10px;
+  padding-bottom: 13px;
+
+  text-align: center;
+  border-bottom: 1px solid rgba(71, 85, 105, 0.55);
+}
+
+/* Vaste ruimte voor foto of placeholder */
+
+.analysis-avatar {
+  position: relative;
+  z-index: 1;
+
+  display: grid;
+  place-items: center;
+
+  width: 90px;
+  height: 82px;
+  flex: 0 0 82px;
+
+  margin: 0 0 3px;
+
+  background: transparent;
+  overflow: visible;
+}
+
+/* Echte spelersfoto */
+
+.analysis-avatar.has-image {
+  overflow: visible;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+}
+
+.analysis-avatar.has-image img {
+    width: 80px;
+    height: 82px;
+
+    object-fit: contain;
+    object-position: center bottom;
+
+    transform: translateY(2px);
+}
+
+/* Placeholder houdt zijn eigen premium studio-opmaak */
+
+.analysis-avatar.has-studio-placeholder {
+  overflow: visible;
+  border: 0;
+  background: transparent;
+}
+
+.analysis-avatar.has-studio-placeholder
+.analysis-photo-studio {
+  width: 82px;
+  height: 82px;
+}
+
+/* Positie, naam en club worden één compact blok */
+
+.analysis-card-main {
+  position: relative;
+  z-index: 2;
+
+  display: grid;
+  justify-items: center;
+  gap: 0;
+
+  width: 100%;
+  min-width: 0;
+  padding: 0;
+
+  text-align: center;
+  background: transparent;
+}
+
+.analysis-position {
+  margin: 0 0 3px;
+
+  color: #fca5a5;
+  font-size: 9px;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: 0.9px;
+  text-transform: uppercase;
+}
+
+.analysis-card-main h3 {
+  margin: 0;
+
+  color: #ffffff;
+  font-size: 21px;
+  font-weight: 950;
+  line-height: 1.05;
+  letter-spacing: 0.01em;
+}
+
+.analysis-card-main p {
+  margin: 4px 0 0;
+
+  color: #9faac0;
+  font-size: 12px;
+  line-height: 1.15;
+}
+
+/* Metadata sluit iets strakker aan */
+
+.analysis-player-profile,
+.analysis-fantasy-profile {
+  margin-top: 11px;
+}
+.analysis-stat-cell.draw .analysis-bar-fill{
+    background:linear-gradient(90deg,#c8a233,#f2d66d);
+}
+
+.analysis-stat-cell.draw span{
+    background:#c8a233;
+    color:#fff;
+}
+
+.analysis-stat-cell.worst .analysis-bar-fill{
+    background:linear-gradient(90deg,#9b2d2d,#d84b4b);
+}
+
+.analysis-stat-cell.worst span{
+    background:#b33636;
+    color:#fff;
+}
+.analysis-stat-cell.draw .analysis-bar-fill{
+    background:linear-gradient(
+        90deg,
+        #d4af37,
+        #f6d365
+    );
+}
+
+.analysis-stat-cell.draw span{
+    background:#d4af37;
+}
+
+.analysis-stat-cell.worst .analysis-bar-fill{
+    background:linear-gradient(
+        90deg,
+        #b91c1c,
+        #ef4444
+    );
+}
+
+.analysis-stat-cell.worst span{
+    background:#b91c1c;
+}
+.analysis-stat-cell.missing {
+  background: transparent;
+}
+
+.analysis-stat-cell.missing .analysis-bar-track {
+  background: #263143;
+}
+
+.analysis-stat-cell.missing .analysis-bar-fill {
+  width: 0 !important;
+  background: transparent;
+}
+
+.analysis-stat-cell.missing .analysis-stat-value strong {
+  color: #cbd5e1;
+}
+/* =========================================================
+   VERGELIJKEN — SEIZOENSDROPDOWNS
+   ========================================================= */
+
+.analysis-season-control {
+  position: relative;
+  display: grid;
+  gap: 6px;
+}
+
+.analysis-season-control span {
+  color: #9faac0;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.85px;
+  text-transform: uppercase;
+}
+
+.analysis-season-control select {
+  width: 100%;
+  min-width: 0;
+  height: 42px;
+  min-height: 42px;
+
+  padding: 0 42px 0 13px;
+
+  color: #ffffff;
+  background-color: #111722;
+  border: 1px solid #303a4d;
+  border-radius: 11px;
+
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 750;
+
+  cursor: pointer;
+  outline: none;
+
+  appearance: none;
+  -webkit-appearance: none;
+
+  background-image:
+    linear-gradient(
+      45deg,
+      transparent 50%,
+      #9faac0 50%
+    ),
+    linear-gradient(
+      135deg,
+      #9faac0 50%,
+      transparent 50%
+    );
+  background-position:
+    calc(100% - 18px) 17px,
+    calc(100% - 13px) 17px;
+  background-size:
+    5px 5px,
+    5px 5px;
+  background-repeat: no-repeat;
+
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    background-color 0.18s ease;
+}
+
+.analysis-season-control select:hover {
+  border-color: #46536a;
+  background-color: #151d2a;
+}
+
+.analysis-season-control select:focus {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
+}
+
+.analysis-season-control select option {
+  color: #ffffff;
+  background: #111722;
+}
+/* =========================================================
+   VERGELIJKEN — RESULTAATKLEUREN
+   ========================================================= */
+
+/* Standaard: wel een vergelijkingsbalk, maar geen oordeel. */
+
+.analysis-stat-cell.neutral
+.analysis-bar-fill {
+  background:
+    linear-gradient(
+      90deg,
+      #334155,
+      #64748b
+    );
+}
+
+/* Unieke winnaar */
+
+.analysis-stat-cell.best {
+  background:
+    rgba(63, 98, 18, 0.18);
+}
+
+.analysis-stat-cell.best
+.analysis-bar-fill {
+  background:
+    linear-gradient(
+      90deg,
+      #3f6212,
+      #84cc16
+    ) !important;
+}
+
+.analysis-stat-cell.best
+.analysis-stat-value span {
+  color: #ecfccb;
+  background: #3f6212 !important;
+}
+
+/* Gedeelde winnaar */
+
+.analysis-stat-cell.draw {
+  background:
+    rgba(161, 98, 7, 0.13);
+}
+
+.analysis-stat-cell.draw
+.analysis-bar-track {
+  background:
+    rgba(113, 86, 25, 0.34);
+}
+
+.analysis-stat-cell.draw
+.analysis-bar-fill {
+  background:
+    linear-gradient(
+      90deg,
+      #b7791f,
+      #facc15
+    ) !important;
+}
+
+.analysis-stat-cell.draw
+.analysis-stat-value span {
+  color: #fff7c2;
+  background: #a16207 !important;
+}
+
+/* Unieke laagste waarde bij 3 of 4 spelers */
+
+.analysis-stat-cell.worst {
+  background:
+    rgba(127, 29, 29, 0.12);
+}
+
+.analysis-stat-cell.worst
+.analysis-bar-track {
+  background:
+    rgba(127, 29, 29, 0.28);
+}
+
+.analysis-stat-cell.worst
+.analysis-bar-fill {
+  background:
+    linear-gradient(
+      90deg,
+      #991b1b,
+      #ef4444
+    ) !important;
+}
+
+.analysis-stat-cell.worst
+.analysis-stat-value span {
+  color: #fee2e2;
+  background: #991b1b !important;
+}
+
+/* Ontbrekende data */
+
+.analysis-stat-cell.missing {
+  background: transparent;
+}
+
+.analysis-stat-cell.missing
+.analysis-stat-value strong {
+  color: #94a3b8;
+}
+
+.analysis-stat-cell.missing
+.analysis-bar-track {
+  background: #263143;
+}
+
+.analysis-stat-cell.missing
+.analysis-bar-fill {
+  width: 0 !important;
+  background: transparent !important;
+}
+/* =========================================================
+   VERGELIJKEN — SEIZOENSDROPDOWNS V2
+   ========================================================= */
+
+.analysis-selectors select {
+  width: 100%;
+  height: 44px;
+  min-width: 0;
+  min-height: 44px;
+
+  padding:
+    0
+    43px
+    0
+    14px;
+
+  color: #f8fafc;
+
+  background-color: #111722;
+
+  background-image:
+    linear-gradient(
+      45deg,
+      transparent 50%,
+      #9faac0 50%
+    ),
+    linear-gradient(
+      135deg,
+      #9faac0 50%,
+      transparent 50%
+    ),
+    linear-gradient(
+      to left,
+      rgba(48, 58, 77, 0.55),
+      rgba(48, 58, 77, 0.55)
+    );
+
+  background-position:
+    calc(100% - 18px) 18px,
+    calc(100% - 13px) 18px,
+    calc(100% - 39px) 0;
+
+  background-size:
+    5px 5px,
+    5px 5px,
+    1px 100%;
+
+  background-repeat:
+    no-repeat;
+
+  border:
+    1px solid
+    #303a4d;
+
+  border-radius: 11px;
+
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 800;
+
+  cursor: pointer;
+  outline: none;
+
+  appearance: none;
+  -webkit-appearance: none;
+
+  transition:
+    background-color 0.18s ease,
+    border-color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.analysis-selectors select:hover {
+  background-color: #151d2a;
+  border-color: #46536a;
+}
+
+.analysis-selectors select:focus {
+  background-color: #151d2a;
+  border-color: #ef4444;
+
+  box-shadow:
+    0 0 0 3px
+    rgba(239, 68, 68, 0.12);
+}
+
+.analysis-selectors select option {
+  color: #f8fafc;
+  background: #111722;
+}
+.analysis-strengths-wrap {
+  display: grid;
+  gap: 7px;
+  margin-top: 12px;
+}
+
+.analysis-strengths-wrap > small {
+  color: #9faac0;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.analysis-strengths-wrap
+.analysis-strengths {
+  margin-top: 0;
+}
+/* =========================================================
+   VERGELIJKEN — STICKY SPELERHEADER
+   ========================================================= */
+
+.analysis-sticky-players {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+
+  display: grid;
+  grid-template-columns:
+    minmax(240px, 0.85fr)
+    repeat(
+      var(--analysis-count),
+      minmax(0, 1fr)
+    );
+
+  width: 100%;
+  margin-top: 12px;
+
+  overflow: hidden;
+
+  border: 1px solid #303a4d;
+  border-radius: 13px;
+
+  background:
+    rgba(17, 23, 34, 0.97);
+
+  box-shadow:
+    0 12px 28px
+    rgba(0, 0, 0, 0.28);
+
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Linkerkolom, gelijk aan de namen van de statistieken */
+
+.analysis-sticky-label {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+
+  min-width: 0;
+  min-height: 62px;
+  padding: 10px 14px;
+
+  border-right: 1px solid #303a4d;
+
+  background:
+    linear-gradient(
+      145deg,
+      #172131,
+      #111722
+    );
+}
+
+.analysis-sticky-label span {
+  color: #8ea7d3;
+  font-size: 9px;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.analysis-sticky-label strong {
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 900;
+  line-height: 1.1;
+}
+
+/* Compact spelersblok per kolom */
+
+.analysis-sticky-player {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  min-width: 0;
+  min-height: 62px;
+  padding: 8px 10px;
+
+  text-align: center;
+
+  border-right: 1px solid #303a4d;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(30, 41, 59, 0.94),
+      rgba(17, 23, 34, 0.97)
+    );
+}
+
+.analysis-sticky-player:last-child {
+  border-right: 0;
+}
+
+.analysis-sticky-player span {
+  display: block;
+
+  max-width: 100%;
+  margin-bottom: 3px;
+
+  overflow: hidden;
+
+  color: #fca5a5;
+  font-size: 8px;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: 0.08em;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.analysis-sticky-player strong {
+  display: block;
+
+  max-width: 100%;
+
+  overflow: hidden;
+
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 950;
+  line-height: 1.1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.analysis-sticky-player small {
+  display: block;
+
+  max-width: 100%;
+  margin-top: 3px;
+
+  overflow: hidden;
+
+  color: #9faac0;
+  font-size: 10px;
+  line-height: 1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.analysis-sticky-player.empty span,
+.analysis-sticky-player.empty strong {
+  color: #64748b;
+}
+
+/*
+ * Zorgt dat een geopende categorie niet over
+ * de sticky spelersrij heen kan verschijnen.
+ */
+
+.analysis-category {
+  position: relative;
+  z-index: 1;
+}
+
+/* Smallere schermen */
+
+@media (max-width: 1100px) {
+  .analysis-sticky-players {
+    grid-template-columns:
+      minmax(185px, 0.85fr)
+      repeat(
+        var(--analysis-count),
+        minmax(170px, 1fr)
+      );
+
+    overflow-x: auto;
+  }
+
+  .analysis-sticky-label,
+  .analysis-sticky-player {
+    min-height: 58px;
+  }
+
+  .analysis-sticky-player strong {
+    font-size: 12px;
+  }
+}
+
+/* =========================================================
+   FANTASY OUTLOOK — BASIS EN SPELERKAARTEN
+   ========================================================= */
+
+.fantasy-outlook-comparison {
+  display: grid;
+  gap: 18px;
+}
+
+.outlook-controls,
+.outlook-decision,
+.outlook-comparison-section,
+.outlook-ranking,
+.outlook-empty-state {
+  background: #111722;
+  border: 1px solid #303a4d;
+  border-radius: 16px;
+}
+
+.outlook-controls {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: center;
+  padding: 16px 18px;
+}
+
+.outlook-controls h3,
+.outlook-section-heading h3 {
+  margin-top: 4px;
+  color: #f8fafc;
+}
+
+.outlook-controls p {
+  margin-top: 4px;
+  color: #91a6c7;
+  font-size: 11px;
+}
+
+.outlook-round-buttons {
+  display: grid;
+  grid-template-columns:
+    repeat(
+      10,
+      minmax(38px, 1fr)
+    );
+  gap: 6px;
+  flex: 1;
+  max-width: 620px;
+}
+
+.outlook-round-button {
+  min-height: 40px;
+  padding: 0;
+  color: #cbd5e1;
+  background: #202838;
+  border: 1px solid #364156;
+  border-radius: 9px;
+  font-weight: 900;
+  cursor: pointer;
+  transition:
+    color .16s ease,
+    background .16s ease,
+    border-color .16s ease,
+    transform .16s ease;
+}
+
+.outlook-round-button:hover {
+  transform: translateY(-1px);
+  color: #fff;
+  border-color: #ef4444;
+}
+
+.outlook-round-button.active {
+  color: #fff;
+  background: #ef4444;
+  border-color: #ef4444;
+}
+
+.outlook-decision {
+  display: flex;
+  align-items: center;
+  gap: 17px;
+  padding: 20px;
+}
+
+.outlook-decision.is-winner,
+.outlook-decision.is-edge {
+  background:
+    radial-gradient(
+      circle at 88% 20%,
+      rgba(239, 68, 68, .2),
+      transparent 34%
+    ),
+    linear-gradient(
+      105deg,
+      rgba(127, 29, 29, .35),
+      rgba(17, 23, 34, .98)
+    );
+  border-color:
+    rgba(
+      239,
+      68,
+      68,
+      .6
+    );
+}
+
+.outlook-decision-icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 62px;
+  width: 62px;
+  height: 62px;
+  background: #202838;
+  border-radius: 17px;
+  font-size: 29px;
+}
+
+.outlook-decision h2 {
+  margin: 3px 0 6px;
+  font-size: 23px;
+}
+
+.outlook-decision p {
+  color: #b5c0d2;
+  line-height: 1.55;
+}
+
+.outlook-decision small {
+  display: block;
+  margin-top: 9px;
+  color: #7f90aa;
+}
+
+.outlook-player-grid,
+.outlook-scout-grid,
+.outlook-fixture-columns {
+  display: grid;
+  grid-template-columns:
+    repeat(
+      var(--outlook-count),
+      minmax(0, 1fr)
+    );
+  gap: 10px;
+}
+
+.outlook-player-card {
+  position: relative;
+  display: grid;
+  grid-template-columns:
+    74px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  min-width: 0;
+  padding: 16px;
+  background: #111722;
+  border: 1px solid #303a4d;
+  border-radius: 16px;
+}
+
+.outlook-player-card.is-leading {
+  border-color:
+    rgba(
+      132,
+      204,
+      22,
+      .65
+    );
+
+  box-shadow:
+    0 0 0 1px
+      rgba(
+        132,
+        204,
+        22,
+        .08
+      ),
+    0 10px 26px
+      rgba(
+        63,
+        98,
+        18,
+        .12
+      );
+}
+
+.outlook-player-card.is-empty {
+  min-height: 125px;
+  place-content: center;
+  color: #7f90aa;
+  text-align: center;
+  border-style: dashed;
+}
+
+.outlook-player-rank {
+  position: absolute;
+  top: 9px;
+  right: 10px;
+  color: #91a6c7;
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.outlook-player-photo {
+  display: grid;
+  place-items: center;
+  width: 74px;
+  height: 74px;
+  overflow: hidden;
+  color: #fff;
+  background: #202838;
+  border: 1px solid #364156;
+  border-radius: 50%;
+  font-size: 24px;
+  font-weight: 900;
+}
+
+.outlook-player-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.outlook-player-copy {
+  min-width: 0;
+}
+
+.outlook-player-copy > span {
+  color: #fca5a5;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+}
+
+.outlook-player-copy h3 {
+  overflow: hidden;
+  margin: 3px 0;
+  color: #f8fafc;
+  font-size: 18px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.outlook-player-copy p {
+  color: #91a6c7;
+  font-size: 11px;
+}
+
+.outlook-player-score {
+  display: flex;
+  align-items: baseline;
+  gap: 3px;
+}
+
+.outlook-player-score strong {
+  color: #fff;
+  font-size: 29px;
+}
+
+.outlook-player-score span {
+  color: #91a6c7;
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.outlook-player-meta {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding-top: 9px;
+  border-top: 1px solid #2a3445;
+  color: #aebbd3;
+  font-size: 10px;
+}
+
+.outlook-comparison-section,
+.outlook-ranking {
+  overflow: hidden;
+}
+
+.outlook-section-heading {
+  padding: 15px 17px;
+  background: #161e2b;
+  border-bottom: 1px solid #303a4d;
+}
+
+.outlook-score-table {
+  display: grid;
+}
+
+.outlook-score-row {
+  display: grid;
+  grid-template-columns:
+    minmax(185px, .8fr)
+    repeat(
+      var(--outlook-count),
+      minmax(135px, 1fr)
+    );
+  min-width: 720px;
+  border-bottom: 1px solid #273244;
+}
+
+.outlook-score-row:last-child {
+  border-bottom: 0;
+}
+
+.outlook-score-label,
+.outlook-score-cell {
+  min-width: 0;
+  padding: 12px 14px;
+  border-right: 1px solid #273244;
+}
+
+.outlook-score-row > :last-child {
+  border-right: 0;
+}
+
+.outlook-score-label {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: #d9e2ef;
+}
+
+.outlook-score-cell {
+  display: grid;
+  gap: 8px;
+  background:
+    color-mix(
+      in srgb,
+      var(--outlook-score-color) 4%,
+      transparent
+    );
+}
+
+.outlook-score-cell.is-winner {
+  background:
+    color-mix(
+      in srgb,
+      var(--outlook-score-color) 13%,
+      #111722
+    );
+}
+
+.outlook-score-cell.is-unavailable {
+  opacity: .55;
+}
+
+.outlook-score-cell > div:first-child {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.outlook-score-cell strong {
+  font-size: 16px;
+}
+
+.outlook-score-cell span {
+  padding: 3px 5px;
+  color: #ecfccb;
+  background: #3f6212;
+  border-radius: 5px;
+  font-size: 7px;
+  font-weight: 900;
+}
+
+.outlook-score-track {
+  height: 7px;
+  overflow: hidden;
+  background: #263143;
+  border-radius: 999px;
+}
+
+.outlook-score-track span {
+  display: block;
+  height: 100%;
+  background:
+    var(
+      --outlook-score-color
+    );
+  border-radius: inherit;
+  transition: width .25s ease;
+}
+
+/* =========================================================
+   FANTASY OUTLOOK — SCOUT / PROGRAMMA / RANKING
+   ========================================================= */
+
+.outlook-scout-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px;
+  background: #111722;
+  border: 1px solid #303a4d;
+  border-radius: 16px;
+}
+
+.outlook-scout-card.is-empty {
+  justify-content: center;
+  min-height: 180px;
+  color: #7f90aa;
+  text-align: center;
+  border-style: dashed;
+}
+
+.outlook-scout-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.outlook-scout-heading strong {
+  display: block;
+  margin-top: 4px;
+  color: #ffffff;
+  font-size: 17px;
+}
+
+.outlook-scout-heading span:first-child {
+  color: #facc15;
+  font-size: 16px;
+}
+
+.outlook-scout-heading b {
+  color: #ffffff;
+  font-size: 22px;
+}
+
+.outlook-scout-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: #91a6c7;
+  font-size: 11px;
+}
+
+.outlook-scout-card p {
+  color: #d7e1ef;
+  line-height: 1.6;
+}
+
+.outlook-strength-list,
+.outlook-concern-list {
+  display: grid;
+  gap: 6px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.outlook-strength-list li {
+  color: #c8f7c5;
+}
+
+.outlook-concern-list li {
+  color: #ffd3b0;
+}
+
+/* ========================================================= */
+
+.outlook-fixture-column {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px;
+  background: #111722;
+  border: 1px solid #303a4d;
+  border-radius: 16px;
+}
+
+.outlook-fixture-column.is-empty {
+  justify-content: center;
+  min-height: 180px;
+  color: #7f90aa;
+  text-align: center;
+  border-style: dashed;
+}
+
+.outlook-fixture-column header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.outlook-fixture-column header strong {
+  color: #ffffff;
+  font-size: 18px;
+}
+
+.outlook-fixture-column header span {
+  color: #91a6c7;
+  font-size: 11px;
+}
+
+.outlook-fixture-list {
+  display: grid;
+  gap: 10px;
+}
+
+.outlook-fixture-card {
+  padding: 14px;
+  border-radius: 12px;
+  border-left: 6px solid var(--fixture-color);
+  background: #1a2230;
+}
+
+.outlook-fixture-card.is-double {
+  box-shadow: inset 0 0 0 1px rgba(239,68,68,.45);
+}
+
+.outlook-fixture-card.is-blank {
+  border-left-color: #4b5563;
+  color: #94a3b8;
+}
+
+.outlook-fixture-card div:first-child {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.outlook-fixture-card strong {
+  color: #ffffff;
+}
+
+.outlook-fixture-card span,
+.outlook-fixture-card small {
+  color: #94a3b8;
+  font-size: 11px;
+}
+
+.outlook-fixture-card h4 {
+  margin: 0 0 8px;
+  color: #ffffff;
+}
+
+.outlook-fixture-card b {
+  color: var(--fixture-color);
+  font-size: 18px;
+}
+
+/* ========================================================= */
+
+.outlook-ranking-list {
+  display: grid;
+}
+
+.outlook-ranking-row {
+  display: grid;
+  grid-template-columns: 70px 1fr auto auto;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 18px;
+  border-bottom: 1px solid #273244;
+}
+
+.outlook-ranking-row:last-child {
+  border-bottom: 0;
+}
+
+.outlook-ranking-row.is-first {
+  background: rgba(34,197,94,.08);
+}
+
+.outlook-ranking-row strong:first-child {
+  color: #ffffff;
+  font-size: 20px;
+}
+
+.outlook-ranking-row div {
+  display: flex;
+  flex-direction: column;
+}
+
+.outlook-ranking-row div b {
+  color: #ffffff;
+}
+
+.outlook-ranking-row div span {
+  color: #91a6c7;
+  font-size: 11px;
+}
+
+.outlook-ranking-row > span {
+  color: #cbd5e1;
+  font-size: 12px;
+}
+
+.outlook-ranking-row > b {
+  color: #ffffff;
+  font-size: 22px;
+}
+
+.outlook-footnote {
+  color: #7f90aa;
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+.outlook-empty-state {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  padding: 60px;
+  text-align: center;
+}
+
+.outlook-empty-state div {
+  font-size: 52px;
+}
+
+.outlook-empty-state h2 {
+  color: #ffffff;
+}
+
+/* ========================================================= */
+
+@media (max-width: 1200px) {
+
+  .outlook-player-grid,
+  .outlook-scout-grid,
+  .outlook-fixture-columns {
+    grid-template-columns: 1fr;
+  }
+
+  .outlook-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .outlook-round-buttons {
+    max-width: none;
+  }
+
+  .outlook-ranking-row {
+    grid-template-columns: 55px 1fr;
+  }
+
+  .outlook-ranking-row > span,
+  .outlook-ranking-row > b {
+    grid-column: 2;
+  }
+
+  .outlook-score-row {
+    min-width: 650px;
+  }
+}
+
+/* =========================================================
+   FANTASY OUTLOOK — STICKY SPELERKOPPEN
+   ========================================================= */
+
+.outlook-sticky-players {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+
+  display: grid;
+  grid-template-columns:
+    minmax(185px, .8fr)
+    repeat(
+      var(--outlook-count),
+      minmax(135px, 1fr)
+    );
+
+  overflow: hidden;
+
+  background: #111722;
+  border: 1px solid #303a4d;
+  border-radius: 13px;
+
+  box-shadow:
+    0 8px 24px
+    rgba(
+      0,
+      0,
+      0,
+      .35
+    );
+}
+
+.outlook-sticky-label,
+.outlook-sticky-player {
+  min-width: 0;
+  padding: 10px 14px;
+  border-right: 1px solid #303a4d;
+}
+
+.outlook-sticky-players > :last-child {
+  border-right: 0;
+}
+
+.outlook-sticky-label {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.outlook-sticky-label span,
+.outlook-sticky-player span {
+  color: #91a6c7;
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.outlook-sticky-label strong,
+.outlook-sticky-player strong {
+  margin-top: 2px;
+  overflow: hidden;
+  color: #f8fafc;
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.outlook-sticky-player {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.outlook-sticky-player small {
+  margin-top: 1px;
+  overflow: hidden;
+  color: #aebbd3;
+  font-size: 9px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.outlook-sticky-player.is-empty {
+  color: #7f90aa;
+}
+
+/* =========================================================
+   FANTASY OUTLOOK — ALLE SPELERKOLOMMEN GELIJK UITLIJNEN
+   ========================================================= */
+
+/*
+ * De scoretabellen en sticky spelersbalk gebruiken:
+ *
+ * labelkolom | speler 1 | speler 2
+ *
+ * Scout en Programma krijgen nu exact
+ * dezelfde kolomverdeling.
+ */
+
+.outlook-scout-grid,
+.outlook-fixture-columns {
+  grid-template-columns:
+    minmax(185px, .8fr)
+    repeat(
+      var(--outlook-count),
+      minmax(135px, 1fr)
+    );
+}
+
+/*
+ * Deze eerste cel vult de vaste linkerkolom,
+ * zodat alle spelerskaarten exact onder
+ * de juiste sticky spelersnaam beginnen.
+ */
+
+.outlook-scout-grid::before,
+.outlook-fixture-columns::before {
+  content: '';
+  display: block;
+  min-width: 0;
+}
+
+/*
+ * Zorgt dat de spelerskaarten de beschikbare
+ * kolombreedte volledig gebruiken.
+ */
+
+.outlook-scout-card,
+.outlook-fixture-column {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+/*
+ * Op smallere schermen vervalt de vaste
+ * labelkolom en komen de kaarten onder elkaar.
+ */
+
+@media (max-width: 1200px) {
+  .outlook-scout-grid,
+  .outlook-fixture-columns {
+    grid-template-columns: 1fr;
+  }
+
+  .outlook-scout-grid::before,
+  .outlook-fixture-columns::before {
+    display: none;
+  }
+}
+
+/* =========================================================
+   FANTASY OUTLOOK — GELIJKE HOOGTE PER SPEELRONDE
+   ========================================================= */
+
+/*
+ * Iedere speelronde krijgt dezelfde minimale hoogte.
+ * Daardoor blijven SR 1, SR 2, SR 3 enzovoort
+ * horizontaal netjes naast elkaar staan.
+ */
+
+.outlook-fixture-card {
+  min-height: 94px;
+  box-sizing: border-box;
+}
+
+/*
+ * Een lege speelronde wordt als volwaardige kaart getoond.
+ */
+
+.outlook-fixture-card.is-blank {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 7px;
+  min-height: 94px;
+  padding: 14px;
+  background: #1a2230;
+  border-left: 6px solid #4b5563;
+  border-radius: 12px;
+}
+
+/*
+ * Tekst van de lege speelronde dezelfde hiërarchie geven
+ * als een normale wedstrijdkaart.
+ */
+
+.outlook-fixture-card.is-blank strong {
+  color: #ffffff;
+  font-size: 14px;
+}
+
+.outlook-fixture-card.is-blank span {
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 700;
 }

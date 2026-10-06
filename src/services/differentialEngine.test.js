@@ -1,0 +1,27 @@
+import assert from 'node:assert/strict'
+import { buildDifferentialAnalysis, calculateDifferentialScore } from './differentialEngine.js'
+
+const projection = (xp, minutes, type = 'single') => ({ rounds: [1,2,3,4,5].map((round) => ({ round, type, fixtureCount: type === 'blank' ? 0 : type === 'double' ? 2 : 1, expectedPoints: type === 'blank' ? 0 : xp * (type === 'double' ? 2 : 1), expectedMinutes: type === 'blank' ? 0 : minutes * (type === 'double' ? 2 : 1), appearanceProbability: minutes >= 80 ? .98 : .5 })) })
+const p = (id, owned, xp, minutes = 88, extra = {}) => ({ id, name: id, club: extra.club ?? 'Ajax', season: 'S', fantasyPosition: extra.position ?? 'middenvelder', endPrice: extra.price ?? 8, selectedPct: owned, expectedPointsProjection: projection(xp, minutes, extra.type), outlook: { form: extra.form ?? 7 }, ...extra })
+const fixtures = [1,2,3,4,5].map((round) => ({ id: `f${round}`, season: 'S', round, home: 'Ajax', away: 'PSV', difficultyHome: 2, difficultyAway: 4 }))
+const players = [p('quality', 4, 8), p('safe', 6, 7, 90), p('risk', 2, 8.5, 40), p('cheap', 8, 6.5, 88, { price: 5 }), p('bad', .1, .5, 20), p('owned', 12, 9)]
+const result = buildDifferentialAnalysis({ season: 'S', startRound: 1, horizon: 3, threshold: 10, players, fixtures, results: [], teamRatings: [] })
+const direct = calculateDifferentialScore({ xpScore: 90, ownership: 3, threshold: 10, fixtureScore: 80, availability: 90, reliability: 90, formScore: 70, valueScore: 70 })
+assert.ok(direct.score >= 0 && direct.score <= 100, 'Edge 0–100')
+assert.equal(result.ranking.some((x) => x.id === 'bad'), false, 'ownership alleen onvoldoende')
+assert.equal(result.ranking.some((x) => x.id === 'quality'), true, 'xP plus low ownership sterk')
+const secureEdge = calculateDifferentialScore({ xpScore: 90, ownership: 2, threshold: 10, fixtureScore: 80, availability: 95, reliability: 95, formScore: 70, valueScore: 70 })
+const riskyEdge = calculateDifferentialScore({ xpScore: 90, ownership: 2, threshold: 10, fixtureScore: 80, availability: 35, reliability: 35, formScore: 70, valueScore: 70 })
+assert.ok(riskyEdge.score < secureEdge.score, 'xMin risk penalty')
+assert.notEqual(result.heroes.safe?.id, result.heroes.best?.id, 'beste uitgesloten van veilig alternatief')
+assert.equal(result.ranking.some((x) => x.ownership >= 10), false, '<10% werkt')
+assert.equal(buildDifferentialAnalysis({ season: 'S', startRound: 1, horizon: 1, threshold: 5, players, fixtures, results: [], teamRatings: [] }).threshold, 5)
+assert.equal(buildDifferentialAnalysis({ season: 'S', startRound: 1, horizon: 3, threshold: 10, players, fixtures, results: [], teamRatings: [] }).horizon, 3)
+assert.equal(buildDifferentialAnalysis({ season: 'S', startRound: 1, horizon: 5, threshold: 15, players, fixtures, results: [], teamRatings: [] }).horizon, 5)
+assert.ok(result.heroes.budget?.price <= 8, 'budget gebruikt positionele context')
+assert.ok(result.positions.length > 0, 'positionele edge')
+assert.ok(Array.isArray(result.clubs), 'club edge')
+assert.ok(result.ranking.every((x) => Number.isFinite(x.edgeScore)), 'geen NaN')
+assert.deepEqual(result.ranking.map((x) => x.id), buildDifferentialAnalysis({ season: 'S', startRound: 1, horizon: 3, threshold: 10, players, fixtures, results: [], teamRatings: [] }).ranking.map((x) => x.id), 'deterministisch')
+assert.equal(buildDifferentialAnalysis({ season: 'S', startRound: 1, horizon: 3, threshold: 10, players: [], fixtures, results: [], teamRatings: [] }).heroes.best, null, 'empty hero')
+console.log('Differential Engine: 15 kerncontroles geslaagd.')

@@ -1,0 +1,9 @@
+Welkom bij Fantasy Voetbal Studio
+
+Je account is bijna klaar. Bevestig je e-mailadres om toegang te krijgen tot Fantasy Voetbal Studio.
+
+Account bevestigen: {{ .ConfirmationURL }}
+
+Deze link is persoonlijk en beperkt geldig. Heb je dit niet aangevraagd? Negeer deze e-mail.
+
+Fantasy Voetbal Talk · Fantasy Studio

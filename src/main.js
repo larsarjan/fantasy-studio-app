@@ -1,8 +1,19 @@
+import { safeHtml } from './platform/html.js'
 import './style.css'
 import './fixtures.css'
 import './players.css'
 import './sync.css'
 import './compare.css'
+import './history.css'
+import './optimizer.css'
+import './dreamteam.css'
+import './captainRadar.css'
+import './intelligence.css'
+import './intelligenceQuality.css'
+import './dashboard.css'
+import { createSettingsScreen, mountSettingsScreen } from './platform/settings.js'
+import { basePath } from './platform/client.js'
+import { TRANSFER_DEADLINE_ENABLED } from './constants/featureFlags.js'
 
 import {
   initializeDatabase,
@@ -26,46 +37,48 @@ import {
   mountCompareScreen,
 } from './modules/compare.js'
 
-initializeDatabase()
+import {
+  createHistoryScreen,
+  mountHistoryScreen,
+} from './modules/history.js'
+
+import {
+  createInputScreen,
+  mountInputScreen,
+} from './modules/input.js'
+
+import {
+  createOptimizerScreen,
+  mountOptimizerScreen,
+} from './modules/optimizer.js'
+
+import {
+createDreamTeamScreen,
+mountDreamTeamScreen,
+} from './modules/dreamteam.js'
+
+import {
+  createCaptainRadarScreen,
+  mountCaptainRadarScreen,
+} from './modules/captainRadar.js'
+
+import { createAnalysisScreen, mountAnalysisScreen } from './modules/analysis.js'
+import { createDifferentialsScreen, mountDifferentialsScreen } from './modules/differentials.js'
+import { createDashboardScreen, mountDashboardScreen } from './modules/dashboard.js'
+
+await initializeDatabase()
 
 let activeScreenName = 'dashboard'
+let previousStandardScreenName = 'dashboard'
+let transferDeadlineModule = null
 
-function createDashboardScreen() {
-  const summary = getDatabaseSummary()
-  const status = getSyncStatus()
-
-  return `
-    <section class="cards">
-      <div class="card">
-        <h3>Spelers</h3>
-        <span>${summary.players}</span>
-      </div>
-
-      <div class="card">
-        <h3>Clubs ${summary.activeSeason ? `(${summary.activeSeason})` : ''}</h3>
-        <span>${summary.clubs}</span>
-      </div>
-
-      <div class="card">
-        <h3>Wedstrijden ${summary.activeSeason ? `(${summary.activeSeason})` : ''}</h3>
-        <span>${summary.fixtures}</span>
-      </div>
-
-      <div class="card">
-        <h3>Database</h3>
-        <span class="database-card-status">${status.source}</span>
-      </div>
-    </section>
-
-    <section class="panel">
-      <span class="eyebrow">Fantasy Studio v0.5</span>
-      <h2>Google Sheets is de centrale database</h2>
-      <p>
-        Werk de tabbladen SPELERS, WEDSTRIJDEN en TEAM_RATINGS bij.
-        Klik daarna rechtsboven op Synchroniseren.
-      </p>
-    </section>
-  `
+async function loadTransferDeadlineModule() {
+  if (!TRANSFER_DEADLINE_ENABLED) return null
+  if (!transferDeadlineModule) {
+    await import('./transferDeadlineLive.css')
+    transferDeadlineModule = await import('./modules/transferDeadlineLive.js')
+  }
+  return transferDeadlineModule
 }
 
 function createComingSoon(title, description) {
@@ -82,90 +95,130 @@ function getScreens() {
   return {
     dashboard: {
       title: 'Dashboard',
-      content: createDashboardScreen(),
+      get content() {
+        return createDashboardScreen()
+      },
+      mount: mountDashboardScreen,
     },
 
     players: {
       title: 'Spelers',
-      content: createPlayersScreen(),
+      get content() { return createPlayersScreen() },
       mount: mountPlayersScreen,
     },
 
     compare: {
       title: 'Vergelijken',
-      content: createCompareScreen(),
+      get content() { return createCompareScreen() },
       mount: mountCompareScreen,
     },
 
     fixtures: {
       title: 'Speelschema',
-      content: createFixturesScreen(),
+      get content() { return createFixturesScreen() },
       mount: mountFixturesScreen,
     },
 
+    history: {
+  title: 'Historische Data',
+  get content() { return createHistoryScreen() },
+  mount: mountHistoryScreen,
+},
+
     analysis: {
       title: 'Analyse',
-      content: createComingSoon(
-        'Analyse',
-        'Beste schema’s, prijs-kwaliteit, vorm en statistische ranglijsten.',
-      ),
+      get content() {
+        return createAnalysisScreen()
+      },
+      mount: mountAnalysisScreen,
     },
 
     captain: {
       title: 'Captain Radar',
-      content: createComingSoon(
-        'Captain Radar',
-        'Hier komen later de beste captainkeuzes per speelronde.',
-      ),
+      get content() {
+        return createCaptainRadarScreen()
+      },
+      mount: mountCaptainRadarScreen,
     },
 
     differentials: {
       title: 'Differentials',
-      content: createComingSoon(
-        'Differentials',
-        'Vind interessante spelers met een laag gekozen percentage.',
-      ),
+      get content() {
+        return createDifferentialsScreen()
+      },
+      mount: mountDifferentialsScreen,
     },
 
+    optimizer: {
+  title: 'FVT Manager',
+  get content() { return createOptimizerScreen() },
+  mount: mountOptimizerScreen,
+},
+
     dreamteam: {
-      title: 'Dream Team',
-      content: createComingSoon(
-        'Dream Team',
-        'Stel later automatisch een optimaal team samen binnen een budget.',
-      ),
-    },
+  title: 'Dream Team',
+  get content() { return createDreamTeamScreen() },
+  mount: mountDreamTeamScreen,
+},
+
+    ...(TRANSFER_DEADLINE_ENABLED && transferDeadlineModule ? {
+      transfersLive: {
+        title: 'Transfers Live',
+        get content() { return transferDeadlineModule.createTransferDeadlineLiveScreen() },
+        mount: transferDeadlineModule.mountTransferDeadlineLiveScreen,
+      },
+    } : {}),
+
+    input: {
+  title: 'Invoer',
+  get content() { return createInputScreen() },
+  mount: mountInputScreen,
+},
 
     settings: {
       title: 'Instellingen',
-      content: createComingSoon(
-        'Instellingen',
-        'Beheer thema, database, synchronisatie en OBS-instellingen.',
-      ),
+      get content() { return createSettingsScreen() },
+      mount: mountSettingsScreen,
     },
   }
 }
 
-document.querySelector('#app').innerHTML = `
+document.querySelector('#app').innerHTML = safeHtml(`
   <div class="app">
     <aside class="sidebar">
-      <div class="logo">
-        <div class="logo-icon">FVT</div>
+<div class="logo">
+  <img
+    class="logo-image"
+    src="./ui/logo.png"
+    alt="Fantasy Voetbal Talk Eredivisie"
+  />
 
-        <div>
-          <h1>Fantasy Studio</h1>
-          <p>Versie 0.5 Alpha</p>
-        </div>
-      </div>
+  <div class="logo-copy">
+    <h1>Fantasy Studio</h1>
+
+    <p class="logo-powered">
+      by Fantasy Voetbal Talk
+    </p>
+
+    <span class="logo-version">
+      Studio Cloud · 0.12
+    </span>
+  </div>
+</div>
 
       <nav class="navigation">
         <button class="menu active" data-screen="dashboard">🏠 Dashboard</button>
         <button class="menu" data-screen="players">👥 Spelers</button>
         <button class="menu" data-screen="compare">🆚 Vergelijken</button>
         <button class="menu" data-screen="fixtures">📅 Speelschema</button>
+        <button class="menu" data-screen="history">📚 Historische Data</button>
         <button class="menu" data-screen="analysis">📈 Analyse</button>
         <button class="menu" data-screen="captain">👑 Captain Radar</button>
         <button class="menu" data-screen="differentials">💎 Differentials</button>
+        <button class="menu" data-screen="optimizer">🤖 FVT Manager</button>
         <button class="menu" data-screen="dreamteam">🏆 Dream Team</button>
+        ${TRANSFER_DEADLINE_ENABLED ? '<button class="menu" data-screen="transfersLive">🔴 Transfers Live</button>' : ''}
+        <button class="menu" data-screen="input">📝 Invoer</button>
         <button class="menu" data-screen="settings">⚙ Instellingen</button>
       </nav>
     </aside>
@@ -193,7 +246,7 @@ document.querySelector('#app').innerHTML = `
       <div id="page-content"></div>
     </main>
   </div>
-`
+`)
 
 const pageTitle = document.querySelector('#page-title')
 const pageContent = document.querySelector('#page-content')
@@ -235,16 +288,27 @@ function showNotice(message, type = 'success') {
   }, 6000)
 }
 
-function showScreen(screenName) {
-  activeScreenName = screenName
+async function showScreen(screenName) {
+  if (screenName === 'transfersLive') await loadTransferDeadlineModule()
   const screen = getScreens()[screenName]
 
   if (!screen) {
+    pageTitle.textContent = 'Pagina niet gevonden'
+    pageContent.innerHTML = safeHtml('<section class="panel"><h2>Deze pagina bestaat niet</h2><p>Kies een scherm in het menu om verder te gaan.</p></section>')
     return
   }
 
+  if (screenName === 'transfersLive' && activeScreenName !== 'transfersLive') {
+    previousStandardScreenName = activeScreenName
+  }
+
+  activeScreenName = screenName
+  const route = `${basePath}${screenName === 'dashboard' ? '' : screenName}`
+  if (location.pathname !== route) history.pushState({ screenName }, '', route)
+  document.body.classList.toggle('tdl-workspace-active', screenName === 'transfersLive')
+
   pageTitle.textContent = screen.title
-  pageContent.innerHTML = screen.content
+  pageContent.innerHTML = safeHtml(screen.content)
 
   menuButtons.forEach((button) => {
     button.classList.toggle(
@@ -254,13 +318,13 @@ function showScreen(screenName) {
   })
 
   if (typeof screen.mount === 'function') {
-    screen.mount()
+    await screen.mount()
   }
 }
 
 menuButtons.forEach((button) => {
   button.addEventListener('click', () => {
-    showScreen(button.dataset.screen)
+    showScreen(button.dataset.screen).catch(() => showNotice('Dit scherm kon niet worden geopend. Probeer het opnieuw.', 'error'))
   })
 })
 
@@ -270,14 +334,25 @@ syncButton.addEventListener('click', async () => {
 
   try {
     const result = await synchronizeDatabase()
+    const transferSharedStatus = TRANSFER_DEADLINE_ENABLED
+      ? (await import('./services/transferDeadlineEditorial.js')).synchronizeTransferDeadlineSharedData()
+      : Promise.resolve({ message: 'Transfer Deadline is uitgeschakeld.' })
+    const sharedStatus = await transferSharedStatus
 
     refreshSyncStatus()
     showScreen(activeScreenName)
 
     showNotice(
-      `Klaar: ${result.players} spelers, ${result.fixtures} wedstrijden en ${result.ratings} teamratings.`,
-      'success',
-    )
+  `Klaar: ` +
+  `${result.players} spelers, ` +
+  `${result.historicalPlayers} historische spelers, ` +
+  `${result.fixtures} wedstrijden, ` +
+  `${result.results} historische uitslagen, ` +
+  `${result.metadata} metadatarecords, ` +
+  `${result.matchStats} spelerswedstrijden en ` +
+  `${result.ratings} teamratings. ${sharedStatus.message}.`,
+  'success',
+)
   } catch (error) {
     refreshSyncStatus()
 
@@ -292,4 +367,18 @@ syncButton.addEventListener('click', async () => {
 })
 
 refreshSyncStatus()
-showScreen('dashboard')
+await showScreen(location.pathname.slice(basePath.length).replace(/\/$/, '') || 'dashboard')
+window.addEventListener('popstate', () => {
+  showScreen(location.pathname.slice(basePath.length).replace(/\/$/, '') || 'dashboard').catch(() => showNotice('De pagina kon niet worden geopend.', 'error'))
+})
+
+window.addEventListener('keydown', (event) => {
+  if (activeScreenName === 'transfersLive' && transferDeadlineModule?.handleTransferDeadlineKeydown(event)) event.preventDefault()
+})
+
+document.addEventListener('tdl:close-workspace', () => {
+  const fallback = previousStandardScreenName && previousStandardScreenName !== 'transfersLive'
+    ? previousStandardScreenName
+    : 'dashboard'
+  showScreen(fallback)
+})

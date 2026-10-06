@@ -1,0 +1,22 @@
+# Target: Fantasy Studio only. Never push this config to AFTRAP Control.
+project_id = "rzunbquzffdivlpuomjc"
+
+[auth]
+enabled = true
+site_url = "https://fantasy-studio-app.vercel.app"
+additional_redirect_urls = ["https://fantasy-studio-app.vercel.app/auth/callback", "https://fantasy-studio-app.vercel.app/auth/callback?flow=recovery", "http://127.0.0.1:5173/auth/callback", "http://127.0.0.1:5173/auth/callback?flow=recovery"]
+jwt_expiry = 3600
+enable_refresh_token_rotation = true
+refresh_token_reuse_interval = 10
+enable_signup = true
+enable_anonymous_sign_ins = false
+enable_manual_linking = false
+minimum_password_length = 12
+
+[auth.email]
+enable_signup = true
+double_confirm_changes = true
+enable_confirmations = true
+max_frequency = "60s"
+otp_expiry = 3600
+

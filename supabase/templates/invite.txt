@@ -1,0 +1,9 @@
+Je bent uitgenodigd
+
+Je bent uitgenodigd voor Fantasy Voetbal Studio. Open je uitnodiging om je account te activeren.
+
+Uitnodiging accepteren: {{ .ConfirmationURL }}
+
+Deze link is persoonlijk en beperkt geldig. Heb je dit niet aangevraagd? Negeer deze e-mail.
+
+Fantasy Voetbal Talk · Fantasy Studio

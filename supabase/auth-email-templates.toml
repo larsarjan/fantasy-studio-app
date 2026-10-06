@@ -1,0 +1,25 @@
+[auth.email.template.confirmation]
+subject = "Welkom bij Fantasy Voetbal Studio - bevestig je account"
+content_path = "./supabase/templates/confirmation.html"
+
+[auth.email.template.recovery]
+subject = "Fantasy Studio - nieuw wachtwoord instellen"
+content_path = "./supabase/templates/recovery.html"
+
+[auth.email.template.invite]
+subject = "Je bent uitgenodigd voor Fantasy Studio"
+content_path = "./supabase/templates/invite.html"
+
+[auth.email.template.email_change]
+subject = "Fantasy Studio - bevestig je nieuwe e-mailadres"
+content_path = "./supabase/templates/email_change.html"
+
+# Add SMTP only after a provider and verified sender are available.
+# [auth.email.smtp]
+# enabled = true
+# host = "env(SMTP_HOST)"
+# port = 587
+# user = "env(SMTP_USER)"
+# pass = "env(SMTP_PASSWORD)"
+# admin_email = "env(SMTP_FROM_EMAIL)"
+# sender_name = "Fantasy Voetbal Studio"

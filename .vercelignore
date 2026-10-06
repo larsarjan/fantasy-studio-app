@@ -1,0 +1,13 @@
+node_modules
+dist
+release
+test-results
+.env*
+.git
+.vscode
+docs
+electron
+build
+supabase
+*.log
+src/assets/Players/20260288.webp

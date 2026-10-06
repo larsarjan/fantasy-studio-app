@@ -72,7 +72,7 @@ const screens = {
             <option>Sorteer op punten</option>
             <option>Gespeeld %</option>
             <option>Beginprijs</option>
-            <option>Eindprijs</option>
+            <option>Huidige prijs</option>
           </select>
         </div>
 

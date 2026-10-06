@@ -1,0 +1,9 @@
+Nieuw wachtwoord instellen
+
+Je hebt een nieuw wachtwoord aangevraagd. Gebruik de beveiligde link om een nieuw wachtwoord in te stellen.
+
+Nieuw wachtwoord instellen: {{ .ConfirmationURL }}
+
+Deze link is persoonlijk en beperkt geldig. Heb je dit niet aangevraagd? Negeer deze e-mail.
+
+Fantasy Voetbal Talk · Fantasy Studio

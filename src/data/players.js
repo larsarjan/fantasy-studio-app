@@ -78,7 +78,12 @@ export const players = [
     "goalsAgainstMinus": 0,
     "yellowCards": 0,
     "redCards": 0,
-    "penaltiesMissed": 0
+        "penaltiesMissed": 0,
+
+    "outlook": {
+      "expectedRole": "starter",
+      "expectedStarter": true
+    }
   },
   {
     "id": "drommel",
@@ -240,7 +245,12 @@ export const players = [
     "goalsAgainstMinus": 0,
     "yellowCards": 0,
     "redCards": 0,
-    "penaltiesMissed": 0
+"penaltiesMissed": 0,
+
+"outlook": {
+  "expectedRole": "starter",
+  "expectedStarter": true
+}
   },
   {
     "id": "crett",

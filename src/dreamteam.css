@@ -1,0 +1,542 @@
+/* =========================================================
+   FANTASY STUDIO — DREAM TEAM
+========================================================= */
+
+.dreamteam-module {
+  display: grid;
+  gap: 18px;
+}
+
+
+.dreamteam-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: flex-end;
+}
+
+
+.dreamteam-heading p {
+  margin-top: 7px;
+  color: #9faac0;
+}
+
+
+.dreamteam-controls {
+  display: flex;
+  gap: 10px;
+  align-items: end;
+}
+
+
+.dreamteam-controls label {
+  display: grid;
+  gap: 7px;
+}
+
+
+.dreamteam-controls label > span {
+  color: #9faac0;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+}
+
+
+.dreamteam-controls select {
+  min-width: 165px;
+  min-height: 44px;
+  padding: 0 12px;
+  color: #ffffff;
+  background: #111722;
+  border: 1px solid #303a4d;
+  border-radius: 10px;
+  outline: none;
+}
+
+
+.dreamteam-controls select:focus {
+  border-color: #ef4444;
+}
+
+
+/* =========================================================
+   KPI'S
+========================================================= */
+
+.dreamteam-summary {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+
+.dreamteam-summary article {
+  padding: 15px 17px;
+  background: #171f2c;
+  border: 1px solid #303a4d;
+  border-radius: 13px;
+}
+
+
+.dreamteam-summary span {
+  display: block;
+  color: #9faac0;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+}
+
+
+.dreamteam-summary strong {
+  display: block;
+  margin-top: 6px;
+  color: #ffffff;
+  font-size: 24px;
+}
+
+
+/* =========================================================
+   KAART
+========================================================= */
+
+.dreamteam-main-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+
+.dreamteam-pitch-card,
+.dreamteam-list-card {
+  overflow: hidden;
+  background: #111722;
+  border: 1px solid #303a4d;
+  border-radius: 16px;
+}
+
+
+.dreamteam-card-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: center;
+  padding: 16px 18px;
+  background: #161e2b;
+  border-bottom: 1px solid #303a4d;
+}
+
+
+.dreamteam-card-heading h3 {
+  margin-top: 4px;
+}
+
+
+.dreamteam-card-heading > strong {
+  padding: 7px 10px;
+  color: #fecaca;
+  background: rgba(239, 68, 68, 0.12);
+  border-radius: 8px;
+  font-size: 11px;
+}
+
+
+/* =========================================================
+   VOETBALVELD
+========================================================= */
+
+.dreamteam-pitch {
+  position: relative;
+  width: min(900px, calc(100% - 36px));
+  min-height: 720px;
+  margin: 22px auto;
+  overflow: hidden;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      #185f39 0,
+      #185f39 72px,
+      #1c6b40 72px,
+      #1c6b40 144px
+    );
+  border: 3px solid rgba(255, 255, 255, 0.7);
+  border-radius: 14px;
+}
+
+
+.dreamteam-pitch-markings {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+
+.dreamteam-center-line {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.65);
+}
+
+
+.dreamteam-center-circle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 125px;
+  height: 125px;
+  border: 2px solid rgba(255, 255, 255, 0.65);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+
+.dreamteam-box {
+  position: absolute;
+  left: 50%;
+  width: 310px;
+  height: 115px;
+  border: 2px solid rgba(255, 255, 255, 0.65);
+  transform: translateX(-50%);
+}
+
+
+.dreamteam-box-top {
+  top: -2px;
+  border-top: 0;
+}
+
+
+.dreamteam-box-bottom {
+  bottom: -2px;
+  border-bottom: 0;
+}
+
+
+.dreamteam-pitch-content {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-rows:
+    1fr
+    1fr
+    1fr
+    0.85fr;
+  min-height: 720px;
+  padding: 35px 28px;
+}
+
+
+.dreamteam-line {
+  display: flex;
+  justify-content: space-evenly;
+  gap: 14px;
+  align-items: center;
+}
+
+
+/* =========================================================
+   SPELERKAARTJES
+========================================================= */
+
+.dreamteam-player {
+  display: grid;
+  justify-items: center;
+  width: 135px;
+  padding: 9px 7px;
+  color: #ffffff;
+  background: rgba(13, 19, 29, 0.91);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 11px;
+  text-align: center;
+  box-shadow: 0 5px 16px rgba(0, 0, 0, 0.22);
+}
+
+
+.dreamteam-player-avatar {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  margin-bottom: 5px;
+  color: #ffffff;
+  background: #202838;
+  border: 1px solid #3a465c;
+  border-radius: 50%;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+
+.dreamteam-player strong {
+  max-width: 100%;
+  overflow: hidden;
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+.dreamteam-player-club {
+  max-width: 100%;
+  margin-top: 2px;
+  overflow: hidden;
+  color: #cbd5e1;
+  font-size: 8px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+.dreamteam-player-points {
+  margin-top: 5px;
+  padding: 4px 7px;
+  color: #ffffff;
+  background: #ef4444;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 900;
+}
+
+
+/* =========================================================
+   TABEL
+========================================================= */
+
+.dreamteam-table-wrap {
+  overflow-x: auto;
+}
+
+
+.dreamteam-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+
+.dreamteam-table th,
+.dreamteam-table td {
+  padding: 11px 14px;
+  border-bottom: 1px solid #252f40;
+  text-align: left;
+}
+
+
+.dreamteam-table th {
+  color: #9faac0;
+  background: #161e2b;
+  font-size: 9px;
+  text-transform: uppercase;
+}
+
+
+.dreamteam-table td {
+  color: #cbd5e1;
+  font-size: 11px;
+}
+
+
+.dreamteam-table tr:last-child td {
+  border-bottom: 0;
+}
+
+
+/* =========================================================
+   LEEG
+========================================================= */
+
+.dreamteam-empty {
+  display: grid;
+  place-items: center;
+  min-height: 400px;
+  padding: 30px;
+  color: #9faac0;
+  text-align: center;
+}
+
+
+.dreamteam-empty strong {
+  color: #ffffff;
+  font-size: 18px;
+}
+
+
+.dreamteam-empty p {
+  max-width: 520px;
+  margin-top: 8px;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1100px) {
+  .dreamteam-heading {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .dreamteam-summary {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+
+@media (max-width: 800px) {
+  .dreamteam-controls {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .dreamteam-controls select {
+    width: 100%;
+  }
+
+  .dreamteam-pitch {
+    min-height: 620px;
+  }
+
+  .dreamteam-pitch-content {
+    min-height: 620px;
+    padding-inline: 12px;
+  }
+
+  .dreamteam-player {
+    width: 105px;
+  }
+}
+
+
+@media (max-width: 560px) {
+  .dreamteam-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .dreamteam-pitch {
+    width: calc(100% - 16px);
+  }
+
+  .dreamteam-player {
+    width: 82px;
+    padding-inline: 4px;
+  }
+
+  .dreamteam-player-avatar {
+    width: 28px;
+    height: 28px;
+  }
+
+  .dreamteam-player-club {
+    display: none;
+  }
+}
+
+.dreamteam-player-clickable,
+.dreamteam-table-player {
+  cursor: pointer;
+}
+
+.dreamteam-player-avatar {
+  overflow: hidden;
+}
+
+.dreamteam-player-photo {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  object-position: center top;
+}
+
+.dreamteam-player-clickable:hover {
+  transform: translateY(-2px);
+}
+
+.dreamteam-table-player:hover {
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.dreamteam-profile-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(3, 8, 18, 0.58);
+  backdrop-filter: blur(2px);
+}
+
+.dreamteam-profile-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 1001;
+
+  width: min(520px, 92vw);
+  height: 100vh;
+
+  display: flex;
+  flex-direction: column;
+
+  background: #111927;
+  border-left: 1px solid rgba(255, 255, 255, 0.12);
+
+  box-shadow:
+    -18px 0 50px
+    rgba(0, 0, 0, 0.35);
+
+  overflow: hidden;
+}
+
+.dreamteam-profile-drawer-top {
+  min-height: 64px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0 20px;
+
+  border-bottom:
+    1px solid
+    rgba(255, 255, 255, 0.1);
+
+  font-weight: 700;
+}
+
+.dreamteam-profile-close {
+  width: 38px;
+  height: 38px;
+
+  border: 0;
+  border-radius: 10px;
+
+  background:
+    rgba(255, 255, 255, 0.08);
+
+  color: #fff;
+
+  font-size: 26px;
+  line-height: 1;
+
+  cursor: pointer;
+}
+
+.dreamteam-profile-close:hover {
+  background:
+    rgba(255, 255, 255, 0.14);
+}
+
+.dreamteam-profile-drawer-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 18px;
+}
+
+.dreamteam-profile-drawer
+.player-detail {
+  width: 100%;
+  max-width: none;
+}

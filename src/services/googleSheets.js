@@ -6,38 +6,178 @@ const BASE_URL =
 
 const SHEET_GIDS = {
   SPELERS: '0',
+  SPELERS_HISTORIE: '1818115160',
   WEDSTRIJDEN: '987182802',
   TEAM_RATINGS: '1178297655',
+  RESULTS: '776264419',
+  PLAYER_METADATA: '1096170677',
+  PLAYER_MATCH_STATS: '1473841294',
+  // Vul deze waarden in nadat de nieuwe tabbladen afzonderlijk als CSV zijn gepubliceerd.
+  ELITE_PLAYER_STATS: '1374530400',
+  ELITE_TRANSFERS: '38559593',
+  ELITE_SYNC_CONTROLE: '918754832',
+  CHIP_GEBRUIK: '2111638371',
+  ELITE_FORMATIONS: '1758286734',
+  ELITE_CLUB_EXPOSURE: '231456850',
+  TRANSFERS_2026_27: '813354455',
+  TRANSFER_CLUB_OVERVIEW: '725320659',
+  EUROPE_2026_27: '637872629',
 }
 
-export function createSheetUrl(sheetName) {
-  const gid = SHEET_GIDS[sheetName]
+export function hasPublishedSheet(sheetName) {
+  return Boolean(SHEET_GIDS[sheetName])
+}
+
+export function createSheetUrl(
+  sheetName,
+) {
+  const gid =
+    SHEET_GIDS[sheetName]
 
   if (!gid) {
-    throw new Error(`Geen gid ingesteld voor tabblad ${sheetName}.`)
-  }
-
-  return `${BASE_URL}?output=csv&gid=${gid}&_=${Date.now()}`
-}
-
-export async function fetchSheet(sheetName) {
-  const response = await fetch(createSheetUrl(sheetName), {
-    cache: 'no-store',
-  })
-
-  if (!response.ok) {
     throw new Error(
-      `Tabblad ${sheetName} kon niet worden geladen (${response.status}).`,
+      `Geen gid ingesteld voor tabblad ${sheetName}.`,
     )
   }
 
-  const csv = await response.text()
+  /*
+   * Iedere synchronisatie krijgt een unieke URL.
+   * Dit voorkomt dat Google of de browser een oudere
+   * gepubliceerde CSV-versie uit de cache teruggeeft.
+   */
+  const cacheBust =
+    Date.now()
 
-  if (!csv.trim()) {
-    throw new Error(`Tabblad ${sheetName} is leeg.`)
+  return (
+    `${BASE_URL}` +
+    `?gid=${gid}` +
+    `&single=true` +
+    `&output=csv` +
+    `&cacheBust=${cacheBust}`
+  )
+}
+
+function wait(
+  milliseconds,
+) {
+  return new Promise(
+    (resolve) => {
+      setTimeout(
+        resolve,
+        milliseconds,
+      )
+    },
+  )
+}
+
+export async function fetchSheet(
+  sheetName,
+  options = {},
+) {
+  const maximumAttempts =
+    Number(
+      options.maximumAttempts,
+    ) || 3
+
+  const timeoutMilliseconds =
+    Number(
+      options.timeoutMilliseconds,
+    ) || 15000
+
+  let lastError =
+    null
+
+  for (
+    let attempt = 1;
+    attempt <= maximumAttempts;
+    attempt += 1
+  ) {
+    const controller =
+      new AbortController()
+
+    const timeoutId =
+      setTimeout(
+        () => {
+          controller.abort()
+        },
+        timeoutMilliseconds,
+      )
+
+    try {
+      const response =
+        await fetch(
+          createSheetUrl(
+            sheetName,
+          ),
+          {
+            cache:
+              'no-store',
+
+            signal:
+              controller.signal,
+          },
+        )
+
+      clearTimeout(
+        timeoutId,
+      )
+
+      if (!response.ok) {
+        throw new Error(
+          `Tabblad ${sheetName} kon niet worden geladen (${response.status}).`,
+        )
+      }
+
+      const csv =
+        await response.text()
+
+      if (!csv.trim()) {
+        throw new Error(
+          `Tabblad ${sheetName} is leeg.`,
+        )
+      }
+
+      return parseCsv(
+        csv,
+      )
+    } catch (error) {
+      clearTimeout(
+        timeoutId,
+      )
+
+      lastError =
+        error?.name ===
+        'AbortError'
+          ? new Error(
+              `Tabblad ${sheetName} reageerde niet binnen ${Math.round(
+                timeoutMilliseconds /
+                1000,
+              )} seconden.`,
+            )
+          : error
+
+      console.warn(
+        `Poging ${attempt}/${maximumAttempts} voor ${sheetName} mislukt:`,
+        lastError,
+      )
+
+      if (
+        attempt <
+        maximumAttempts
+      ) {
+        await wait(
+          attempt * 1000,
+        )
+      }
+    }
   }
 
-  return parseCsv(csv)
+  throw (
+    lastError ??
+    new Error(
+      `Tabblad ${sheetName} kon niet worden geladen.`,
+    )
+  )
 }
 
 export function parseCsv(csvText) {
