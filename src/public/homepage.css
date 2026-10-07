@@ -7,8 +7,10 @@
 }
 .fvt-public {
   color: #f4f7fd;
-  background: #020b18 url("/landing/stadium.jpg") center top/auto 1050px
-    no-repeat;
+  width: 100%;
+  background: #020b18 url("/landing/stadium.jpg") center top no-repeat;
+  /* Preserve the 1050px composition, but cover wide viewports (image: 1672 × 941). */
+  background-size: max(100%, calc(1050px * 1672 / 941)) auto;
   font:
     15px/1.5 system-ui,
     -apple-system,
