@@ -142,6 +142,8 @@ const managerTeamState = {
   importResult: null,
 
   bank: 0,
+  bankKnown: false,
+  plannedTransfers: [],
 
   freeTransfers: 1,
 
@@ -1403,7 +1405,7 @@ function createPreseasonSection(preseason, comparison = null) {
   const lineup = preseason.lineup ?? {}
   const outgoing = changes.playersOut ?? []
   const incoming = changes.playersIn ?? []
-  const modeLabel = preseason.mode === 'current-team' ? 'Huidig team' : 'Nieuw team'
+  const modeLabel = preseason.mode === 'current-team' ? 'Huidige selectie' : 'Nieuw team'
   return `<section class="season-plan-preseason">
     <header class="optimizer-panel-header">
       <div><span class="optimizer-panel-eyebrow">Voor de start van het seizoen</span><h3>Onbeperkt optimaliseren vóór speelronde 1</h3></div>
@@ -1420,7 +1422,7 @@ function createPreseasonSection(preseason, comparison = null) {
       <div><span>Vice-captain</span><strong>${escapeHtml(getCandidateName(lineup.viceCaptain) || '—')}</strong></div>
     </div>
     ${comparison?.available ? `<section class="season-plan-preseason-comparison">
-      <h4>Jouw huidige team → geoptimaliseerd team</h4>
+      <h4>Jouw huidige selectie → geoptimaliseerd team</h4>
       <div>
         <span><small>Teamscore</small><strong>${toNumber(comparison.initialTeamScore).toFixed(1).replace('.', ',')} → ${toNumber(comparison.optimizedTeamScore).toFixed(1).replace('.', ',')}</strong></span>
         <span><small>Rondeprojectie</small><strong>${formatExpectedPoints(comparison.initialExpectedPointsRound1)} → ${formatExpectedPoints(comparison.optimizedExpectedPointsRound1)} xP</strong></span>
@@ -1646,7 +1648,7 @@ function createOptimizerSummary({ optimizerResult }) {
   const isCurrentTeamPreseason = optimizerResult?.request?.seasonPhase === 'preseason' &&
     optimizerResult?.request?.team?.mode === 'current-team'
   return `<aside class="optimizer-summary-panel manager-coach-panel">
-    <header class="optimizer-panel-header"><div><span class="optimizer-panel-eyebrow">FVT Manager</span><h3>${isCurrentTeamPreseason ? 'Huidig team' : 'Mijn oordeel'}</h3></div></header>
+    <header class="optimizer-panel-header"><div><span class="optimizer-panel-eyebrow">FVT Manager</span><h3>${isCurrentTeamPreseason ? 'Huidige selectie' : 'Mijn oordeel'}</h3></div></header>
     <div class="manager-coach-score"><strong>${escapeHtml(score.label ?? 'Niet beschikbaar')}</strong><span>${escapeHtml(getManagerScoreLabel(score.value))}</span><small>${coverage.level === 'low' ? 'Beperkte beoordeling: niet alle gegevens zijn beschikbaar.' : `Gebaseerd op ${toNumber(coverage.usedDimensions)} van ${toNumber(coverage.possibleDimensions)} onderdelen`}</small></div>
     ${comparison?.available ? `<section class="manager-coach-comparison"><span>Na optimalisatie</span><strong>${toNumber(comparison.optimizedTeamScore).toFixed(1).replace('.', ',')} / 10</strong><small>${comparison.teamScoreDelta > 0 ? '+' : ''}${toNumber(comparison.teamScoreDelta).toFixed(1).replace('.', ',')} teamscore · ${comparison.expectedPointsGain > 0 ? '+' : ''}${toNumber(comparison.expectedPointsGain).toFixed(1).replace('.', ',')} xP</small></section>` : ''}
     ${coach?.headline?.summary ? `<blockquote>${escapeHtml(coach.headline.summary)}</blockquote>` : conclusionParts.length ? `<blockquote>${escapeHtml(`Op basis van de huidige gegevens: ${conclusionParts.join(' ')}`)}</blockquote>` : ''}
@@ -1791,9 +1793,9 @@ function createOptimizerResult({
   const isPreseason = optimizerResult?.request?.seasonPhase === 'preseason'
   const isCurrentTeam = optimizerResult?.request?.team?.mode === 'current-team'
   const pitchHeading = isPreseason && isCurrentTeam
-    ? { eyebrow: 'Geïmporteerde selectie', title: 'Jouw huidige team', period: 'Speelronde 1' }
+    ? { eyebrow: 'Geïmporteerde selectie', title: 'Jouw huidige selectie', period: 'Speelronde 1' }
     : isPreseason
-      ? { eyebrow: 'Voor de eerste deadline', title: 'Nieuw startteam bouwen', period: 'Speelronde 1' }
+      ? { eyebrow: 'Voor de eerste deadline', title: 'Nieuwe startselectie bouwen', period: 'Speelronde 1' }
       : undefined
   return `
     <div class="optimizer-result-layout">
@@ -1924,7 +1926,7 @@ function createManagerTeamScreen() {
       >
         <div class="manager-team-import-copy">
           <span class="manager-panel-eyebrow">
-            Team importeren
+            Selectie importeren
           </span>
 
           <h4>
@@ -3099,7 +3101,7 @@ const strategyDescription =
       <div class="manager-screenshot-filters" role="group" aria-label="Controlefilter"><button type="button" data-screenshot-filter="all" class="${screenshotReviewFilter === 'all' ? 'is-active' : ''}">Alles</button><button type="button" data-screenshot-filter="attention" class="${screenshotReviewFilter === 'attention' ? 'is-active' : ''}">Alleen controleren${attentionCount ? ` (${attentionCount})` : ''}</button></div>
       ${(screenshotDraft.warnings ?? []).length ? `<div class="manager-screenshot-warnings">${screenshotDraft.warnings.map((warning) => `<p>⚠️ ${escapeHtml(warning)}</p>`).join('')}</div>` : ''}
       ${groups}
-      <div class="manager-screenshot-import-bar"><div><strong>${validation.valid ? 'Je selectie en prijzen zijn klaar om te importeren' : `${completedPlayers} van 15 spelers compleet`}</strong>${!validation.valid ? validation.errors.slice(0, 3).map((error) => `<small>${escapeHtml(error)}</small>`).join('') : ''}</div><button class="manager-primary-button" type="button" data-screenshot-confirm ${validation.valid ? '' : 'disabled'}>Team importeren</button></div>`)
+      <div class="manager-screenshot-import-bar"><div><strong>${validation.valid ? 'Je selectie en prijzen zijn klaar om te importeren' : `${completedPlayers} van 15 spelers compleet`}</strong>${!validation.valid ? validation.errors.slice(0, 3).map((error) => `<small>${escapeHtml(error)}</small>`).join('') : ''}</div><button class="manager-primary-button" type="button" data-screenshot-confirm ${validation.valid ? '' : 'disabled'}>Selectie importeren</button></div>`)
   }
 
   function clearScreenshotImport() {

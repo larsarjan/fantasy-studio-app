@@ -1,3 +1,5 @@
+import { renderPersonalContext } from './personalContext.js'
+import { buildCaptainRadar } from '../services/captainRadarEngine.js'
 import { safeHtml } from '../platform/html.js'
 import {
   getPlayerProfiles,
@@ -4329,6 +4331,9 @@ const compareWrap =
   })
 
   function render() {
+    document.querySelector('[data-personal-context="fixtures"]')?.remove()
+    const roundData=buildCaptainRadar({season:currentFixtures()[0]?.season,round:state.startRound})
+    document.querySelector('#page-content').insertAdjacentHTML('afterbegin',safeHtml(renderPersonalContext('fixtures',roundData)))
   const isClubMode =
     state.mode === 'club'
 

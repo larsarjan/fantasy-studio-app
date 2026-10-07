@@ -14,7 +14,7 @@ function check(result) { if (result.error) throw result.error; return result.dat
 export async function initializeUser(session) {
   userId = session.user.id
   const results = await Promise.all([
-    supabase.from('profiles').select('id,display_name,role').eq('id', userId).single(),
+    supabase.from('profiles').select('id,display_name,favorite_club,role,created_at,updated_at').eq('id', userId).single(),
     supabase.from('user_preferences').select('settings,version').eq('user_id', userId).maybeSingle(),
     supabase.from('fantasy_teams').select('*').eq('user_id', userId).eq('slug', 'primary').maybeSingle(),
     supabase.from('transfer_editorial').select('kind,key,payload').eq('user_id', userId),
@@ -53,11 +53,19 @@ export async function savePreferences(settings) {
 
 export async function saveTeam(state, settings) {
   const saved = check(await supabase.rpc('save_fantasy_team', {
-    team_slug: 'primary', team_name: 'Mijn team', team_state: state,
+    team_slug: 'primary', team_name: 'Mijn selectie', team_state: state,
     manager_settings: settings, expected_version: teamVersion,
   }))
   team = saved
   teamVersion = saved.version
+  return saved
+}
+
+export async function saveProfile({ displayName, favoriteClub }) {
+  const saved = check(await supabase.from('profiles').update({ display_name: displayName.trim(), favorite_club: favoriteClub || null }).eq('id', userId).eq('updated_at', profile.updated_at).select('id,display_name,favorite_club,role,created_at,updated_at').maybeSingle())
+  if (!saved) throw { code: 'P0001' }
+  profile = saved
+  window.dispatchEvent(new Event('studio:profile-saved'))
   return saved
 }
 

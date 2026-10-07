@@ -5,7 +5,11 @@
   "about",
   "privacy",
   "contact",
+  "ranglijsten",
+  "prominenten",
 ]);
+export const isProminentRoute = route => /^(ranglijsten|prominenten)(?:\/\d+)?$/.test(route);
+export const isPublicRoute = route => publicRoutes.has(route) || isProminentRoute(route);
 export function relativeRoute(pathname, base = "/") {
   return pathname.startsWith(base)
     ? pathname.slice(base.length).replace(/^\/+|\/+$/g, "")
@@ -21,7 +25,7 @@ export function studioPath(screen = "dashboard", base = "/") {
 }
 export function loginDestination(pathname, base = "/") {
   const route = relativeRoute(pathname, base);
-  return publicRoutes.has(route) || route.startsWith("auth/")
+  return isPublicRoute(route) || route.startsWith("auth/")
     ? studioPath("dashboard", base)
     : pathname;
 }

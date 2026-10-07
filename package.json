@@ -24,7 +24,10 @@
     "test:security": "node scripts/test-database.mjs && node scripts/test-platform.mjs",
     "test:ui-api": "node scripts/test-ui-server.mjs",
     "check": "npm test && npm run test:security && npm run build",
-    "test:public": "node --test scripts/test-public-homepage.mjs"
+    "test:public": "node --test scripts/test-public-homepage.mjs",
+    "test:prominents": "node --test src/services/prominentModel.test.js src/services/prominentCollector.test.js && node scripts/test-prominent-database.mjs",
+    "backfill:prominents": "node scripts/prominent-backfill.mjs",
+    "test:prominents-live": "node scripts/test-prominent-live.mjs"
   },
   "build": {
     "appId": "nl.fantasyvoetbaltalk.fantasystudio",

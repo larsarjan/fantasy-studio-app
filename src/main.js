@@ -11,6 +11,12 @@ import './captainRadar.css'
 import './intelligence.css'
 import './intelligenceQuality.css'
 import './dashboard.css'
+import './personal.css'
+import { createSelectionScreen, mountSelectionScreen } from './modules/selection.js'
+import { createProfileScreen, mountProfileScreen } from './modules/profile.js'
+import { getManagerTeamState } from './modules/optimizer.js'
+import { changeSelection } from './platform/selectionStorage.js'
+import { renderPersonalContext } from './modules/personalContext.js'
 import { createSettingsScreen, mountSettingsScreen } from './platform/settings.js'
 import { basePath } from './platform/client.js'
 import { studioPath, studioScreen } from './platform/routes.js'
@@ -94,6 +100,8 @@ function createComingSoon(title, description) {
 
 function getScreens() {
   return {
+    selection: { title: 'Mijn selectie', get content() { return createSelectionScreen() }, mount: mountSelectionScreen },
+    profile: { title: 'Mijn profiel', get content() { return createProfileScreen() }, mount: mountProfileScreen },
     dashboard: {
       title: 'Dashboard',
       get content() {
@@ -208,6 +216,7 @@ document.querySelector('#app').innerHTML = safeHtml(`
 </div>
 
       <nav class="navigation">
+        <button class="menu" data-screen="selection">Mijn selectie</button>
         <button class="menu active" data-screen="dashboard">🏠 Dashboard</button>
         <button class="menu" data-screen="players">👥 Spelers</button>
         <button class="menu" data-screen="compare">🆚 Vergelijken</button>
@@ -310,6 +319,7 @@ async function showScreen(screenName) {
 
   pageTitle.textContent = screen.title
   pageContent.innerHTML = safeHtml(screen.content)
+  if (['dashboard'].includes(screenName)) pageContent.insertAdjacentHTML('afterbegin', safeHtml(renderPersonalContext(screenName)))
 
   menuButtons.forEach((button) => {
     button.classList.toggle(
@@ -327,6 +337,18 @@ menuButtons.forEach((button) => {
   button.addEventListener('click', () => {
     showScreen(button.dataset.screen).catch(() => showNotice('Dit scherm kon niet worden geopend. Probeer het opnieuw.', 'error'))
   })
+})
+
+document.addEventListener('click', event => {
+  const plan=event.target.closest('[data-plan-out]'),remove=event.target.closest('[data-remove-plan]')
+  if(!plan && !remove)return
+  const state=getManagerTeamState()
+  if(plan){
+    if((state.plannedTransfers??[]).some(t=>t.outId===plan.dataset.planOut || t.inId===plan.dataset.planIn))return
+    state.plannedTransfers=[...(state.plannedTransfers??[]),{outId:plan.dataset.planOut,inId:plan.dataset.planIn}]
+  } else state.plannedTransfers=state.plannedTransfers.filter((_,i)=>i!==Number(remove.dataset.removePlan))
+  changeSelection(state)
+  showScreen(activeScreenName).catch(()=>showNotice('Dit scherm kon niet worden geopend.','error'))
 })
 
 syncButton.addEventListener('click', async () => {

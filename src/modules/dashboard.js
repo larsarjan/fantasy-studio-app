@@ -36,7 +36,7 @@ function eliteCard(elite) {
 }
 
 function actionsBlock(actions) {
-  return `<section class="panel dashboard-actions"><div><span class="eyebrow">Beslissingen</span><h2>Acties voor deze speelronde</h2></div><ol>${actions.length ? actions.map(action => `<li><button data-dashboard-screen="${action.screen}">${esc(action.label)}<span>Open →</span></button></li>`).join('') : '<li class="dashboard-neutral">Nog onvoldoende betrouwbare signalen voor concrete acties.</li>'}</ol></section>`
+  return `<section class="panel dashboard-actions"><div><span class="eyebrow">Beslissingen</span><h2>Algemene kansen in de competitie</h2></div><ol>${actions.length ? actions.map(action => `<li><button data-dashboard-screen="${action.screen}">${esc(action.label)}<span>Open →</span></button></li>`).join('') : '<li class="dashboard-neutral">Nog onvoldoende betrouwbare signalen voor concrete acties.</li>'}</ol></section>`
 }
 
 export function renderDashboardMarketBlock(data) {
@@ -92,7 +92,7 @@ export function createDashboardScreen() {
   const next = status.nextFixture
   return `<section class="dashboard-screen">
     <section class="dashboard-hero"><div><span class="eyebrow">Fantasy Studio</span><h1>Speelronde ${data.round}</h1><span class="dashboard-status ${status.status.toLowerCase()}">Speelronde: ${esc(status.status)}</span></div><div class="dashboard-round-metrics"><span><small>Gespeeld</small><b>${status.playedMatches}</b></span><span><small>Resterend</small><b>${status.remainingMatches}</b></span><span class="wide"><small>Eerstvolgende wedstrijd</small><b>${next ? `${esc(next.home)} – ${esc(next.away)}` : status.status === 'Definitief' ? 'Ronde afgerond' : 'Nog niet bekend'}</b></span></div></section>
-    <section><div class="dashboard-section-heading"><span class="eyebrow">Dit moet je nu weten</span><h2>De zes belangrijkste signalen</h2></div><div class="dashboard-insight-grid">
+    <section><div class="dashboard-section-heading"><span class="eyebrow">Dit moet je nu weten</span><h2>Algemene marktsignalen</h2></div><div class="dashboard-insight-grid">
       ${playerInsightCard({ label: 'Captain van de ronde', data: data.cards.captain, accent: 'captain', screen: 'captain', metric: data.cards.captain ? `${number(data.cards.captain.score, 0)} / 100` : '', empty: 'Captain Radar levert nog geen geldige kandidaat.' })}
       ${playerInsightCard({ label: 'Beste aankoop', data: data.cards.buy, accent: 'buy', screen: 'analysis', metric: data.cards.buy ? `${number(data.cards.buy.expectedPoints)} xP` : '', empty: 'Geen speler passeert de bestaande koopgrenzen.' })}
       ${playerInsightCard({ label: 'Beste verkoop / avoid', data: data.cards.sell, accent: 'sell', screen: 'analysis', metric: data.cards.sell ? `${number(data.cards.sell.score, 0)} risico` : '', empty: 'Geen sterk verkoopsignaal; houden blijft verdedigbaar.' })}

@@ -42,7 +42,7 @@ const pageContent = {
     "MEEDOEN",
     "Samen meer uit fantasy halen.",
     "Praat mee onder onze video’s en volg Fantasy Voetbal Talk op Instagram. De plek voor jouw vragen, ideeën en fantasykeuzes.",
-    `<div class="fvt-actions"><a class="fvt-button" href="${channelUrl}" target="_blank" rel="noopener noreferrer">Praat mee op YouTube ${icon("arrow")}</a><a class="fvt-text-link" href="${instagramUrl}" target="_blank" rel="noopener noreferrer">Volg FVT op Instagram ↗</a></div><p class="fvt-coming">Een eigen forum, subleague en ranglijsten zijn toekomstplannen. Ze zijn nog niet beschikbaar.</p>`,
+    `<div class="fvt-actions"><a class="fvt-button" href="${channelUrl}" target="_blank" rel="noopener noreferrer">Praat mee op YouTube ${icon("arrow")}</a><a class="fvt-text-link" href="${instagramUrl}" target="_blank" rel="noopener noreferrer">Volg FVT op Instagram ↗</a></div><p><a class="fvt-text-link" href="${appUrl('ranglijsten')}">Volg de FVT-subleague en prominenten ${icon('arrow')}</a></p>`,
   ],
   about: [
     "OVER FVT",
@@ -70,7 +70,7 @@ function videoMarkup(video, source) {
       : `https://i.ytimg.com/vi/${video.id}/hqdefault.jpg`;
   return `<span class="fvt-eyebrow">${source === "fallback" ? "UITGELICHTE VIDEO" : "NIEUWSTE VIDEO"}</span><a class="fvt-video-image" href="https://www.youtube.com/watch?v=${video.id}" target="_blank" rel="noopener noreferrer" aria-label="Bekijk ${escape(video.title)}"><img src="${thumbnail}" width="480" height="270" alt="Thumbnail van ${escape(video.title)}" loading="lazy"><span class="fvt-play">${icon("play")}</span></a><h3>${escape(video.title)}</h3><p class="fvt-video-meta">Fantasy Voetbal Talk Eredivisie<br><time datetime="${escape(video.published)}">${new Intl.DateTimeFormat("nl-NL", { day: "numeric", month: "long", year: "numeric" }).format(new Date(video.published))}</time></p><a class="fvt-button fvt-button-outline" href="https://www.youtube.com/watch?v=${video.id}" target="_blank" rel="noopener noreferrer">Bekijk op YouTube ${icon("arrow")}</a>`;
 }
-export function renderPublic(accountMarkup, { displayName = "" } = {}) {
+export function renderPublic(accountMarkup, { displayName = "", mainMarkup = null, pageTitle = null } = {}) {
   videoController?.abort();
   videoController = new AbortController();
   const route = relativeRoute(location.pathname, import.meta.env.BASE_URL);
@@ -104,13 +104,14 @@ export function renderPublic(accountMarkup, { displayName = "" } = {}) {
   const nav = [
     ["", "Home"],
     ["studio", "Studio"],
+    ["ranglijsten", "Ranglijsten"],
     ["videos", "Video’s"],
     ["community", "Community"],
     ["about", "Over FVT"],
   ]
     .map(
       ([path, label]) =>
-        `<a href="${appUrl(path)}" ${route === path || (path === "studio" && route.startsWith("studio/")) ? 'aria-current="page"' : ""}>${label}</a>`,
+        `<a href="${appUrl(path)}" ${route === path || (path === "ranglijsten" && /^(ranglijsten|prominenten)(\/|$)/.test(route)) || (path === "studio" && route.startsWith("studio/")) ? 'aria-current="page"' : ""}>${label}</a>`,
     )
     .join("");
   document.title = `${page ? { videos: "Video’s", community: "Community", about: "Over FVT", privacy: "Privacy", contact: "Contact" }[route] : "Fantasy Studio"} | Fantasy Voetbal Talk`;
@@ -127,6 +128,21 @@ export function renderPublic(accountMarkup, { displayName = "" } = {}) {
     button.setAttribute("aria-expanded", String(open));
     document.querySelector("#fvt-nav").classList.toggle("is-open", open);
   };
+  if (mainMarkup !== null) {
+    const main = document.querySelector('#fvt-main');
+    main.className = 'prom-main';
+    main.innerHTML = safeHtml(mainMarkup);
+    document.querySelector('.fvt-header-account').href = appUrl('#fvt-account');
+    if (pageTitle) document.title = `${pageTitle} | Fantasy Voetbal Talk`;
+    return;
+  }
+  if (!route) {
+    const teaser=document.createElement('section');
+    teaser.className='prom-home';
+    teaser.innerHTML=safeHtml(`<span class="fvt-eyebrow">VOLG DE KENNERS</span><h2>Prominenten</h2><p>De keuzes en prestaties van creators, ESPN-kenners en onze subleague.</p><div id="prom-home-leaders" role="status">Ranglijst laden…</div><a class="fvt-text-link" href="${appUrl('ranglijsten')}">Bekijk volledige ranglijst ${icon('arrow')}</a>`);
+    document.querySelector('#fvt-main').append(teaser);
+    import('./prominents.js').then(m=>m.mountHomeTeaser(teaser)).catch(()=>{if(teaser.isConnected)teaser.querySelector('#prom-home-leaders').textContent='Bekijk de ranglijst voor de nieuwste stand.';});
+  }
   const videoElement = document.querySelector("#fvt-video");
   fetch(appUrl("api/latest-video"), { signal: videoController.signal })
     .then((r) => (r.ok ? r.json() : null))

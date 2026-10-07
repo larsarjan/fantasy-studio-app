@@ -2,8 +2,11 @@ import { safeHtml } from '../platform/html.js'
 import {
   getFixtures,
   getPlayers,
+  getHistoricalPlayers,
+  getPlayerMatchStats,
   getResults,
 } from '../services/database.js'
+import { resolveHistoricalMatch } from '../services/historicalMatchDetails.js'
 
 import {
   calculateStandings,
@@ -45,119 +48,6 @@ function getResultKey(result) {
       result.away,
     ].join('|'),
   )
-}
-
-function findFixtureForResult(
-  result,
-  fixtures,
-) {
-  const sameMatch =
-    fixtures.filter(
-      (fixture) =>
-        fixture.season === result.season &&
-        fixture.home === result.home &&
-        fixture.away === result.away,
-    )
-
-  if (!sameMatch.length) {
-    return null
-  }
-
-  const round =
-    Number(result.round)
-
-  if (
-    Number.isFinite(round) &&
-    round > 0
-  ) {
-    const roundFixture =
-      sameMatch.find(
-        (fixture) =>
-          Number(fixture.round) ===
-          round,
-      )
-
-    if (roundFixture) {
-      return roundFixture
-    }
-  }
-
-  const dateFixture =
-    sameMatch.find(
-      (fixture) =>
-        fixture.date &&
-        result.date &&
-        fixture.date === result.date,
-    )
-
-  return (
-    dateFixture ??
-    sameMatch[0] ??
-    null
-  )
-}
-
-function getMatchPlayers(
-  fixture,
-  players,
-) {
-  if (!fixture) {
-    return {
-      home: [],
-      away: [],
-    }
-  }
-
-  const matches =
-    players
-      .flatMap(
-        (player) =>
-          (
-            Array.isArray(
-              player.matchHistory,
-            )
-              ? player.matchHistory
-              : []
-          )
-            .filter(
-              (match) =>
-                String(
-                  match.fixture?.id ??
-                  '',
-                ) ===
-                String(
-                  fixture.id ??
-                  '',
-                ),
-            )
-            .map(
-              (match) => ({
-                player,
-                match,
-              }),
-            ),
-      )
-      .filter(
-        ({ match }) =>
-          match.played === true &&
-          Number(match.minutes) > 0,
-      )
-
-  return {
-    home:
-      matches.filter(
-        ({ match }) =>
-          match.fixture?.venue ===
-          'home',
-      ),
-
-    away:
-      matches.filter(
-        ({ match }) =>
-          match.fixture?.venue ===
-          'away',
-      ),
-  }
 }
 
 function renderRepeatedEvent(
@@ -457,6 +347,7 @@ function renderMatchPlayerRow({
 
       <span class="history-match-player-events">
         ${renderPlayerEvents(match)}
+        ${match.recordedGoalsConceded !== null && match.recordedGoalsConceded !== undefined && ['Doelman','Verdediger'].includes(position) ? `<small>${match.recordedGoalsConceded} tegengoals</small>` : ''}
       </span>
     </div>
   `
@@ -623,11 +514,8 @@ function renderMatchDetails(
   fixtures,
   players,
 ) {
-  const fixture =
-    findFixtureForResult(
-      result,
-      fixtures,
-    )
+  const matchPlayers = resolveHistoricalMatch(result, fixtures, players, getPlayerMatchStats())
+  const fixture = matchPlayers.fixture
 
   if (!fixture) {
     return `
@@ -640,15 +528,10 @@ function renderMatchDetails(
     `
   }
 
-  const matchPlayers =
-    getMatchPlayers(
-      fixture,
-      players,
-    )
-
   const allPlayers = [
     ...matchPlayers.home,
     ...matchPlayers.away,
+    ...matchPlayers.unassigned,
   ]
 
   if (!allPlayers.length) {
@@ -730,6 +613,7 @@ function renderMatchDetails(
           players: matchPlayers.away,
         })}
       </div>
+      ${matchPlayers.unassigned.length ? `<p>Bij ${matchPlayers.unassigned.length} speler(s) wijkt de huidige club af van deze wedstrijd. De bron bewaart geen wedstrijdclub; onderstaande prestaties zijn daarom niet aan thuis of uit toegewezen.</p>${renderMatchTeam({club:'Wedstrijdclub niet vastgelegd',players:matchPlayers.unassigned})}` : ''}
     </div>
   `
 }
@@ -918,7 +802,7 @@ function renderResults(
                       state.expandedMatch ===
                       key
 
-                    const fixture = findFixtureForResult(result, fixtures)
+                    const fixture = resolveHistoricalMatch(result, fixtures, [], []).fixture
                     const time = fixture?.time
 
                     return `
@@ -1427,7 +1311,7 @@ export function createHistoryScreen() {
 export function mountHistoryScreen() {
   const results = getResults()
   const fixtures = getFixtures()
-  const players = getPlayers()
+  const players = [...getPlayers(), ...getHistoricalPlayers()]
 
   const seasons =
     getHistorySeasons(results)
