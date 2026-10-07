@@ -17,7 +17,7 @@ assert.match(safeHtml('<button data-screen="players" aria-label="Spelers">Speler
 assert.match(safeHtml('<img src="blob:https://studio.test/123" alt="Screenshot">'), /blob:/); checks++
 assert.match(safeHtml('<tr><td>Speler</td></tr>'), /<tr><td>Speler<\/td><\/tr>/); checks++
 assert.match(safeHtml('<th scope="col">Naam</th>'), /<th scope="col">Naam<\/th>/); checks++
-const files = ['src/main.js', ...['src/modules','src/platform'].flatMap(dir => readdirSync(dir).filter(f => f.endsWith('.js')).map(f => `${dir}/${f}`))]
+const files = ['src/main.js', ...['src/modules','src/platform','src/public'].flatMap(dir => readdirSync(dir).filter(f => f.endsWith('.js')).map(f => `${dir}/${f}`))]
 for (const file of files) {
   const ast = parse(readFileSync(file,'utf8'),{ecmaVersion:'latest',sourceType:'module'})
   function walk(node) {

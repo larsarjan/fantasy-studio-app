@@ -1,6 +1,6 @@
-Welkom bij Fantasy Voetbal Studio
+Welkom bij Fantasy Voetbal Studio!
 
-Je account is bijna klaar. Bevestig je e-mailadres om toegang te krijgen tot Fantasy Voetbal Studio.
+Je account is bijna klaar. Bevestig je e-mailadres om toegang te krijgen tot Fantasy Voetbal Studio. Na bevestiging kun je jouw selectie samenstellen, spelers vergelijken, vooruit plannen en gebruikmaken van alle analyses binnen de Studio.
 
 Account bevestigen: {{ .ConfirmationURL }}
 

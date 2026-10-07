@@ -1,5 +1,5 @@
 [auth.email.template.confirmation]
-subject = "Welkom bij Fantasy Voetbal Studio - bevestig je account"
+subject = "Bevestig je account voor Fantasy Voetbal Studio"
 content_path = "./supabase/templates/confirmation.html"
 
 [auth.email.template.recovery]
@@ -23,3 +23,4 @@ content_path = "./supabase/templates/email_change.html"
 # pass = "env(SMTP_PASSWORD)"
 # admin_email = "env(SMTP_FROM_EMAIL)"
 # sender_name = "Fantasy Voetbal Studio"
+

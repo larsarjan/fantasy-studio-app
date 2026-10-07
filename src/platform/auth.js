@@ -1,11 +1,11 @@
-import { safeHtml } from './html.js'
+import { renderPublic, icon } from '../public/homepage.js'
+import { loginDestination } from './routes.js'
 import { supabase, appUrl, friendlyError } from './client.js'
 import './platform.css'
 
-const root = () => document.querySelector('#app')
 let authMode = 'login'
 let recovery = new URLSearchParams(location.search).get('flow') === 'recovery'
-const requestedPath = location.pathname.startsWith(import.meta.env.BASE_URL) && !location.pathname.includes('/auth/') ? location.pathname : import.meta.env.BASE_URL
+const requestedPath = loginDestination(location.pathname, import.meta.env.BASE_URL)
 
 function message(text) { const el = document.querySelector('#auth-message'); if (el) el.textContent = text }
 
@@ -13,22 +13,21 @@ export function renderAuth(mode = 'login', notice = '') {
   authMode = mode
   const titles = { login: 'Welkom terug', signup: 'Jouw Studio begint hier', forgot: 'Wachtwoord vergeten?', reset: 'Nieuw wachtwoord instellen' }
   const buttons = { login: 'Inloggen', signup: 'Account aanmaken', forgot: 'Verstuur herstelmail', reset: 'Wachtwoord opslaan' }
-  root().innerHTML = safeHtml(`<main class="auth-layout">
-    <section class="auth-story"><a class="auth-brand" href="${appUrl()}"><span>FVT</span> FANTASY VOETBAL STUDIO</a>
-      <div><span class="auth-kicker">JOUW VOORSPRONG BEGINT HIER</span><h1>Meer inzicht.<br>Betere keuzes.<br><em>Jouw beste team.</em></h1>
-      <p>Spelers, programma en slimme analyses. Alles voor jouw fantasyseizoen, op één plek.</p>
-      <div class="auth-features"><span>Captain Radar</span><span>FVT Manager</span><span>Intelligence</span></div></div>
-      <small>Fantasy Voetbal Talk · Eredivisie</small></section>
-    <section class="auth-card"><span class="auth-kicker">FANTASY STUDIO</span><h2>${titles[mode]}</h2>
-      <p>${mode === 'signup' ? 'Maak je persoonlijke account aan en bevestig je e-mailadres.' : mode === 'forgot' ? 'We sturen je een link om je wachtwoord opnieuw in te stellen.' : mode === 'reset' ? 'Gebruik een uniek wachtwoord van minimaal 12 tekens.' : 'Log in en werk verder aan jouw seizoen.'}</p>
+  renderPublic(`<span class="fvt-eyebrow">FANTASY STUDIO</span><h2>${titles[mode]}</h2>
+      <p>${mode === 'signup' ? 'Maak je persoonlijke account aan en bevestig je e-mailadres.' : mode === 'forgot' ? 'We sturen je een link om je wachtwoord opnieuw in te stellen.' : mode === 'reset' ? 'Gebruik een uniek wachtwoord van minimaal 12 tekens.' : 'Log in om verder te gaan in Fantasy Studio.'}</p>
       <form id="auth-form">
-        ${mode !== 'reset' ? '<label>E-mailadres<input name="email" type="email" autocomplete="email" required maxlength="254" placeholder="jij@voorbeeld.nl"></label>' : ''}
-        ${mode !== 'forgot' ? `<label>Wachtwoord<input name="password" type="password" autocomplete="${mode === 'login' ? 'current-password' : 'new-password'}" minlength="${mode === 'login' ? 1 : 12}" maxlength="128" required></label>` : ''}
-        ${mode === 'reset' || mode === 'signup' ? '<label>Herhaal wachtwoord<input name="confirmation" type="password" autocomplete="new-password" minlength="12" maxlength="128" required></label>' : ''}
-        <p id="auth-message" role="status" aria-live="polite"></p><button class="platform-primary" type="submit">${buttons[mode]}</button>
-      </form><div class="auth-links">${mode === 'login' ? '<button data-auth="forgot">Wachtwoord vergeten?</button><button data-auth="signup">Account aanmaken</button>' : '<button data-auth="login">Terug naar inloggen</button>'}</div>
-      <small class="auth-footer">Je team en instellingen worden veilig in je account bewaard.</small>
-    </section></main>`)
+        ${mode !== 'reset' ? '<label for="auth-email">E-mailadres</label><input id="auth-email" name="email" type="email" autocomplete="email" required maxlength="254" placeholder="jouw@email.nl">' : ''}
+        ${mode !== 'forgot' ? `<label for="auth-password">Wachtwoord</label><div class="fvt-password"><input id="auth-password" name="password" type="password" autocomplete="${mode === 'login' ? 'current-password' : 'new-password'}" minlength="${mode === 'login' ? 1 : 12}" maxlength="128" placeholder="Je wachtwoord" required><button class="fvt-password-toggle" type="button" aria-controls="auth-password" aria-pressed="false" aria-label="Wachtwoord tonen">Toon</button></div>` : ''}
+        ${mode === 'reset' || mode === 'signup' ? '<label for="auth-confirmation">Herhaal wachtwoord</label><input id="auth-confirmation" name="confirmation" type="password" autocomplete="new-password" minlength="12" maxlength="128" required>' : ''}
+        <p id="auth-message" role="status" aria-live="polite"></p><button class="platform-primary" type="submit">${buttons[mode]} ${icon('arrow')}</button>
+      </form><div class="auth-links">${mode === 'login' ? '<button data-auth="forgot" type="button">Wachtwoord vergeten?</button><button data-auth="signup" type="button">Nog geen account? Account aanmaken</button>' : '<button data-auth="login" type="button">Terug naar inloggen</button>'}</div>
+      <p class="fvt-account-note">${icon('lock')} Je selectie, instellingen en analyses blijven veilig bewaard.</p>`)
+  const toggle = document.querySelector('.fvt-password-toggle')
+  if (toggle) toggle.onclick = () => {
+    const input = document.querySelector('#auth-password'); const visible = input.type === 'password'
+    input.type = visible ? 'text' : 'password'; toggle.textContent = visible ? 'Verberg' : 'Toon'
+    toggle.setAttribute('aria-pressed', String(visible)); toggle.setAttribute('aria-label', visible ? 'Wachtwoord verbergen' : 'Wachtwoord tonen')
+  }
   message(notice)
   document.querySelectorAll('[data-auth]').forEach(button => button.onclick = () => renderAuth(button.dataset.auth))
   document.querySelector('#auth-form').onsubmit = async event => {
@@ -48,7 +47,7 @@ export function renderAuth(mode = 'login', notice = '') {
       if (authMode === 'reset') result = await supabase.auth.updateUser({ password: values.password })
       if (result.error) throw result.error
       if (authMode === 'signup' || authMode === 'forgot') message('Controleer je e-mail. Als je aanvraag kan worden verwerkt, ontvang je een link. Kijk ook in je spammap.')
-      else if (authMode === 'reset') { recovery = false; location.replace(appUrl()) }
+      else if (authMode === 'reset') { recovery = false; location.replace(appUrl('studio')) }
       else location.replace(new URL(requestedPath, location.origin).href)
     } catch (error) { message(friendlyError(error)) }
     finally { button.disabled = false }
@@ -81,6 +80,6 @@ export async function requireSession() {
   if (error) { renderAuth('login', friendlyError(error)); return null }
   if (recovery && data.session) { renderAuth('reset'); return null }
   if (!data.session) { renderAuth('login', location.pathname.includes('/auth/') ? 'De link is verlopen of is geopend in een andere browser. Vraag hier een nieuwe link aan.' : ''); return null }
-  if (location.pathname.includes('/auth/')) history.replaceState(null, '', appUrl())
+  if (location.pathname.includes('/auth/')) history.replaceState(null, '', appUrl('studio'))
   return data.session
 }

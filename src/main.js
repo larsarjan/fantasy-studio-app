@@ -13,6 +13,7 @@ import './intelligenceQuality.css'
 import './dashboard.css'
 import { createSettingsScreen, mountSettingsScreen } from './platform/settings.js'
 import { basePath } from './platform/client.js'
+import { studioPath, studioScreen } from './platform/routes.js'
 import { TRANSFER_DEADLINE_ENABLED } from './constants/featureFlags.js'
 
 import {
@@ -189,7 +190,7 @@ document.querySelector('#app').innerHTML = safeHtml(`
 <div class="logo">
   <img
     class="logo-image"
-    src="./ui/logo.png"
+    src="${basePath}ui/logo.png"
     alt="Fantasy Voetbal Talk Eredivisie"
   />
 
@@ -303,7 +304,7 @@ async function showScreen(screenName) {
   }
 
   activeScreenName = screenName
-  const route = `${basePath}${screenName === 'dashboard' ? '' : screenName}`
+  const route = studioPath(screenName, basePath)
   if (location.pathname !== route) history.pushState({ screenName }, '', route)
   document.body.classList.toggle('tdl-workspace-active', screenName === 'transfersLive')
 
@@ -367,9 +368,9 @@ syncButton.addEventListener('click', async () => {
 })
 
 refreshSyncStatus()
-await showScreen(location.pathname.slice(basePath.length).replace(/\/$/, '') || 'dashboard')
+await showScreen(studioScreen(location.pathname, basePath))
 window.addEventListener('popstate', () => {
-  showScreen(location.pathname.slice(basePath.length).replace(/\/$/, '') || 'dashboard').catch(() => showNotice('De pagina kon niet worden geopend.', 'error'))
+  showScreen(studioScreen(location.pathname, basePath)).catch(() => showNotice('De pagina kon niet worden geopend.', 'error'))
 })
 
 window.addEventListener('keydown', (event) => {
