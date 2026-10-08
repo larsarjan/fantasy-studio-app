@@ -7,7 +7,7 @@ const accounts=JSON.parse(readFileSync('test-results/staging-accounts.json','utf
 const ok=(r,label)=>{assert.equal(r.error,null,`${label}: ${r.error?.message}`);checks.push(label);return r.data}
 for(const role of ['a','b','editor']){const account=accounts.find(a=>a.role===role);const client=createClient(env.VITE_SUPABASE_URL,env.VITE_SUPABASE_PUBLISHABLE_KEY,{auth:{persistSession:false,autoRefreshToken:false}});ok(await client.auth.signInWithPassword({email:account.email,password:account.password}),role+' login');clients[role]=client}
 const anon=createClient(env.VITE_SUPABASE_URL,env.VITE_SUPABASE_PUBLISHABLE_KEY,{auth:{persistSession:false,autoRefreshToken:false}})
-const cat=ok(await anon.from('forum_categories').select('*').order('position'),'Public forum categories');assert.equal(cat.length,7);assert.equal(cat[5].name,'FVT-video’s')
+const cat=ok(await anon.from('forum_categories').select('*').order('position'),'Public forum categories');assert.equal(cat.length,7);assert.equal(cat[5].name,'FVT-video’s & content')
 const topic=ok(await clients.a.from('forum_topics').insert({category_id:cat[0].id,title:'[Acceptatietest] FVT beveiliging',body:'Tijdelijk controlebericht. Geen echte discussie; wordt na acceptatie verwijderd.'}).select().single(),'Create own topic')
 try{
  assert.equal(ok(await clients.b.from('forum_topics').update({title:'Forbidden'}).eq('id',topic.id).select(),'Cross-user topic update').length,0)
