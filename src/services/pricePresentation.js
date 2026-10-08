@@ -1,15 +1,19 @@
 // Small, pure presentation helpers. Never import the backend model here.
+import {thresholdSignal} from './priceThresholdQuality.js'
 export const PRICE_VIEWS=[['rise','↑ Stijgers'],['fall','↓ Dalers'],['all','Alle spelers'],['likely','Waarschijnlijk vannacht'],['near','Bijna op grens']]
-export const PRICE_SORTS=[['pressure','Hoogste prijsdruk'],['near','Dichtst bij geschatte grens'],['chance','Hoogste modelkans'],['confidence','Hoogste confidence'],['remaining','Minste nog nodig'],['buy','Grootste koopdruk'],['sell','Grootste verkoopdruk'],['price','Hoogste prijs'],['name','Naam']]
+export const PRICE_SORTS=[['pressure','Sterkste onderbouwde druk'],['near','Dichtst bij geschatte grens'],['chance','Hoogste modelkans'],['confidence','Hoogste confidence'],['remaining','Minste nog nodig'],['buy','Grootste koopdruk'],['sell','Grootste verkoopdruk'],['price','Hoogste prijs'],['name','Naam']]
 export const pressureDirection=p=>['rise','fall'].includes(p.pressure_direction)?p.pressure_direction:'stable'
 export const directionalChance=p=>pressureDirection(p)==='stable'?(p.rise_probability==null&&p.fall_probability==null?null:Math.max(p.rise_probability??0,p.fall_probability??0)):p[`${pressureDirection(p)}_probability`]??null
-export const nearThreshold=p=>pressureDirection(p)!=='stable'&&p.price_pressure_percentage!=null&&p.price_pressure_percentage>=80
+export const nearThreshold=p=>thresholdSignal(p).near
+export const materialPressure=p=>thresholdSignal(p).material
 export const likelyTonight=p=>pressureDirection(p)!=='stable'&&directionalChance(p)>=80&&p.confidence_score>=50
 export function pressureStatus(p){
- const direction=pressureDirection(p),pressure=p.price_pressure_percentage
+ const direction=pressureDirection(p),signal=thresholdSignal(p),pressure=signal.validated_pressure_percentage
  if(direction==='stable')return p.direction==='unknown'?'Onvoldoende data':'Stabiel'
  const word=direction==='rise'?'stijgingsdruk':'dalingsdruk'
- if(pressure==null)return `${direction==='rise'?'Stijgingsdruk':'Dalingsdruk'} · drempel onbekend`
+ if(signal.threshold_quality!=='valid')return signal.threshold_quality==='unavailable'?'Onvoldoende betrouwbare drempel':`Mogelijke ${word} · drempel onzeker`
+ if(!signal.significant)return 'Beperkte absolute druk'
+ if(signal.range_overlaps)return `Mogelijke ${word} · grens onzeker`
  if(pressure<=0)return 'Geen meetbare drempeldruk'
  if(pressure>=120)return `Zeer sterke ${word}`
  if(pressure>=100)return `Sterke ${word}`
@@ -22,10 +26,13 @@ export function presentedExpectedPrice(p){
  return next!=null&&(dir==='rise'&&next>current||dir==='fall'&&next<current)?next:null
 }
 export function filterPrices(rows,{search='',view='all',sort='pressure',gameweek='all'}={}){
- const q=search.toLocaleLowerCase('nl'),distance=p=>p.price_pressure_percentage==null?Infinity:Math.abs(p.price_pressure_percentage-100)
+ const q=search.toLocaleLowerCase('nl'),signals=new Map(rows.map(p=>[p,thresholdSignal(p)])),qualityRank={valid:3,weak:2,unreliable:1,unavailable:0}
+ const distance=p=>signals.get(p).validated_pressure_percentage==null?Infinity:Math.abs(signals.get(p).validated_pressure_percentage-100)
  const descending=(a,b)=> (b??-Infinity)-(a??-Infinity),ascending=(a,b)=>(a??Infinity)-(b??Infinity)
  return rows.filter(p=>(!q||`${p.name} ${p.club}`.toLocaleLowerCase('nl').includes(q))&&(gameweek==='all'||p.gameweek===Number(gameweek))&&(view==='all'||view==='rise'&&pressureDirection(p)==='rise'||view==='fall'&&pressureDirection(p)==='fall'||view==='likely'&&likelyTonight(p)||view==='near'&&nearThreshold(p))).sort((a,b)=>{
-  const order=sort==='name'?0:sort==='price'?descending(a.current_price,b.current_price):sort==='near'?distance(a)-distance(b):sort==='chance'?descending(directionalChance(a),directionalChance(b)):sort==='confidence'?descending(a.confidence_score,b.confidence_score):sort==='remaining'?ascending(a.estimated_remaining_net_transfers,b.estimated_remaining_net_transfers):sort==='buy'?descending(a.net_transfers_since_reset,b.net_transfers_since_reset):sort==='sell'?ascending(a.net_transfers_since_reset,b.net_transfers_since_reset):descending(a.price_pressure_percentage,b.price_pressure_percentage)
+  const sa=signals.get(a),sb=signals.get(b)
+  const qualityOrder=qualityRank[sb.threshold_quality]-qualityRank[sa.threshold_quality]
+  const order=sort==='name'?0:sort==='price'?descending(a.current_price,b.current_price):sort==='near'?qualityOrder||distance(a)-distance(b):sort==='chance'?descending(directionalChance(a),directionalChance(b)):sort==='confidence'?descending(a.confidence_score,b.confidence_score):sort==='remaining'?qualityOrder||ascending(sa.validated_pressure_percentage==null?null:a.estimated_remaining_net_transfers,sb.validated_pressure_percentage==null?null:b.estimated_remaining_net_transfers):sort==='buy'?descending(a.net_transfers_since_reset,b.net_transfers_since_reset):sort==='sell'?ascending(a.net_transfers_since_reset,b.net_transfers_since_reset):qualityOrder||sb.signal_strength-sa.signal_strength||Math.abs(b.net_transfers_since_reset??0)-Math.abs(a.net_transfers_since_reset??0)
   return order||a.name.localeCompare(b.name,'nl')
  })
 }

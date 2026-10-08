@@ -97,3 +97,5 @@ Alleen de presentatie is aangepast; modelberekeningen, kanskalibratie, backtest,
 - Desktop houdt tabel links en detail rechts; tablet plaatst detail eronder. Op mobiel wordt dezelfde tabel een compacte kaartlijst met richting, druk en resterende transfers zichtbaar. Selectie scrollt naar het onderliggende detail. Tabellen/lijsten hebben begrensde scrollhoogte.
 
 Validatie van deze UX-pass: 73 regressietests, 104 platform-/HTML-securitychecks en 68 gerichte browserchecks. De browserchecks gebruiken echte productiecache en controleren alle vijf views en richtingen op 1920, 1366, 820 en 390 pixels. Synthetische randgevallen (hoge druk/lage kans, hoge kans/lage confidence, neutraal, onbekend en tegengestelde verwachte prijs) bestaan uitsluitend in geïsoleerde rendertests. Geen testdata wordt naar productie geschreven.
+
+De daaropvolgende kwaliteitscontrole kwalificeert alle hierboven genoemde druklabels, KPI-tellingen en filters. De actuele voorwaarden en de onderzochte productievoorbeelden staan in [PRICE-THRESHOLD-QUALITY.md](PRICE-THRESHOLD-QUALITY.md). Ongekwalificeerde percentages worden niet meer als drempelsignaal gepresenteerd.

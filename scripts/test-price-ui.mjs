@@ -27,6 +27,7 @@ for(const tab of ['rise','fall','all','likely','near']){
  }
  if(tab==='near'){
   ok(ev('Array.from(document.querySelectorAll(".pp-pressure-cell strong"),n=>parseFloat(n.textContent.replace(/[^0-9,]/g,"").replace(",","."))).every(n=>n>=80)'),'Near threshold remains available without high probability')
+  ok(ev('Array.from(document.querySelectorAll(".pp-table tr[data-pp-direction]")).every(n=>n.classList.contains("pp-quality-valid"))'),'Near threshold excludes weak and unreliable thresholds')
  }
 }
 ok(ev('Array.from(document.querySelectorAll(".pp-table .pp-chance-cell")).filter(n=>n.querySelector(".pp-low")).every(n=>!n.querySelector(".pp-bar"))'),'Low probabilities have no repeated progress bars')
@@ -43,6 +44,7 @@ for(const [w,h]of [[1920,1080],[1366,900],[820,1180],[390,844]]){
   click(`[data-pp-tab="${tab}"]`);ok(!ev('document.documentElement.scrollWidth>innerWidth+1'),`Responsive ${tab} without viewport overflow ${w}`)
   if(['rise','fall'].includes(tab)){click('.pp-table [data-pp-player]');ok(ev('document.querySelector(".pp-detail").dataset.ppDirection')===tab,`Selected ${tab} detail ${w}`)}
  }
+ click('[data-pp-tab="all"]');click('.pp-table [data-pp-player]')
  run('eval','document.querySelector("#price-prediction").scrollIntoView({block:"start"})');run('screenshot',`test-results/prices-${w}.png`)
  run('eval','document.querySelector(".pp-table").scrollIntoView({block:"start"})');run('screenshot',`test-results/prices-list-${w}.png`)
  if(w===390)ok(ev('getComputedStyle(document.querySelector(".pp-table tr")).display')==='grid','Mobile list keeps pressure and remaining in visible cards')
