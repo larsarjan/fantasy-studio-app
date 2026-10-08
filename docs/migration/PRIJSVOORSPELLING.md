@@ -80,3 +80,20 @@ npm run build
 Gebruik een geautoriseerd adminaccount via `PRICE_ADMIN_EMAIL` / `PRICE_ADMIN_PASSWORD`; de bestaande lokale acceptatieaccountconfig is een genegeerde fallback. Import- en activatiescripts loggen geen credentials. Kopieer nooit `.env`, accountbestanden of de historische cache naar GitHub.
 
 Externe platformdocumentatie bij bestaande meldingen: [pg_net in public](https://supabase.com/docs/guides/database/database-linter?lint=0014_extension_in_public), [gelekte-wachtwoordcontrole](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection). Deze punten blokkeren de prijsfunctie niet.
+
+## UX-pass: druk eerst (8 oktober 2026)
+
+Alleen de presentatie is aangepast; modelberekeningen, kanskalibratie, backtest, collector, cache en database blijven ongewijzigd. De browser gebruikt dezelfde API-verzoeken en krijgt geen ruwe snapshots.
+
+- Richting komt overal uit `pressure_direction`: lijst, status, near-kaart en detail. De secundaire modelkans betreft dezelfde richting. Zonder drukrichting blijft de hoogste beschikbare modelkans zichtbaar; beide kansen staan in de uitklapbare uitleg.
+- Druklabels: 0% geen meetbare drempeldruk; >0–<40% lichte druk; 40–<80% matige druk; 80–<100% dicht bij stijging/daling; 100–<120% sterke druk; vanaf 120% zeer sterke druk. Ontbrekende drempeldata wordt expliciet benoemd. Dit zijn UI-labels voor geschatte historische drempels, geen nieuwe voorspellingen of officiële ESPN-grenzen.
+- Stijgers zijn groen/cyaan, dalers rood/magenta, neutrale spelers blauw/grijs. Vanaf 100% krijgen rijen en details een sterkere tint, volle balk en grensmelding. De primaire metrics zijn prijsdruk en geschat nog nodig.
+- Bijna op grens omvat alle gerichte druk vanaf 80%, ook boven 120% en bij lage kans. De kaarten staan boven de tabel. De sortering op nabijheid gebruikt de absolute afstand tot 100%.
+- Waarschijnlijk vannacht vereist minstens 80% kans in de drukrichting en minstens 50/100 confidence. De lege staat verwijst naar de bruikbare drempelsignalen. De bestaande serverstatus bepaalt deze UI-filter niet meer: daardoor worden zeer waarschijnlijke spelers niet per ongeluk uitgesloten.
+- Stijgers/dalers openen op hoogste prijsdruk. Beschikbare sorteringen: prijsdruk, afstand tot grens, modelkans, confidence, resterende netto transfers, netto koopdruk, netto verkoopdruk, prijs en naam. Ontbrekende waarden staan onderaan.
+- Onder 10% krijgt modelkans geen balk; 10–<40% een kleine, 40–<70% een gewone en vanaf 70% een sterkere secundaire balk. Het percentage zelf wordt niet gewijzigd. Confidence blijft afzonderlijk als score/100 en label zichtbaar, met toetsenbord- en touchbereikbare uitleg.
+- Geschat nog nodig gebruikt de bestaande waarde/range. Een range wordt getoond bij spreiding groter dan 10 transfers of 20% van de schatting, met de tekst Brede onzekerheidsmarge. Een onveranderde of tegengestelde verwachte prijs wordt niet als directionele forecast gepresenteerd; daarvoor staat Nog geen prijswijziging voorspeld.
+- Modelvalidatie krijgt een korte hoofdtekst; exacte backtestcijfers en uitgebreide prestaties blijven uitklapbaar. Historische wijzigingen houden hun echte vooraf opgeslagen voorspelling, confidence en resultaat.
+- Desktop houdt tabel links en detail rechts; tablet plaatst detail eronder. Op mobiel wordt dezelfde tabel een compacte kaartlijst met richting, druk en resterende transfers zichtbaar. Selectie scrollt naar het onderliggende detail. Tabellen/lijsten hebben begrensde scrollhoogte.
+
+Validatie van deze UX-pass: 73 regressietests, 104 platform-/HTML-securitychecks en 68 gerichte browserchecks. De browserchecks gebruiken echte productiecache en controleren alle vijf views en richtingen op 1920, 1366, 820 en 390 pixels. Synthetische randgevallen (hoge druk/lage kans, hoge kans/lage confidence, neutraal, onbekend en tegengestelde verwachte prijs) bestaan uitsluitend in geïsoleerde rendertests. Geen testdata wordt naar productie geschreven.

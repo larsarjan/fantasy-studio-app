@@ -18,11 +18,34 @@ run('wait','[data-pp-player]');run('wait','--fn','!document.querySelector(".pp-h
 ok(ev('document.querySelectorAll(".pp-table [data-pp-player]").length')>500,'Real ESPN player cache renders')
 ok(ev('document.querySelector(".pp-fresh").textContent').includes('ESPN'),'Source/predictor/snapshot freshness shown')
 ok(!ev('performance.getEntriesByType("resource").some(r=>/price_snapshots|price_model_calibration|price-archive/.test(r.name))'),'Browser never downloads raw snapshots or model state')
-for(const tab of ['rise','fall','all','likely','near']){click(`[data-pp-tab="${tab}"]`);ok(ev(`document.querySelector('[data-pp-tab="${tab}"]').getAttribute('aria-pressed')`)==='true',`Prediction filter ${tab}`)}
+for(const tab of ['rise','fall','all','likely','near']){
+ click(`[data-pp-tab="${tab}"]`);ok(ev(`document.querySelector('[data-pp-tab="${tab}"]').getAttribute('aria-pressed')`)==='true',`Prediction filter ${tab}`)
+ if(['rise','fall'].includes(tab)){
+  ok(ev(`Array.from(document.querySelectorAll('.pp-table tr[data-pp-direction]')).every(r=>r.dataset.ppDirection==='${tab}')`),`${tab} table uses only matching pressure direction`)
+  ok(ev('document.querySelector(".pp-detail").dataset.ppDirection')===tab,`${tab} detail direction matches active tab`)
+  ok(ev('document.querySelector("[data-pp-sort]").value')==='pressure',`${tab} defaults to pressure sort`)
+ }
+ if(tab==='near'){
+  ok(ev('Array.from(document.querySelectorAll(".pp-pressure-cell strong"),n=>parseFloat(n.textContent.replace(/[^0-9,]/g,"").replace(",","."))).every(n=>n>=80)'),'Near threshold remains available without high probability')
+ }
+}
+ok(ev('Array.from(document.querySelectorAll(".pp-table .pp-chance-cell")).filter(n=>n.querySelector(".pp-low")).every(n=>!n.querySelector(".pp-bar"))'),'Low probabilities have no repeated progress bars')
+for(const sort of ['pressure','near','chance','confidence','remaining','buy','sell']){run('select','[data-pp-sort]',sort);ok(ev('document.querySelector("[data-pp-sort]").value')===sort,`Sort available: ${sort}`)}
+for(const text of ['niet hetzelfde als de kans','geen gegarandeerde ESPN-grens','geen officiële ESPN-drempel'])ok(ev(`Array.from(document.querySelectorAll('.pp-info')).some(n=>n.getAttribute('aria-label').includes(${JSON.stringify(text)}))`),`Accessible explanation: ${text}`)
 click('[data-pp-tab="all"]');run('fill','[data-pp-search]','Dest');ok(ev('document.querySelectorAll(".pp-table [data-pp-player]").length')===1,'Search filters real player');click('.pp-table [data-pp-player]');ok(ev('document.querySelector(".pp-detail h3").textContent')==='Dest','Player detail selection')
 ok(ev('document.querySelector(".pp-detail").textContent').includes('Ownership referentie'),'Model explanation exposes measurable inputs')
 ok(ev('document.querySelector(".pp-detail").textContent').includes('/100'),'Numeric confidence shown independently');ok(ev('document.querySelector(".pp-detail").textContent').includes('Vergelijkbaar profiel'),'Comparable history shown separately')
 run('fill','[data-pp-search]','');run('select','[data-pp-sort]','name');const names=ev('Array.from(document.querySelectorAll(".pp-table [data-pp-player]"),e=>e.textContent)');assert.deepEqual(names,[...names].sort((a,b)=>a.localeCompare(b,'nl')));ok(true,'Name sort')
 for(const period of ['season','previous','current','24h']){run('select','[data-pp-period]',period);run('wait','--fn','!document.querySelector(".pp-history").textContent.includes("Historie laden")');ok(ev('document.querySelector("[data-pp-period]").value')===period,`History period ${period}`);if(period==='season'){run('wait','--fn','document.querySelectorAll(".pp-history > .pp-scroll tbody tr").length>1');ok(ev('document.querySelectorAll(".pp-history > .pp-scroll tbody tr").length')===25,'History paginates actual price changes');ok(ev('document.querySelector(".pp-history").textContent').includes('Walk-forward'),'Historical reconstructions distinguished from live predictions');click('[data-pp-next]');run('wait','--fn','document.querySelector(".pp-pagination span").textContent==="Pagina 2"');ok(true,'History next page')}}
-for(const [w,h]of [[1920,1080],[1366,900],[820,1180],[390,844]]){run('set','viewport',String(w),String(h));ok(!ev('document.documentElement.scrollWidth>innerWidth+1'),`Responsive without viewport overflow ${w}`);run('eval','document.querySelector("#price-prediction").scrollIntoView({block:"start"})');run('screenshot',`test-results/prices-${w}.png`)}
+for(const [w,h]of [[1920,1080],[1366,900],[820,1180],[390,844]]){
+ run('set','viewport',String(w),String(h))
+ for(const tab of ['rise','fall','all','likely','near']){
+  click(`[data-pp-tab="${tab}"]`);ok(!ev('document.documentElement.scrollWidth>innerWidth+1'),`Responsive ${tab} without viewport overflow ${w}`)
+  if(['rise','fall'].includes(tab)){click('.pp-table [data-pp-player]');ok(ev('document.querySelector(".pp-detail").dataset.ppDirection')===tab,`Selected ${tab} detail ${w}`)}
+ }
+ run('eval','document.querySelector("#price-prediction").scrollIntoView({block:"start"})');run('screenshot',`test-results/prices-${w}.png`)
+ run('eval','document.querySelector(".pp-table").scrollIntoView({block:"start"})');run('screenshot',`test-results/prices-list-${w}.png`)
+ if(w===390)ok(ev('getComputedStyle(document.querySelector(".pp-table tr")).display')==='grid','Mobile list keeps pressure and remaining in visible cards')
+ run('eval','document.querySelector(".pp-detail").scrollIntoView({block:"start"})');run('screenshot',`test-results/prices-detail-${w}.png`)
+}
 run('set','viewport','1366','900');writeFileSync('test-results/price-ui.json',JSON.stringify({origin,checks,timings},null,2));console.log(`${checks.length} UI checks passed`)
