@@ -79,6 +79,7 @@ await initializeDatabase()
 let activeScreenName = 'dashboard'
 let previousStandardScreenName = 'dashboard'
 let transferDeadlineModule = null
+let pricePredictionModule = null
 
 async function loadTransferDeadlineModule() {
   if (!TRANSFER_DEADLINE_ENABLED) return null
@@ -101,6 +102,7 @@ function createComingSoon(title, description) {
 
 function getScreens() {
   return {
+    ...(pricePredictionModule ? {prices: {title: 'Prijsvoorspelling',get content(){return pricePredictionModule.createPricePredictionScreen()},mount:pricePredictionModule.mountPricePredictionScreen}} : {}),
     selection: { title: 'Mijn selectie', get content() { return createSelectionScreen() }, mount: mountSelectionScreen },
     profile: { title: 'Mijn profiel', get content() { return createProfileScreen() }, mount: mountProfileScreen },
     dashboard: {
@@ -228,6 +230,7 @@ document.querySelector('#app').innerHTML = safeHtml(`
         <button class="menu" data-screen="differentials">💎 Differentials</button>
         <button class="menu" data-screen="optimizer">🤖 FVT Manager</button>
         <button class="menu" data-screen="dreamteam">🏆 Dream Team</button>
+        <button class="menu" data-screen="prices">📈 Prijsvoorspelling</button>
         ${TRANSFER_DEADLINE_ENABLED ? '<button class="menu" data-screen="transfersLive">🔴 Transfers Live</button>' : ''}
         <button class="menu" data-screen="input">📝 Invoer</button>
         <button class="menu" data-screen="settings">⚙ Instellingen</button>
@@ -300,6 +303,10 @@ function showNotice(message, type = 'success') {
 }
 
 async function showScreen(screenName) {
+  if (screenName === 'prices' && !pricePredictionModule) {
+    await import('./pricePrediction.css')
+    pricePredictionModule = await import('./modules/pricePrediction.js')
+  }
   if (screenName === 'transfersLive') await loadTransferDeadlineModule()
   const screen = getScreens()[screenName]
 

@@ -1,0 +1,11 @@
+// Small, pure presentation helpers. Never import the backend model here.
+export const PRICE_VIEWS=[['rise','↑ Stijgers'],['fall','↓ Dalers'],['all','Alle spelers'],['likely','Waarschijnlijk vannacht'],['near','Bijna op grens']]
+export function filterPrices(rows,{search='',view='all',sort='chance',gameweek='all'}={}){
+ const q=search.toLocaleLowerCase('nl');return rows.filter(p=>(!q||`${p.name} ${p.club}`.toLocaleLowerCase('nl').includes(q))&&(gameweek==='all'||p.gameweek===Number(gameweek))&&(view==='all'||view==='rise'&&p.pressure_direction==='rise'||view==='fall'&&p.pressure_direction==='fall'||view==='likely'&&p.status==='likely'||view==='near'&&p.price_pressure_percentage>=80&&p.price_pressure_percentage<=120)).sort((a,b)=>sort==='name'?a.name.localeCompare(b.name,'nl'):sort==='price'?b.current_price-a.current_price:sort==='pressure'?(b.price_pressure_percentage??-1)-(a.price_pressure_percentage??-1):Math.max(b.rise_probability??-1,b.fall_probability??-1)-Math.max(a.rise_probability??-1,a.fall_probability??-1)||a.name.localeCompare(b.name,'nl'))
+}
+export function pricePeriodStart(period,rounds,now=Date.now()){
+ if(period==='24h')return new Date(now-86400000).toISOString()
+ const sorted=rounds.filter(e=>Number.isFinite(Date.parse(e.deadline_time))).sort((a,b)=>Date.parse(a.deadline_time)-Date.parse(b.deadline_time)),started=sorted.filter(e=>Date.parse(e.deadline_time)<=now)
+ return period==='season'?sorted[0]?.deadline_time||null:period==='previous'?(started.at(-2)||started[0])?.deadline_time||null:started.at(-1)?.deadline_time||null
+}
+export function summarizePriceChanges(events){const rises=events.filter(e=>e.direction==='rise'),falls=events.filter(e=>e.direction==='fall'),byPlayer=new Map();for(const e of events)byPlayer.set(e.player_id,(byPlayer.get(e.player_id)||0)+1);return {rises:rises.length,falls:falls.length,biggestRise:[...rises].sort((a,b)=>(b.new_price-b.previous_price)-(a.new_price-a.previous_price))[0]||null,biggestFall:[...falls].sort((a,b)=>(a.new_price-a.previous_price)-(b.new_price-b.previous_price))[0]||null,repeatPlayers:[...byPlayer.values()].filter(n=>n>1).length,meanMove:events.length?events.reduce((s,e)=>s+Math.abs(e.new_price-e.previous_price),0)/events.length/10:null}}

@@ -1,7 +1,13 @@
 import assert from 'node:assert/strict'
 import { existsSync, readFileSync } from 'node:fs'
 import { EUROPEAN_COMPETITIONS, applyEuropeanContextGate, buildEuropeanOverlayPlacements, calculateProgrammeDensity, calendarDayDifference, combineEuropeanSchedule, europeanFixtureTimestamp, findEuropeanFixtureContext, findLeagueFixturesAroundEuropeanFixture, formatEuropeanDate, getEuropeanFixturesForClub, normalizeEuropeanFixture, renderEuropeanCompetitionLogo, renderEuropeanCompareBadge, renderEuropeanContextBadges, renderEuropeanFixtureCard, renderEuropeanPlacementOverlay, resolveEuropeanCompetition } from './europeanFixtureContext.js'
-import { calculateEuropeanOverlayPosition, createFixturesScreen, renderEuropeanContextOverlay, renderEuropeanFixtureDetailPanel, resolveEuropeanOverlayLayout } from '../modules/fixtures.js'
+import { createServer } from 'vite'
+// Fixtures now includes browser modules with import.meta.env/glob. Exercise
+// those through the same Vite transforms used by production instead of raw Node.
+const vite = await createServer({server:{middlewareMode:true},appType:'custom'})
+let transformedFixtures
+try { transformedFixtures = await vite.ssrLoadModule('/src/modules/fixtures.js') } finally { await vite.close() }
+const { calculateEuropeanOverlayPosition, createFixturesScreen, renderEuropeanContextOverlay, renderEuropeanFixtureDetailPanel, resolveEuropeanOverlayLayout } = transformedFixtures
 
 assert.equal(resolveEuropeanCompetition('UEFA Champions League').code,'UCL')
 assert.equal(resolveEuropeanCompetition('UEFA Europa League').code,'UEL')

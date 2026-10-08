@@ -43,7 +43,7 @@ export async function syncProminents(db, {get=createEspnClient(), limit=30, budg
     run=result(await db.from('prominent_sync_runs').insert({trigger_type:trigger}).select().single());
     const bootstrap=await get('bootstrap-static/');
     const events=completedEvents(bootstrap); season=seasonOf(bootstrap); event=events.at(-1)?.id ?? 0;
-    result(await db.from('prominent_bootstrap').upsert({season,events:bootstrap.events,players:bootstrap.elements,teams:bootstrap.teams,element_types:bootstrap.element_types,chips:bootstrap.chips,game_settings:bootstrap.game_settings,game_config:bootstrap.game_config || {},fetched_at:new Date().toISOString()},{onConflict:'season'}));
+    result(await db.from('prominent_bootstrap').upsert({season,events:bootstrap.events,players:bootstrap.elements,teams:bootstrap.teams,element_types:bootstrap.element_types,chips:bootstrap.chips,game_settings:{...bootstrap.game_settings,_price_total_players:bootstrap.total_players},game_config:bootstrap.game_config || {},fetched_at:new Date().toISOString()},{onConflict:'season'}));
     const last = result(await db.from('prominent_sync_runs').select('source_counts,source_warnings,finished_at').not('finished_at','is',null).order('started_at',{ascending:false}).limit(1));
     const existing = result(await db.from('prominents').select('id').limit(1));
     if (!existing.length || !last.length || last[0].source_warnings.length || !last[0].source_counts.synced_at || Date.now()-Date.parse(last[0].source_counts.synced_at)>6*3600000) {

@@ -1,6 +1,13 @@
 # Target: Fantasy Studio only. Never push this config to AFTRAP Control.
 project_id = "rzunbquzffdivlpuomjc"
 
+# Both functions enforce validated Supabase admin auth or the Vault scheduler
+# token in their bodies; the gateway JWT check would reject scheduler requests.
+[functions.price-sync]
+verify_jwt = false
+[functions.prominent-sync]
+verify_jwt = false
+
 [auth]
 enabled = true
 site_url = "https://fantasy-studio-app.vercel.app"

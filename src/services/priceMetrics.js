@@ -1,0 +1,7 @@
+export function priceMetrics(rows){
+ const sum=k=>rows.reduce((s,e)=>s+(e[k]||0),0),ratio=(a,b)=>b?Math.round(10000*a/b)/100:null,mean=(prefix)=>sum(`${prefix}_n`)?Math.round(sum(`${prefix}_sum`)/sum(`${prefix}_n`)*100)/100:null
+ const actual=sum('actual'),correct=sum('correct'),fp=sum('false_positives'),fn=sum('false_negatives'),calibration={}
+ for(const e of rows)for(const[k,b]of Object.entries(e.buckets||{})){const v=calibration[k]??={n:0,actual:0,predicted_sum:0};v.n+=b.n;v.actual+=b.actual;v.predicted_sum+=b.predicted_sum}
+ let total=0,error=0;for(const b of Object.values(calibration)){b.observed_rate=ratio(b.actual,b.n);b.mean_prediction=b.n?Math.round(b.predicted_sum/b.n*100)/100:null;b.overconfidence=b.n?Math.round((b.mean_prediction-b.observed_rate)*100)/100:null;total+=b.n;error+=b.n*Math.abs(b.overconfidence||0)}
+ return {windows:rows.length,actual,rises:sum('rises'),falls:sum('falls'),correct,false_positives:fp,false_negatives:fn,unknown:sum('unknown'),precision:ratio(correct,correct+fp),recall:ratio(correct,actual),hitrate:ratio(correct,actual),rise_hitrate:ratio(sum('correct_rises'),sum('rises')),fall_hitrate:ratio(sum('correct_falls'),sum('falls')),mean_threshold_error:{rise_net_transfers:mean('rise_threshold_error'),fall_ownership_fraction:mean('fall_threshold_error')},mean_remaining_error:mean('remaining_error'),mean_confidence_correct:mean('correct_confidence'),mean_confidence_incorrect:mean('incorrect_confidence'),timing_error:null,calibration,calibration_error:total?Math.round(error/total*100)/100:null}
+}
