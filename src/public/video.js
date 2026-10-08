@@ -36,7 +36,7 @@ const decode = (value) =>
       : parseInt(entity.slice(2, -1), 10);
     return n > 0 && n <= 0x10ffff ? String.fromCodePoint(n) : "";
   });
-export function parseVideoFeed(xml) {
+export function parseVideoLibrary(xml) {
   if (
     typeof xml !== "string" ||
     xml.length > 1000000 ||
@@ -45,7 +45,8 @@ export function parseVideoFeed(xml) {
     throw new Error("Invalid feed");
   if (!xml.includes(`<yt:channelId>${channelId}</yt:channelId>`))
     throw new Error("Unexpected channel");
-  const entry = xml.match(/<entry>([\s\S]*?)<\/entry>/)?.[1];
+  const videos = [...xml.matchAll(/<entry>([\s\S]*?)<\/entry>/g)].map(match => {
+  const entry = match[1];
   const field = (tag) =>
     decode(
       entry
@@ -60,7 +61,11 @@ export function parseVideoFeed(xml) {
   };
   if (!validVideo(video)) throw new Error("Invalid video");
   return video;
+  });
+  if (!videos.length) throw new Error('Empty feed');
+  return videos.sort((a,b) => Date.parse(b.published)-Date.parse(a.published));
 }
+export const parseVideoFeed = xml => parseVideoLibrary(xml)[0];
 export async function latestVideo(fetcher = fetch) {
   try {
     const response = await fetcher(
@@ -81,8 +86,9 @@ export async function latestVideo(fetcher = fetch) {
       }
     }
     xml += decoder.decode();
-    return { video: parseVideoFeed(xml), source: "youtube" };
+    const videos = parseVideoLibrary(xml);
+    return { video: videos[0], videos, source: "youtube" };
   } catch {
-    return { video: fallbackVideo, source: "fallback" };
+    return { video: fallbackVideo, videos: [fallbackVideo], source: "fallback" };
   }
 }

@@ -1,6 +1,8 @@
 ﻿export const publicRoutes = new Set([
   "",
   "videos",
+  "studio",
+  "nieuws",
   "community",
   "about",
   "privacy",
@@ -9,7 +11,8 @@
   "prominenten",
 ]);
 export const isProminentRoute = route => /^(ranglijsten|prominenten)(?:\/\d+)?$/.test(route);
-export const isPublicRoute = route => publicRoutes.has(route) || isProminentRoute(route);
+export const isContentRoute = route => /^(community|nieuws)(?:\/[a-z0-9-]+)?$/.test(route) || route === 'videos';
+export const isPublicRoute = route => publicRoutes.has(route) || isProminentRoute(route) || isContentRoute(route);
 export function relativeRoute(pathname, base = "/") {
   return pathname.startsWith(base)
     ? pathname.slice(base.length).replace(/^\/+|\/+$/g, "")
@@ -21,7 +24,7 @@ export function studioScreen(pathname, base = "/") {
   );
 }
 export function studioPath(screen = "dashboard", base = "/") {
-  return `${base}studio${screen === "dashboard" ? "" : `/${screen}`}`;
+  return `${base}studio/${screen}`;
 }
 export function loginDestination(pathname, base = "/") {
   const route = relativeRoute(pathname, base);

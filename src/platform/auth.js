@@ -47,7 +47,7 @@ export function renderAuth(mode = 'login', notice = '') {
       if (authMode === 'reset') result = await supabase.auth.updateUser({ password: values.password })
       if (result.error) throw result.error
       if (authMode === 'signup' || authMode === 'forgot') message('Controleer je e-mail. Als je aanvraag kan worden verwerkt, ontvang je een link. Kijk ook in je spammap.')
-      else if (authMode === 'reset') { recovery = false; location.replace(appUrl('studio')) }
+      else if (authMode === 'reset') { recovery = false; location.replace(appUrl('studio/dashboard')) }
       else location.replace(new URL(requestedPath, location.origin).href)
     } catch (error) { message(friendlyError(error)) }
     finally { button.disabled = false }
@@ -80,6 +80,6 @@ export async function requireSession() {
   if (error) { renderAuth('login', friendlyError(error)); return null }
   if (recovery && data.session) { renderAuth('reset'); return null }
   if (!data.session) { renderAuth('login', location.pathname.includes('/auth/') ? 'De link is verlopen of is geopend in een andere browser. Vraag hier een nieuwe link aan.' : ''); return null }
-  if (location.pathname.includes('/auth/')) history.replaceState(null, '', appUrl('studio'))
+  if (location.pathname.includes('/auth/')) history.replaceState(null, '', appUrl('studio/dashboard'))
   return data.session
 }

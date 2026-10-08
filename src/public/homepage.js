@@ -1,5 +1,5 @@
 ﻿import { safeHtml } from "../platform/html.js";
-import { appUrl } from "../platform/client.js";
+import { appUrl, supabase } from "../platform/client.js";
 import { relativeRoute } from "../platform/routes.js";
 import {
   channelUrl,
@@ -8,6 +8,9 @@ import {
   validVideo,
 } from "./video.js";
 import "./homepage.css";
+import "./content.css";
+import { navigationMarkup } from "./navigation.js";
+import { mountHomeNews } from "./news.js";
 const escape = (value) =>
   String(value ?? "").replace(
     /[&<>"']/g,
@@ -101,19 +104,7 @@ export function renderPublic(accountMarkup, { displayName = "", mainMarkup = nul
       "fixtures",
     ],
   ];
-  const nav = [
-    ["", "Home"],
-    ["studio", "Studio"],
-    ["ranglijsten", "Ranglijsten"],
-    ["videos", "Video’s"],
-    ["community", "Community"],
-    ["about", "Over FVT"],
-  ]
-    .map(
-      ([path, label]) =>
-        `<a href="${appUrl(path)}" ${route === path || (path === "ranglijsten" && /^(ranglijsten|prominenten)(\/|$)/.test(route)) || (path === "studio" && route.startsWith("studio/")) ? 'aria-current="page"' : ""}>${label}</a>`,
-    )
-    .join("");
+  const nav = navigationMarkup(route);
   document.title = `${page ? { videos: "Video’s", community: "Community", about: "Over FVT", privacy: "Privacy", contact: "Contact" }[route] : "Fantasy Studio"} | Fantasy Voetbal Talk`;
   document.querySelector("#app").innerHTML =
     safeHtml(`<div class="fvt-public"><a class="fvt-skip" href="#fvt-main">Naar de inhoud</a><div class="fvt-shell"><header class="fvt-header"><a class="fvt-brand" href="${appUrl()}" aria-label="Fantasy Voetbal Talk — Home"><img src="${asset("fvt-logo.png")}" alt="FVT" width="64" height="64"><span>FANTASY VOETBAL TALK<strong>STUDIO</strong></span></a><button class="fvt-menu-toggle" type="button" aria-expanded="false" aria-controls="fvt-nav">Menu ☰</button><nav id="fvt-nav" class="fvt-nav" aria-label="Hoofdnavigatie">${nav}</nav><a class="fvt-header-account" href="#fvt-account">${displayName ? "Mijn Studio" : "Inloggen"} ${icon("arrow")}</a></header>
@@ -132,22 +123,41 @@ export function renderPublic(accountMarkup, { displayName = "", mainMarkup = nul
     const main = document.querySelector('#fvt-main');
     main.className = 'prom-main';
     main.innerHTML = safeHtml(mainMarkup);
-    document.querySelector('.fvt-header-account').href = appUrl('#fvt-account');
+    document.querySelector('.fvt-header-account').href = appUrl('studio#fvt-account');
     if (pageTitle) document.title = `${pageTitle} | Fantasy Voetbal Talk`;
+    const accountLink=document.querySelector('.fvt-header-account');
+    supabase?.auth.getSession().then(({data})=>{if(data.session&&accountLink.isConnected){accountLink.textContent='Mijn profiel →';accountLink.href=appUrl('studio/profile')}}).catch(()=>{});
     return;
   }
   if (!route) {
-    const teaser=document.createElement('section');
-    teaser.className='prom-home';
-    teaser.innerHTML=safeHtml(`<span class="fvt-eyebrow">VOLG DE KENNERS</span><h2>Prominenten</h2><p>De keuzes en prestaties van creators, ESPN-kenners en onze subleague.</p><div id="prom-home-leaders" role="status">Ranglijst laden…</div><a class="fvt-text-link" href="${appUrl('ranglijsten')}">Bekijk volledige ranglijst ${icon('arrow')}</a>`);
-    document.querySelector('#fvt-main').append(teaser);
-    import('./prominents.js').then(m=>m.mountHomeTeaser(teaser)).catch(()=>{if(teaser.isConnected)teaser.querySelector('#prom-home-leaders').textContent='Bekijk de ranglijst voor de nieuwste stand.';});
+    document.querySelector('.fvt-hero > .fvt-eyebrow').textContent='FANTASY VOETBAL TALK';
+    document.querySelector('.fvt-lead').textContent='Jouw thuisbasis voor Eredivisie-fantasy. Kijk FVT, bespreek je keuzes en ontdek de inzichten voor jouw selectie.';
+    document.querySelector('.fvt-features').remove();
+    document.querySelector('.fvt-preview').outerHTML = safeHtml('<article class="fvt-card"><span class="fvt-eyebrow">JOUW SELECTIE, JOUW INZICHTEN</span><h2>Meer uit je speelronde halen.</h2><p>Bewaar jouw selectie, vergelijk spelers en vind je beste captain. Fantasy Studio verbindt echte wedstrijddata met persoonlijke analyses.</p><a class="fvt-button" href="'+appUrl('studio')+'">Ontdek Fantasy Studio '+icon('arrow')+'</a></article>');
+    const news=document.createElement('section');news.className='fvt-home-news';news.innerHTML=safeHtml('<span class="fvt-eyebrow">VAN DE REDACTIE</span><h2>Het laatste FVT-nieuws</h2><div id="home-news" role="status">Nieuws laden…</div><a class="fvt-text-link" href="'+appUrl('nieuws')+'">Alle nieuwsberichten →</a>');document.querySelector('#fvt-main').append(news);mountHomeNews(news.querySelector('#home-news'));
+    const community=document.createElement('section');community.className='fvt-community-cta';community.innerHTML=safeHtml('<div><span class="fvt-eyebrow">SAMEN FANTASY</span><h2>Twijfel over je captain of transfer?</h2><p>Leg je dilemma voor aan andere FVT-managers.</p></div><a class="fvt-button" href="'+appUrl('community')+'">Naar het forum →</a>');document.querySelector('#fvt-main').append(community);
+  } else if (route==='studio') {
+    document.title='Fantasy Studio | Fantasy Voetbal Talk';
+    document.querySelector('.fvt-hero h1').innerHTML=safeHtml('JOUW SELECTIE.<br>ECHTE DATA.<br><em>PERSOONLIJK ADVIES.</em>');
+    document.querySelector('.fvt-lead').textContent='Van je eerste selectie tot je volgende transfer: één werkplek voor onderbouwde fantasykeuzes.';
+    document.querySelector('.fvt-showcase #fvt-video').remove();
+    document.querySelector('.fvt-showcase').style.gridTemplateColumns='1fr';
+    document.querySelector('.fvt-preview').href=appUrl('studio/dashboard');
+    const section=document.createElement('section');section.className='fvt-studio-benefits';section.innerHTML=safeHtml('<div class="fvt-grid">'+[
+      ['Mijn selectie','Beheer 15 spelers, je basiself, bank, captain en vice-captain. Wijzigingen worden automatisch bij jouw account bewaard.','selection'],
+      ['Captain Radar','Vind jouw beste captain uit je eigen selectie, met alternatieven en aandacht voor speelminuten.','captain'],
+      ['FVT Manager','Onderzoek selecties en transferkeuzes met de optimizer, jouw budget en de spelregels.','optimizer'],
+      ['Historische data','Bekijk echte wedstrijd-details, gespeelde minuten en fantasy-punten. Ontbrekende data blijft herkenbaar.','history'],
+      ['Persoonlijke analyses','Koop- en verkoopadvies houdt rekening met je selectie, komende rondes, transferkosten en bewaarde plannen.','analysis']
+    ].map(([title,body,path])=>'<a class="fvt-card" href="'+appUrl('studio/'+path)+'"><h2>'+title+'</h2><p>'+body+'</p><span class="fvt-text-link">Open module →</span></a>').join('')+'</div>');document.querySelector('#fvt-main').append(section);
+  } else if (page) {
+    document.querySelector('.fvt-features').remove();document.querySelector('.fvt-showcase').remove();
   }
   const videoElement = document.querySelector("#fvt-video");
   fetch(appUrl("api/latest-video"), { signal: videoController.signal })
     .then((r) => (r.ok ? r.json() : null))
     .then((data) => {
-      if (data && validVideo(data.video) && videoElement.isConnected)
+      if (data && validVideo(data.video) && videoElement?.isConnected)
         videoElement.innerHTML = safeHtml(
           videoMarkup(
             data.video,
@@ -160,7 +170,7 @@ export function renderPublic(accountMarkup, { displayName = "", mainMarkup = nul
 export function renderWelcome(displayName) {
   const name = displayName?.trim() || "fantasymanager";
   renderPublic(
-    `<span class="fvt-eyebrow">FANTASY STUDIO</span><div class="fvt-avatar" aria-hidden="true">${escape(name.slice(0, 1).toUpperCase())}</div><h2>Welkom terug,<br>${escape(name)}</h2><p>Je Studio staat voor je klaar. Werk verder aan jouw selectie en ontdek de nieuwste inzichten.</p><a class="fvt-button" href="${appUrl("studio")}">Open Fantasy Studio ${icon("arrow")}</a><p class="fvt-account-note">${icon("lock")} Je selectie, instellingen en analyses blijven veilig bewaard.</p>`,
+    `<span class="fvt-eyebrow">FANTASY STUDIO</span><div class="fvt-avatar" aria-hidden="true">${escape(name.slice(0, 1).toUpperCase())}</div><h2>Welkom terug,<br>${escape(name)}</h2><p>Je Studio staat voor je klaar. Werk verder aan jouw selectie en ontdek de nieuwste inzichten.</p><a class="fvt-button" href="${appUrl("studio/dashboard")}">Open Fantasy Studio ${icon("arrow")}</a><p class="fvt-account-note">${icon("lock")} Je selectie, instellingen en analyses blijven veilig bewaard.</p>`,
     { displayName: name },
   );
 }

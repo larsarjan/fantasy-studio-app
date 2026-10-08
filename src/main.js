@@ -37,6 +37,7 @@ import {
 import {
   createPlayersScreen,
   mountPlayersScreen,
+  setPlayersScreenSelection,
 } from './modules/players.js'
 
 import {
@@ -216,8 +217,8 @@ document.querySelector('#app').innerHTML = safeHtml(`
 </div>
 
       <nav class="navigation">
-        <button class="menu" data-screen="selection">Mijn selectie</button>
         <button class="menu active" data-screen="dashboard">🏠 Dashboard</button>
+        <button class="menu" data-screen="selection">Mijn selectie</button>
         <button class="menu" data-screen="players">👥 Spelers</button>
         <button class="menu" data-screen="compare">🆚 Vergelijken</button>
         <button class="menu" data-screen="fixtures">📅 Speelschema</button>
@@ -390,6 +391,8 @@ syncButton.addEventListener('click', async () => {
 })
 
 refreshSyncStatus()
+const linkedPlayer = new URLSearchParams(location.search).get('player')
+if (linkedPlayer && studioScreen(location.pathname, basePath)==='players') setPlayersScreenSelection({playerId:linkedPlayer})
 await showScreen(studioScreen(location.pathname, basePath))
 window.addEventListener('popstate', () => {
   showScreen(studioScreen(location.pathname, basePath)).catch(() => showNotice('De pagina kon niet worden geopend.', 'error'))

@@ -2,7 +2,7 @@ import { safeHtml } from './html.js'
 import { requireSession, renderAuth } from './auth.js'
 import { initializeUser } from './repository.js'
 import { friendlyError, supabase } from './client.js'
-import { isPublicRoute, isProminentRoute, relativeRoute } from './routes.js'
+import { isPublicRoute, isProminentRoute, isContentRoute, relativeRoute } from './routes.js'
 import { renderWelcome } from '../public/homepage.js'
 
 document.querySelector('#app').innerHTML = safeHtml('<div class="platform-loading" role="status">Fantasy Studio laden…</div>')
@@ -14,7 +14,11 @@ try {
   const isPublic = isPublicRoute(route)
   let session = null
   if (isPublic && !/[#&](access_token|error)=/.test(location.hash) && !['code','error','flow'].some(key => new URLSearchParams(location.search).has(key))) {
-    if (isProminentRoute(route)) {
+    if (isContentRoute(route)) {
+      if(route.startsWith('community')) await (await import('../public/community.js')).renderCommunityPage(route)
+      else if(route.startsWith('nieuws')) await (await import('../public/news.js')).renderNewsPage(route)
+      else await (await import('../public/videos.js')).renderVideosPage()
+    } else if (isProminentRoute(route)) {
       const { renderProminentPage } = await import('../public/prominents.js')
       await renderProminentPage()
     } else {

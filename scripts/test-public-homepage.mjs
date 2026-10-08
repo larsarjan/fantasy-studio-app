@@ -11,6 +11,7 @@ import {
   fallbackVideo,
   latestVideo,
   parseVideoFeed,
+  parseVideoLibrary,
   validVideo,
 } from "../src/public/video.js";
 const feed = `<feed><yt:channelId>${channelId}</yt:channelId><entry><yt:videoId>95hoTNaS6xo</yt:videoId><title>FVT &amp; fantasy &lt;keuzes&gt;</title><published>2026-10-06T14:15:43Z</published></entry></feed>`;
@@ -24,11 +25,11 @@ test("public login always enters Studio; canonical and legacy screens survive re
     "/contact",
     "/auth/callback",
   ])
-    assert.equal(loginDestination(path), "/studio");
+    assert.equal(loginDestination(path), "/studio/dashboard");
   for (const path of ["/studio/players", "/players"])
     assert.equal(studioScreen(path), "players");
   assert.equal(studioScreen("/studio/"), "dashboard");
-  assert.equal(studioPath(), "/studio");
+  assert.equal(studioPath(), "/studio/dashboard");
   assert.equal(loginDestination("/studio/optimizer"), "/studio/optimizer");
   assert.equal(studioScreen("/fvt/studio/fixtures", "/fvt/"), "fixtures");
   assert.equal(studioPath("compare", "/fvt/"), "/fvt/studio/compare");
@@ -36,6 +37,8 @@ test("public login always enters Studio; canonical and legacy screens survive re
 });
 test("YouTube XML: fixed channel, validated identities, decoded text, malformed and entity feeds rejected", () => {
   assert.equal(parseVideoFeed(feed).title, "FVT & fantasy <keuzes>");
+  assert.equal(parseVideoLibrary(feed.replace('</feed>', '<entry><yt:videoId>abcdefghijk</yt:videoId><title>New episode</title><published>2026-10-07T12:00:00Z</published></entry></feed>')).length,2);
+  assert.equal(parseVideoFeed(feed.replace('</feed>', '<entry><yt:videoId>abcdefghijk</yt:videoId><title>New episode</title><published>2026-10-07T12:00:00Z</published></entry></feed>')).id,'abcdefghijk');
   for (const xml of [
     "",
     feed.replace(channelId, "other"),
@@ -58,6 +61,7 @@ test("video API uses a verified fallback on upstream failures and invalid data",
   ]) {
     assert.deepEqual(await latestVideo(fetcher), {
       video: fallbackVideo,
+      videos: [fallbackVideo],
       source: "fallback",
     });
   }
