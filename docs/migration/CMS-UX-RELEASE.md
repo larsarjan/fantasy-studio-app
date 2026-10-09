@@ -40,6 +40,10 @@ Bron van bewijs dat autorisatie niet is herontworpen: bestaande function-fingerp
 
 ## Release
 
-Doel is hetzelfde Vercel-project `fantasy-studio-app` / https://fantasyvoetbaltalk.nl. Eerst productiebuild zonder domeinpromotie; na release-identiteitcheck promotie en herhaalde live CMS-browseracceptatie. Build/commit/deployment en definitieve opruiming worden na productiecontrole gerapporteerd.
+Live op hetzelfde Vercel-project `fantasy-studio-app` / https://fantasyvoetbaltalk.nl. Codecommit `36921fb45bdb6f3bb3662ebcffe1642d4079f1ab`; deployment `dpl_9XJkoabx6VR8QgTJcEJnGvxN9mPU` READY. Eerst staged productiebuild, daarna commit-identiteitcheck en promotie. Publieke /release.json bevestigt de codecommit.
+
+Na promotie zijn alle 46 CMS-browserchecks opnieuw op https://fantasyvoetbaltalk.nl geslaagd, met echte Supabase Auth, REST en Storage. Desktop 1366 en mobiel 390, alle gevraagde editoracties, preview, upload/afbeeldingsbehoud/vervanging/verwijdering, dubbele slugs, publisherpublicatie, editor-API-denial, videorubriek en tonen/verbergen gecontroleerd. Geen runtime-errorlogs gevonden voor deze deployment. Eindscan: 1951 bestanden, geen secrets/service-role-lek.
+
+Vier tijdelijke accounts verwijderd, plus alle bijbehorende testartikelen, videoregistraties en Storage-objecten. Verificatie na afloop: 8 oorspronkelijke profielen behouden; 0 testaccounts, 0 artikelen, 0 videoregistraties en 0 news-images-objecten (contentaantallen gelijk aan de inventarisatie). De echte eerste super_admin blijft member + super_admin, met zijn bestaande bootstrap-auditrecord behouden. Alle drie autorisatiefingerprints blijven identiek. Tijdelijke credential-/bootstrapbestanden lokaal verwijderd; append-only auditbewijs blijft behouden. GitHub main bevat de geteste code; deze documentatieaanvulling verandert de gedeployde frontend niet.
 
 Rollback: behoud Storage-bucket/objects en bodywaarden. Gebruik een CMS-compatibele frontend voor rich-textweergave; een oudere frontend zou de nieuwe HTML veilig als letterlijke tekst tonen. Geen databasecontent of rollen verwijderen als rollbackmaatregel.
