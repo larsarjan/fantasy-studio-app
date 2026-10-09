@@ -12,7 +12,7 @@ for (const f of readdirSync('supabase/migrations').filter(f => f.endsWith('.sql'
 }
 let checks = 0
 // Replaying the new migration must preserve seeded roles and schema.
-await db.exec(readFileSync('supabase/migrations/20261009142245_fvt_admin_center.sql','utf8'))
+await db.exec(readFileSync('supabase/migrations/20261009151732_fvt_admin_center.sql','utf8'))
 checks++
 const ids = Object.fromEntries(['member','moderator','editor','publisher','admin','super_admin','multi'].map((r,i) => [r, `00000000-0000-4000-8000-${String(i+1).padStart(12,'0')}`]))
 for (const [role,id] of Object.entries(ids)) {
