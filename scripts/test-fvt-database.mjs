@@ -2,10 +2,11 @@ import {PGlite} from '@electric-sql/pglite'
 import {readFileSync,readdirSync} from 'node:fs'
 import assert from 'node:assert/strict'
 const db=new PGlite();let checks=0
-await db.exec(`create role anon;create role authenticated;create schema auth;create table auth.users(id uuid primary key);create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;grant usage on schema auth to authenticated,anon;grant execute on function auth.uid() to authenticated,anon;alter default privileges in schema public grant all on tables to anon,authenticated;`)
+await db.exec(`create role anon;create role authenticated;create role service_role bypassrls;create schema auth;create table auth.users(id uuid primary key);create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;grant usage on schema auth to authenticated,anon;grant execute on function auth.uid() to authenticated,anon;alter default privileges in schema public grant all on tables to anon,authenticated;`)
 for(const f of readdirSync('supabase/migrations').filter(f=>f.endsWith('.sql')&&!f.includes('prominents_')).sort())await db.exec(readFileSync('supabase/migrations/'+f,'utf8'))
 const a='00000000-0000-4000-8000-000000000001',b='00000000-0000-4000-8000-000000000002',ed='00000000-0000-4000-8000-000000000003'
 await db.exec(`insert into auth.users values('${a}'),('${b}'),('${ed}');update profiles set role='editor' where id='${ed}'`)
+await db.exec(`insert into user_roles(user_id,role_key) values('${ed}','editor'),('${ed}','moderator'),('${ed}','publisher')`)
 const as=async id=>db.exec(`reset role;set role ${id?'authenticated':'anon'};select set_config('request.jwt.claim.sub','${id||''}',false)`)
 const rows=async(sql,args=[]) => (await db.query(sql,args)).rows
 const check=(value,label)=>{assert(value,label);checks++;console.log(label)}
@@ -28,7 +29,7 @@ const reply=(await rows(`insert into forum_posts(topic_id,body) values($1,'Reply
 check(reply.user_id===b,'Authenticated reply persists')
 await as(a);check((await rows(`update forum_posts set body='Attack' where id=$1 returning id`,[reply.id])).length===0,'Cross-user reply update denied')
 await db.exec("update profiles set display_name='Renamed Author'");check((await rows('select author_name from forum_topics where id=$1',[topic.id]))[0].author_name==='Renamed Author','Public author name follows profile edits')
-await as(ed);await db.query(`select moderate_forum_topic($1,true,true)`,[topic.id]);check((await rows('select closed from forum_topics where id=$1',[topic.id]))[0].closed,'Editor can moderate')
+await as(ed);await db.query(`select moderate_forum_topic($1,true,true)`,[topic.id]);check((await rows('select closed from forum_topics where id=$1',[topic.id]))[0].closed,'Explicit moderator role can moderate')
 await as(b);await denied(`update forum_posts set body='Closed reply edit' where id=$1`,[reply.id])
 await as(ed);const article=(await rows(`insert into news_articles(title,slug,intro,body) values('Test draft','test-draft','Explicit test intro','Explicit acceptance content, not real news.') returning *`))[0]
 await as(null);check((await rows('select * from news_articles')).length===0,'Anonymous cannot read drafts')

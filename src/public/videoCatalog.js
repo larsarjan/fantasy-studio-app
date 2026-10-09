@@ -24,7 +24,7 @@ export const VIDEO_CATEGORY_RULES = [
 ]
 export function videoCategory(video) {
   if(typeof video==='string') video={title:video}
-  return VIDEO_CATEGORY_OVERRIDES[video.id] ?? VIDEO_CATEGORY_RULES.find(r=>r.pattern.test(video.title))?.category ?? 'Overige / Specials'
+  return (VIDEO_CATEGORIES.includes(video.category) ? video.category : null) ?? VIDEO_CATEGORY_OVERRIDES[video.id] ?? VIDEO_CATEGORY_RULES.find(r=>r.pattern.test(video.title))?.category ?? 'Overige / Specials'
 }
 export function thumbnailSources(id) {
   if(!/^[\w-]{11}$/.test(id)) throw new Error('Invalid video identity')

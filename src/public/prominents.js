@@ -72,7 +72,7 @@ export async function renderProminentPage() {
   const available=data.snapshots.filter(s=>s.season===season&&(!manager || s.prominent_id===manager.id));
   if(!available.length){document.querySelector('#prom-content').innerHTML=safeHtml(`<header class="prom-hero"><span class="fvt-eyebrow">PROMINENTEN</span><h1>RANGLIJSTEN</h1></header>${empty('Er zijn nog geen definitieve rondes opgeslagen. De synchronisatie vult de ranglijst zodra ESPN een ronde heeft gecontroleerd.')}<a class="prom-back" href="${appUrl()}">← Terug naar FVT</a>`);return;}
   const state={season,event:available.some(s=>s.event===Number(params.get('event')))?Number(params.get('event')):Math.max(0,...available.map(s=>s.event)),group:GROUPS[params.get('group')]?params.get('group'):'',search:params.get('q')||'',tab:['team','history','transfers','performance','analysis'].includes(params.get('tab'))?params.get('tab'):'team'};
-  let admin=null;try{admin=await adminStatus();}catch{}
+  let admin=null;
   let sequence=0;
   const redraw=async()=>{
     const token=++sequence;

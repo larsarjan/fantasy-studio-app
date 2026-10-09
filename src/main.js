@@ -24,6 +24,7 @@ import { createSettingsScreen, mountSettingsScreen } from './platform/settings.j
 import { basePath } from './platform/client.js'
 import { studioPath, studioScreen } from './platform/routes.js'
 import { TRANSFER_DEADLINE_ENABLED } from './constants/featureFlags.js'
+import { access, hasPermission, featureAllowed, FEATURE_ROUTES } from './platform/access.js'
 
 import {
   initializeDatabase,
@@ -307,6 +308,12 @@ function showNotice(message, type = 'success') {
 }
 
 async function showScreen(screenName) {
+  if (screenName === 'input') { location.assign(basePath + 'admin/input'); return }
+  if (!await featureAllowed(FEATURE_ROUTES[screenName])) {
+    pageTitle.textContent = 'Geen toegang'
+    pageContent.innerHTML = safeHtml('<section class="panel"><h2>403 · Dit onderdeel is niet beschikbaar</h2><p>Kies een toegankelijk onderdeel in het menu.</p></section>')
+    return
+  }
   if (screenName === 'prices' && !pricePredictionModule) {
     await import('./pricePrediction.css')
     pricePredictionModule = await import('./modules/pricePrediction.js')
@@ -364,6 +371,7 @@ document.addEventListener('click', event => {
 })
 
 syncButton.addEventListener('click', async () => {
+  if (!hasPermission(access, 'sync.run')) return
   syncButton.disabled = true
   syncButton.textContent = '⏳ Bezig…'
 
@@ -402,6 +410,13 @@ syncButton.addEventListener('click', async () => {
 })
 
 refreshSyncStatus()
+document.querySelector('[data-screen="input"]')?.remove()
+syncButton.hidden = true
+if (hasPermission(access, 'admin.access')) {
+  const adminLink = document.createElement('a'); adminLink.href = basePath + 'admin'; adminLink.textContent = 'Admin'; adminLink.className = 'menu'
+  document.querySelector('.navigation').append(adminLink)
+}
+for (const button of menuButtons) if (FEATURE_ROUTES[button.dataset.screen] && !await featureAllowed(FEATURE_ROUTES[button.dataset.screen])) button.hidden = true
 const linkedPlayer = new URLSearchParams(location.search).get('player')
 if (linkedPlayer && studioScreen(location.pathname, basePath)==='players') setPlayersScreenSelection({playerId:linkedPlayer})
 await showScreen(studioScreen(location.pathname, basePath))

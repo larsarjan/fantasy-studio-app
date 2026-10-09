@@ -1,4 +1,5 @@
 import { navigationMarkup } from '../public/navigation.js'
+import { access, hasPermission } from './access.js'
 import '../public/content.css'
 import { safeHtml } from './html.js'
 import { supabase, friendlyError } from './client.js'
@@ -27,6 +28,7 @@ export function mountAccount(session) {
   toolbar.className = 'platform-toolbar'
   toolbar.innerHTML = safeHtml('<span class="platform-status" id="account-status" role="status">Opgeslagen</span><button id="selection-retry" hidden>Opnieuw opslaan</button><a id="selection-reload" href="" hidden>Herlaad opgeslagen selectie</a><details class="profile-menu"><summary><span class="profile-avatar" id="account-initials"></span><span><strong id="account-display-name"></strong><small id="account-name"></small></span></summary><nav aria-label="Accountmenu"><a href="/studio/profile">Mijn profiel</a><a href="/studio/settings">Instellingen</a><a href="/studio/profile">Account</a><button id="sign-out">Uitloggen</button></nav></details>')
   document.querySelector('.main-content').prepend(toolbar)
+  if (hasPermission(access, 'admin.access')) { const link = document.createElement('a'); link.href = '/admin'; link.textContent = 'Admin'; toolbar.querySelector('.profile-menu nav').prepend(link) }
   const globalNav=document.createElement('nav');globalNav.className='fvt-studio-nav';globalNav.setAttribute('aria-label','Hoofdnavigatie');globalNav.innerHTML=safeHtml(navigationMarkup('studio/dashboard'));document.querySelector('.main-content').prepend(globalNav)
   document.querySelector('#account-name').textContent = session.user.email
   const refresh = () => { document.querySelector('#account-display-name').textContent=profileName();document.querySelector('#account-initials').textContent=initials() }

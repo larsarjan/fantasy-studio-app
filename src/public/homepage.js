@@ -11,6 +11,8 @@ import "./homepage.css";
 import "./content.css";
 import { navigationMarkup } from "./navigation.js";
 import { mountHomeNews } from "./news.js";
+import { featureAllowed, refreshAccess, hasPermission, FEATURE_ROUTES } from '../platform/access.js';
+import { fetchVideoFeed } from './videoFeed.js';
 const escape = (value) =>
   String(value ?? "").replace(
     /[&<>"']/g,
@@ -111,7 +113,7 @@ export function renderPublic(accountMarkup, { displayName = "", mainMarkup = nul
   <main id="fvt-main" class="fvt-main ${page ? "fvt-subpage" : ""}"><section class="fvt-hero"><span class="fvt-eyebrow">${page ? page[0] : "FVT STUDIO"}</span><h1>${page ? page[1] : "MEER INZICHT.<br>SLIMMERE KEUZES.<br><em>EEN STERKERE SELECTIE.</em>"}</h1><p class="fvt-lead">${page ? page[2] : "Spelers, speelschema’s, statistieken en slimme analyses.<br>Alles wat je nodig hebt om betere fantasykeuzes te maken."}</p>${page ? page[3] : '<a class="fvt-mobile-cta fvt-button" href="#fvt-account">Open jouw Studio ' + icon("arrow") + "</a>"}</section>
   <aside id="fvt-account" class="fvt-account">${accountMarkup}</aside>
   <section class="fvt-features" aria-label="Ontdek Fantasy Studio">${features.map(([symbol, title, text, screen]) => `<a class="fvt-feature" href="${appUrl(`studio/${screen}`)}"><span class="fvt-feature-icon">${icon(symbol)}</span><span><h2>${title}</h2><p>${text}</p></span></a>`).join("")}</section>
-  <section class="fvt-showcase" aria-label="FVT in beeld"><article id="fvt-video" class="fvt-video">${videoMarkup(fallbackVideo, "fallback")}</article><a class="fvt-preview" href="${appUrl("studio")}" aria-label="Open Fantasy Studio"><div class="fvt-preview-bar"><span class="fvt-window-dots">● ● ●</span><span>FANTASY STUDIO · ECHTE PRODUCTPREVIEW</span>${icon("arrow")}</div><img src="${asset("studio-preview.jpg")}" width="1440" height="1000" alt="De echte Fantasy Studio met FVT-logo, spelerslijst en spelersfilters" loading="lazy"><span class="fvt-preview-caption">Jouw selectie. Jouw inzichten. ${icon("arrow")}</span></a></section>
+  <section class="fvt-showcase" aria-label="FVT in beeld"><article id="fvt-video" class="fvt-video" role="status">Video laden…</article><a class="fvt-preview" href="${appUrl("studio")}" aria-label="Open Fantasy Studio"><div class="fvt-preview-bar"><span class="fvt-window-dots">● ● ●</span><span>FANTASY STUDIO · ECHTE PRODUCTPREVIEW</span>${icon("arrow")}</div><img src="${asset("studio-preview.jpg")}" width="1440" height="1000" alt="De echte Fantasy Studio met FVT-logo, spelerslijst en spelersfilters" loading="lazy"><span class="fvt-preview-caption">Jouw selectie. Jouw inzichten. ${icon("arrow")}</span></a></section>
   </main><nav class="fvt-pillars" aria-label="Ontdek FVT"><a href="${appUrl("videos")}"><span>01 / KIJKEN</span>De nieuwste fantasyvideo’s ${icon("arrow")}</a><a href="${appUrl("community")}"><span>02 / MEEDOEN</span>Deel jouw voetbalblik ${icon("arrow")}</a><a href="${appUrl("studio")}"><span>03 / ANALYSEREN</span>Maak jouw volgende keuze ${icon("arrow")}</a></nav><footer class="fvt-footer"><span>© ${new Date().getFullYear()} Fantasy Voetbal Talk · Eredivisie</span><nav aria-label="Footer"><a href="${channelUrl}" target="_blank" rel="noopener noreferrer">YouTube ↗</a><a href="${instagramUrl}" target="_blank" rel="noopener noreferrer">Instagram ↗</a><a href="${appUrl("privacy")}">Privacy</a><a href="${appUrl("contact")}">Contact</a></nav></footer></div></div>`);
   document.querySelector(".fvt-menu-toggle").onclick = (event) => {
     const button = event.currentTarget;
@@ -119,6 +121,20 @@ export function renderPublic(accountMarkup, { displayName = "", mainMarkup = nul
     button.setAttribute("aria-expanded", String(open));
     document.querySelector("#fvt-nav").classList.toggle("is-open", open);
   };
+  const shell = document.querySelector('.fvt-public');
+  queueMicrotask(async () => {
+    const visibility = new Map();
+    for (const anchor of shell.querySelectorAll('a[href]')) {
+      const path = new URL(anchor.href).pathname.replace(import.meta.env.BASE_URL, '').split('/');
+      const key = FEATURE_ROUTES[path[0] === 'studio' ? path[1] : path[0]];
+      if (!key) continue;
+      try { if (!visibility.has(key)) visibility.set(key, await featureAllowed(key)); if (!visibility.get(key)) anchor.hidden = true } catch { anchor.hidden = true }
+    }
+    for (const [selector,key] of [['.fvt-home-news','news'],['.fvt-community-cta','community'],['#fvt-video','videos']]) {
+      try { if (!await featureAllowed(key)) shell.querySelector(selector)?.remove() } catch { shell.querySelector(selector)?.remove() }
+    }
+    try { const current = await refreshAccess(); if (hasPermission(current,'admin.access') && shell.isConnected) { const link=document.createElement('a');link.href=appUrl('admin');link.textContent='Admin';shell.querySelector('#fvt-nav')?.append(link) } } catch {}
+  });
   if (mainMarkup !== null) {
     const main = document.querySelector('#fvt-main');
     main.className = 'prom-main';
@@ -154,8 +170,7 @@ export function renderPublic(accountMarkup, { displayName = "", mainMarkup = nul
     document.querySelector('.fvt-features').remove();document.querySelector('.fvt-showcase').remove();
   }
   const videoElement = document.querySelector("#fvt-video");
-  fetch(appUrl("api/latest-video"), { signal: videoController.signal })
-    .then((r) => (r.ok ? r.json() : null))
+  fetchVideoFeed(videoController.signal)
     .then((data) => {
       if (data && validVideo(data.video) && videoElement?.isConnected)
         videoElement.innerHTML = safeHtml(
@@ -165,7 +180,7 @@ export function renderPublic(accountMarkup, { displayName = "", mainMarkup = nul
           ),
         );
     })
-    .catch(() => {});
+    .catch(() => { if (videoElement?.isConnected) videoElement.textContent='Video’s zijn tijdelijk niet beschikbaar.' });
 }
 export function renderWelcome(displayName) {
   const name = displayName?.trim() || "fantasymanager";

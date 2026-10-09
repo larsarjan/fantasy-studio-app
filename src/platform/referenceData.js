@@ -1,5 +1,6 @@
 import { supabase } from './client.js'
 import { profile } from './repository.js'
+import { access, hasPermission } from './access.js'
 
 const tables = {
   players: 'players', historicalPlayers: 'historical_players', fixtures: 'fixtures', europeanFixtures: 'european_fixtures',
@@ -28,7 +29,7 @@ export async function loadReferenceData() {
 }
 
 export async function publishReferenceData(database) {
-  if (!supabase || !['editor', 'admin'].includes(profile?.role)) return false
+  if (!supabase || !hasPermission(access, 'data.correct')) return false
   const { error } = await supabase.rpc('publish_reference_data', { datasets: Object.fromEntries(Object.entries(tables).map(([key, table]) => [table, database[key] ?? []])) })
   if (error) throw error
   return true

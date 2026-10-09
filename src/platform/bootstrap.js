@@ -4,6 +4,7 @@ import { initializeUser } from './repository.js'
 import { friendlyError, supabase } from './client.js'
 import { isPublicRoute, isProminentRoute, isContentRoute, relativeRoute } from './routes.js'
 import { renderWelcome } from '../public/homepage.js'
+import { refreshAccess, featureAllowed, FEATURE_ROUTES } from './access.js'
 
 document.querySelector('#app').innerHTML = safeHtml('<div class="platform-loading" role="status">Fantasy Studio laden…</div>')
 document.addEventListener('error', event => {
@@ -12,6 +13,13 @@ document.addEventListener('error', event => {
 try {
   const route = relativeRoute(location.pathname, import.meta.env.BASE_URL)
   const isPublic = isPublicRoute(route)
+  if (route === 'nieuws/beheer') {
+    location.replace(new URL('admin/nieuws' + location.search, location.origin + import.meta.env.BASE_URL))
+  }
+  if (!await featureAllowed(FEATURE_ROUTES[route.split('/')[0]])) {
+    const { deniedAdmin } = await import('../admin/admin.js')
+    deniedAdmin()
+  } else {
   let session = null
   if (isPublic && !/[#&](access_token|error)=/.test(location.hash) && !['code','error','flow'].some(key => new URLSearchParams(location.search).has(key))) {
     if (isContentRoute(route)) {
@@ -32,6 +40,13 @@ try {
     }
   } else session = await requireSession()
   if (session) {
+    await refreshAccess()
+    if (route === 'admin' || route.startsWith('admin/')) {
+      const { renderAdmin } = await import('../admin/admin.js')
+      await renderAdmin(route, session)
+    } else if (route === 'studio/input') {
+      location.replace(new URL('admin/input', location.origin + import.meta.env.BASE_URL))
+    } else {
     document.querySelector('#app').innerHTML = safeHtml('<div class="platform-loading" role="status"><h1>Je Studio openen</h1><p>Je account en de nieuwste voetbaldata worden geladen.</p><small>Bij het eerste bezoek berekenen we ook de spelersscores. Dit kan even duren.</small></div>')
     const user = await initializeUser(session)
     const { restoreManagerState } = await import('../modules/optimizer.js')
@@ -41,6 +56,8 @@ try {
     await import('../main.js')
     const { mountAccount } = await import('./settings.js')
     mountAccount(session)
+    }
+  }
   }
 } catch (error) {
   const root = document.querySelector('#app')

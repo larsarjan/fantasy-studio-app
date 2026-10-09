@@ -21,7 +21,7 @@
     "electron": "npm run build && electron .",
     "dist:portable": "npm run build && electron-builder --win portable",
     "test": "node --test src/services/*.test.js src/services/optimizer/*.test.js src/services/expectedPoints/*.test.js src/modules/*.test.js docs/apps-script/*.test.js",
-    "test:security": "node scripts/test-database.mjs && node scripts/test-platform.mjs",
+    "test:security": "node scripts/test-database.mjs && node scripts/test-admin-database.mjs && node scripts/test-platform.mjs",
     "test:ui-api": "node scripts/test-ui-server.mjs",
     "check": "npm test && npm run test:security && npm run build",
     "test:public": "node --test scripts/test-public-homepage.mjs",

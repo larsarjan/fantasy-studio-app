@@ -6,7 +6,7 @@ const db = new PGlite()
 let checks = 0
 const a = '00000000-0000-4000-8000-000000000001'
 const b = '00000000-0000-4000-8000-000000000002'
-await db.exec(`create role anon; create role authenticated; create schema auth;
+await db.exec(`create role anon; create role authenticated; create role service_role bypassrls; create schema auth; create schema vault; create table vault.decrypted_secrets(name text,decrypted_secret text);
 create table auth.users(id uuid primary key);
 create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid $$;
 grant usage on schema auth to authenticated,anon;
@@ -38,7 +38,7 @@ for (const [user, other] of [[a,b],[b,a]]) {
   await equal(`select count(*)::int n from transfer_editorial where user_id='${other}'`,[{n:0}])
   await denied(`update transfer_editorial set user_id='${other}' where user_id='${user}'`)
 }
-await db.exec(`reset role; update profiles set role='editor' where id='${a}'`)
+await db.exec(`reset role; insert into user_roles(user_id,role_key) values('${a}','admin')`)
 await asUser(a)
 await db.query(`select publish_reference_data('{"players":[{"name":"Test"}],"fixtures":[{"round":1}]}')`)
 checks++

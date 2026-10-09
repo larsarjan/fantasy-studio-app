@@ -1,4 +1,5 @@
 import { supabase } from '../platform/client.js';
+import { refreshAccess, hasPermission } from '../platform/access.js';
 async function rows(factory) {
   const all=[];
   for(let offset=0;;offset+=250){const {data,error}=await factory().range(offset,offset+249);if(error)throw error;all.push(...data);if(data.length<250)return all;}
@@ -23,7 +24,7 @@ export async function loadProfilePicks(id,season) {
 export async function adminStatus() {
   if(!supabase)return null;
   const {data:{session}}=await supabase.auth.getSession();if(!session)return null;
-  const profile=await supabase.from('profiles').select('role').eq('id',session.user.id).maybeSingle();if(profile.data?.role!=='admin')return null;
+  const access=await refreshAccess();if(!hasPermission(access,'sync.view'))return null;
   const [runs,jobs]=await Promise.all([supabase.from('prominent_sync_runs').select('*').order('started_at',{ascending:false}).limit(12),rows(()=>supabase.from('prominent_sync_jobs').select('*').order('season').order('event').order('prominent_id'))]);
   if(runs.error)throw runs.error;return {runs:runs.data,jobs};
 }

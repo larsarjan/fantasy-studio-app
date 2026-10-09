@@ -1,15 +1,17 @@
 import { defineConfig } from 'vite'
 import { execFileSync } from 'node:child_process'
-import { latestVideo } from './src/public/video.js'
+import { GET as videoResponse } from './api/latest-video.js'
+import { loadEnv } from 'vite'
 
 export default defineConfig({
   base: process.env.VITE_BASE_PATH || '/',
   plugins: [{
     name: 'public-video-dev',
     configureServer(server) {
-      server.middlewares.use('/api/latest-video', async (_request, response) => {
-        response.setHeader('Content-Type', 'application/json')
-        response.end(JSON.stringify(await latestVideo()))
+      Object.assign(process.env, loadEnv('development', process.cwd(), 'VITE_'))
+      server.middlewares.use('/api/latest-video', async (request, response) => {
+        try { const result = await videoResponse(new Request('http://localhost/api/latest-video', {headers:request.headers})); response.statusCode=result.status; result.headers.forEach((v,k)=>response.setHeader(k,v)); response.end(await result.text()) }
+        catch { response.statusCode=503; response.end(JSON.stringify({error:'Video service unavailable'})) }
       })
     },
   }, {

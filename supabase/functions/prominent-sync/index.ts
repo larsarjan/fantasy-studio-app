@@ -3,7 +3,7 @@ import { syncProminents } from '../../../src/services/prominentCollector.js';
 const headers = { 'Content-Type': 'application/json', 'Cache-Control': 'no-store', 'Access-Control-Allow-Origin': 'https://fantasy-studio-app.vercel.app', 'Access-Control-Allow-Headers': 'authorization, apikey, content-type, x-client-info', 'Access-Control-Allow-Methods': 'POST, OPTIONS', 'Vary': 'Origin' };
 Deno.serve(async req => {
   const origin=req.headers.get('origin');
-  const allowed=origin && ['https://fantasy-studio-app.vercel.app','http://localhost:5173','http://localhost:4173'].includes(origin);
+  const allowed=origin && ['https://fantasyvoetbaltalk.nl','https://www.fantasyvoetbaltalk.nl','https://fantasy-studio-app.vercel.app','http://localhost:5173','http://localhost:4173'].includes(origin);
   const cors={...headers,...(allowed ? {'Access-Control-Allow-Origin':origin!}: {})};
   const reply=(body:unknown,status=200)=>new Response(JSON.stringify(body),{status,headers:cors});
   if(req.method==='OPTIONS')return reply({});
@@ -17,7 +17,9 @@ Deno.serve(async req => {
       const token=req.headers.get('Authorization')?.replace(/^Bearer /,'');
       if(!token)return reply({error:'Unauthorized'},401);
       const {data,error}=await db.auth.getUser(token);if(error || !data.user)return reply({error:'Unauthorized'},401);
-      const role=await db.from('profiles').select('role').eq('id',data.user.id).single();if(role.error || role.data?.role!=='admin')return reply({error:'Forbidden'},403);
+      const actor=createClient(Deno.env.get('SUPABASE_URL')!,Deno.env.get('SUPABASE_ANON_KEY')!,{auth:{persistSession:false,autoRefreshToken:false},global:{headers:{Authorization:`Bearer ${token}`}}});
+      const access=await actor.rpc('current_access');if(access.error || !access.data?.permissions?.includes('sync.run'))return reply({error:'Forbidden'},403);
+      const audit=await actor.rpc('admin_sync_started');if(audit.error)return reply({error:'Forbidden'},403);
     }
     return reply(await syncProminents(db,{trigger,limit:45,budgetMs:85000}));
   } catch(e) {console.error('prominent-sync failed',e.message);return reply({error:'Synchronisatie mislukt. Bekijk het beheerlog.'},500);}

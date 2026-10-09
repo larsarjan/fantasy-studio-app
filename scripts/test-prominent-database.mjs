@@ -7,6 +7,7 @@ await db.exec(`create role anon;create role authenticated;create role service_ro
 for(const file of readdirSync('supabase/migrations').filter(f=>f.endsWith('.sql')&&!f.includes('prominents_scheduler')).sort())await db.exec(readFileSync(`supabase/migrations/${file}`,'utf8'));
 const a='00000000-0000-4000-8000-000000000001',admin='00000000-0000-4000-8000-000000000002';
 await db.exec(`insert into auth.users values('${a}'),('${admin}');update profiles set role='admin' where id='${admin}';insert into prominent_bootstrap(season,events,players,teams,element_types,chips,game_settings) values('2026-2027','[]','[]','[]','[]','[]','{}');`);
+await db.query(`insert into user_roles(user_id,role_key) values($1,'admin')`,[admin]);
 const manager=(await db.query(`insert into prominents(espn_entry_id,public_name) values(20124,'Kees Kwakman') returning id`)).rows[0];
 const s={season:'2026-2027',event:1,active_chip:'frush',event_points:60,total_points:60,event_rank:500,overall_rank:100,percentile_rank:1,overall_rank_percentage:1,bank:5,team_value:1000,event_transfers:0,event_transfers_cost:0,points_on_bench:7,fantasy_team_name:'Team',groups:['ESPN'],raw_json:{original:true},picks:Array.from({length:15},(_,i)=>({element_id:i+1,squad_position:i+1,multiplier:i<11?1:0,is_captain:i===3,is_vice_captain:i===4,element_type:i===0||i===11?1:2,player_name:'Player',web_name:'P',club_name:'Ajax',club_id:1,price_at_fetch:50}))};
 const save=async snapshot=>(await db.query('select prominent_save_snapshot($1,$2) id',[manager.id,snapshot])).rows[0].id;
