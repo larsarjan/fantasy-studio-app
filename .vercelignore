@@ -11,3 +11,6 @@ build
 supabase
 *.log
 src/assets/Players
+scripts/admin-acceptance-server.mjs
+scripts/admin-live-accounts.mjs
+scripts/test-admin-*.mjs

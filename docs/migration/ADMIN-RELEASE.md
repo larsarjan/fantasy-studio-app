@@ -103,7 +103,7 @@ Controleer vooraf dat de user_id bestaat, de transactionele resultaten één doe
 
 - npm test: 89 bestaande moduletests geslaagd.
 - test-database: 38 bestaande isolatie/persistentiecontroles; aangepast aan expliciete RBAC in plaats van profiles.role.
-- test-admin-database: 92 controles met echte PostgreSQL/RLS via PGlite, inclusief migration replay, directe writes/RPC-aanvallen, multiple roles, metadata-onafhankelijke permissions, publicatiestatus, forum, featurevisibility, blokkeerstatus, audit en fotoconcurrency.
+- test-admin-database: 97 controles met echte PostgreSQL/RLS via PGlite, inclusief migration replay, directe writes/RPC-aanvallen, multiple roles, metadata-onafhankelijke permissions, publicatiestatus, forum, featurevisibility, blokkeerstatus, audit en fotoconcurrency.
 - test-platform: 105 HTML/securitychecks; release scan geen secret/service-rolelek.
 - FVT-contentregressie: 24 controles; moderator/editor/publisher expliciet samen toegekend aan één lokale testactor.
 - Prominentendatabase: 21 historie/atomiciteit/RLS-controles. Fotoregistry: 11 bestaande controles. Publieke routing/feed: 3 tests.
@@ -119,4 +119,4 @@ Behoud nieuwe audit/role/contenttabellen en historische data. Geen DROP TABLE of
 
 ## Resterende grenzen
 
-Eerste echte super_admin moet expliciet geverifieerd/toegewezen worden. Dashboard meldingen alleen als er een echte rapportagetabel komt. De bestaande invoermodule genereert Sheets-export; directe handmatige recordcorrectie is niet geïntroduceerd. Geen account-e-mail/laatste-loginbeheer en geen providercredential/systeemconfiguratie-editor. Forumreacties en topics kunnen moderatief verborgen/verwijderd worden; er is geen nieuw appeals/reportingsysteem. Productie-browserbewijs en productie-auth/API-tests zijn afzonderlijk van de lokale tests te rapporteren.
+Eerste echte super_admin moet expliciet geverifieerd/toegewezen worden. Dashboard meldingen alleen als er een echte rapportagetabel komt. De bestaande invoermodule genereert Sheets-export; directe handmatige recordcorrectie is niet geïntroduceerd. Geen account-e-mail/laatste-loginbeheer en geen providercredential/systeemconfiguratie-editor. Forumreacties en topics kunnen moderatief verborgen/verwijderd worden; er is geen nieuw appeals/reportingsysteem. De echte Supabase-acceptatie is aanvullend uitgevoerd: 57 Auth/REST/RPC/Edge Function-controles geslaagd met zes tijdelijke accounts; deze worden na de productie-browsercontrole verwijderd. Productie-browserbewijs wordt afzonderlijk gerapporteerd.

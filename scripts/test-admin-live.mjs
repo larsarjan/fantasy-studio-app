@@ -1,0 +1,41 @@
+import {createClient} from '@supabase/supabase-js'
+import {loadEnv} from 'vite'
+import {readFileSync,writeFileSync} from 'node:fs'
+import assert from 'node:assert/strict'
+const env=loadEnv('production',process.cwd(),''),accounts=JSON.parse(readFileSync('test-results/admin-live/accounts.json','utf8'))
+assert.equal(new URL(env.VITE_SUPABASE_URL).hostname,'rzunbquzffdivlpuomjc.supabase.co')
+const clients={},checks=[],ok=(value,label)=>{assert(value,label);checks.push(label);console.log('PASS',label)},unwrap=result=>{assert.equal(result.error,null);return result.data}
+const denied=async(promise,label)=>{const result=await promise;ok(!!result.error,label)}
+const make=()=>createClient(env.VITE_SUPABASE_URL,env.VITE_SUPABASE_PUBLISHABLE_KEY,{auth:{persistSession:false,autoRefreshToken:false}})
+try{
+ for(const a of accounts){const client=make();unwrap(await client.auth.signInWithPassword({email:a.email,password:a.password}));clients[a.role]=client;ok(unwrap(await client.auth.getUser()).user.id===a.id,'Real Supabase Auth '+a.role);const access=unwrap(await client.rpc('current_access'));ok(access.permissions.includes('admin.access')===(a.role!=='member'),'Live admin access '+a.role);ok(access.permissions.includes('articles.publish')===['publisher','admin','super_admin'].includes(a.role),'Live publish permission '+a.role);await denied(client.from('user_roles').insert({user_id:a.id,role_key:'super_admin'}),'Direct role table insert denied '+a.role);await denied(client.from('profiles').update({role:'super_admin'}).eq('id',a.id),'Profile role escalation denied '+a.role)}
+ const {member,moderator,editor,publisher,admin,super_admin}=clients,ids=Object.fromEntries(accounts.map(a=>[a.role,a.id]))
+ unwrap(await admin.from('news_articles').delete().eq('author_id',ids.editor));
+ unwrap(await member.from('forum_topics').delete().eq('user_id',ids.member));
+ unwrap(await member.auth.updateUser({data:{role:'super_admin',permissions:['admin.access']}}));ok(!unwrap(await member.rpc('current_access')).permissions.includes('admin.access'),'User metadata cannot escalate live privileges')
+ await denied(member.rpc('admin_assign_roles',{target:ids.editor,requested:['admin'],reason:'Acceptance blocked attack'}),'Member role RPC denied')
+ await denied(admin.rpc('admin_assign_roles',{target:ids.admin,requested:['super_admin'],reason:'Acceptance self promotion'}),'Admin self-promotion denied')
+ await denied(admin.rpc('admin_assign_roles',{target:ids.super_admin,requested:['member'],reason:'Acceptance super demotion'}),'Admin super-admin demotion denied')
+ await denied(editor.rpc('admin_sync_started'),'Editor sync endpoint denied')
+ const prominentDenied=await member.functions.invoke('prominent-sync',{body:{}});ok(prominentDenied.error?.context?.status===403,'Real prominent Edge Function rejects member JWT');
+ const priceDenied=await member.functions.invoke('price-sync',{body:{action:'sync'}});ok(priceDenied.error?.context?.status===403,'Real price Edge Function rejects member JWT');
+ const priceCritical=await admin.functions.invoke('price-sync',{body:{action:'calibrate'}});ok(priceCritical.error?.context?.status===403,'Real price Edge Function rejects admin critical action');
+ await denied(member.rpc('admin_player_photos',{query_text:'',start_offset:0}),'Member photo endpoint denied')
+ ok(unwrap(await member.rpc('feature_access',{feature:'internal_data_entry'}))===false,'Member internal feature denied live');ok(unwrap(await member.rpc('feature_access',{feature:'experimental_tools'}))===false,'Hidden feature direct RPC denied live')
+ const article=unwrap(await editor.from('news_articles').insert({title:'[FVT acceptatie] tijdelijk concept',slug:'fvt-acceptance-'+Date.now(),intro:'Tijdelijke releasecontrole; wordt direct opgeruimd.',body:'Deze tekst is uitsluitend tijdelijke acceptatiecontent en geen nieuwsbericht.'}).select('*').single());ok(article.status==='draft','Live editor draft create');
+ unwrap(await editor.from('news_articles').update({title:'[FVT acceptatie] bijgewerkt concept'}).eq('id',article.id).select('id').single());ok(true,'Live editor draft edit');await denied(editor.from('news_articles').update({status:'published',published_at:new Date().toISOString()}).eq('id',article.id).select('id').single(),'Live editor cannot publish')
+ await denied(moderator.from('news_articles').insert({title:'[FVT acceptatie] verboden',slug:'forbidden-'+Date.now()}),'Live moderator article create denied')
+ unwrap(await publisher.from('news_articles').update({status:'scheduled',published_at:new Date(Date.now()+86400000).toISOString()}).eq('id',article.id).select('id').single());const anon=make();ok(unwrap(await anon.from('news_articles').select('id').eq('id',article.id)).length===0,'Live scheduled article private');
+ unwrap(await publisher.from('news_articles').update({status:'published',published_at:new Date(Date.now()-60000).toISOString()}).eq('id',article.id).select('id').single());ok(unwrap(await anon.from('news_articles').select('id').eq('id',article.id)).length===1,'Live publisher publishes public article');
+ unwrap(await publisher.from('news_articles').update({status:'draft'}).eq('id',article.id).select('id').single());ok(unwrap(await anon.from('news_articles').select('id').eq('id',article.id)).length===0,'Live publisher unpublishes');
+ const category=unwrap(await member.from('forum_categories').select('id').limit(1))[0],topic=unwrap(await member.from('forum_topics').insert({category_id:category.id,title:'[FVT acceptatie] tijdelijk topic',body:'Tijdelijke releasecontrole; automatische opruiming.'}).select('*').single());
+ await denied(editor.rpc('moderate_forum_topic',{topic:topic.id,is_pinned:true,is_closed:true}),'Live editor forum moderation denied');unwrap(await moderator.rpc('moderate_forum_topic',{topic:topic.id,is_pinned:true,is_closed:true}));const mod=unwrap(await moderator.from('forum_topics').select('pinned,closed').eq('id',topic.id).single());ok(mod.pinned&&mod.closed,'Live moderator pin/lock');
+ unwrap(await moderator.rpc('admin_moderate_content',{target_table:'forum_topics',target:topic.id,operation:'hide',reason:'Temporary acceptance hide',category:null}));ok(unwrap(await anon.from('forum_topics').select('id').eq('id',topic.id)).length===0,'Live hidden topic REST denied');
+ unwrap(await admin.rpc('admin_assign_roles',{target:ids.member,requested:['member','editor','moderator'],reason:'Temporary acceptance union'}));const union=unwrap(await member.rpc('current_access'));ok(union.permissions.includes('articles.edit')&&union.permissions.includes('forum.moderate')&&!union.permissions.includes('users.manage_roles'),'Live multiple-role union');
+ unwrap(await admin.rpc('admin_assign_roles',{target:ids.member,requested:['member'],reason:'Restore temporary acceptance member'}));
+ unwrap(await admin.rpc('admin_manage_status',{target:ids.editor,new_status:'blocked',reason:'Temporary acceptance block'}));ok(unwrap(await editor.rpc('current_access')).permissions.length===0,'Blocked existing JWT loses permissions live');await denied(editor.from('news_articles').insert({title:'Blocked','slug':'blocked-'+Date.now()}),'Blocked account write denied live');unwrap(await super_admin.rpc('admin_manage_status',{target:ids.editor,new_status:'active',reason:'Restore temporary acceptance editor'}));
+ await denied(admin.rpc('admin_sync_action',{kind:'price',operation:'calibrate'}),'Admin critical price endpoint denied live');
+ const logs=unwrap(await admin.from('admin_audit_log').select('action').eq('target_id',article.id));ok(logs.length>=4,'Live actions append audit records');await denied(admin.from('admin_audit_log').delete().eq('target_id',article.id),'Live audit deletion denied');
+ unwrap(await admin.from('news_articles').delete().eq('id',article.id).select('id').single());unwrap(await moderator.rpc('admin_moderate_content',{target_table:'forum_topics',target:topic.id,operation:'delete',reason:'Temporary acceptance cleanup',category:null}));
+ writeFileSync('test-results/admin-live/api-results.json',JSON.stringify({checks,transport:'real Supabase Auth/REST/RPC and production PostgreSQL',count:checks.length},null,2));console.log(`${checks.length} live Auth/REST/RPC checks passed. Temporary account cleanup must run next.`)
+}finally{for(const client of Object.values(clients))await client.auth.signOut()}
