@@ -49,7 +49,7 @@ Admin kan lagere rollen wijzigen, niet zichzelf en niet een gebruiker met admin/
 
 ## Database, RLS en RPC
 
-Migratie: `20261009142245_fvt_admin_center.sql`; additive, lokaal tweemaal getest. Nieuwe tabellen: roles, permissions, role_permissions, user_roles, site_features, site_videos, admin_audit_log. Bestaande profiles krijgt account_status; nieuws krijgt zes statussen, featured, last_editor_id en published_by; topics/posts krijgen hidden. Geen productiecontent verwijderd. Seeds gebruiken bestaande user_id's uit profiles, geen vastgelegde generated IDs.
+Migraties: `20261009142245_fvt_admin_center.sql` (additive, lokaal tweemaal getest) en `20261009152110_admin_sync_action_boundaries.sql` (legacy prijs-sync). Nieuwe tabellen: roles, permissions, role_permissions, user_roles, site_features, site_videos, admin_audit_log. Bestaande profiles krijgt account_status; nieuws krijgt zes statussen, featured, last_editor_id en published_by; topics/posts krijgen hidden. Geen productiecontent verwijderd. Seeds gebruiken bestaande user_id's uit profiles, geen vastgelegde generated IDs.
 
 Nieuwe tabellen hebben expliciete grants en RLS. Relationele rol/mappingtables zijn niet client-schrijfbaar. Rol/status-RPC's controleren actor, permission, doel, nieuwe rollen, reden en privilegegrenzen. Audit is uitsluitend appendbaar door interne serverfuncties, leesbaar met audit.view; geen client INSERT/UPDATE/DELETE. Auditmetadata is een allowlist; geen e-mails, contentbodies, sessies of secrets.
 
@@ -110,6 +110,8 @@ Controleer vooraf dat de user_id bestaat, de transactionele resultaten één doe
 - Browser: 31 acceptancechecks tegen een geïsoleerde test-Auth/PostgREST-transportlaag met echte PostgreSQL-RLS. Dit is geen bewijs van productie-GoTrue-login. Geen productie-testcontent voor de lokale suite.
 - Screenshots en JSON-resultaat lokaal: test-results/admin; 1920/1366/820/390, geen horizontale overflow, mobiele drawer/Escape. Visueel bekeken op 1366 en 390.
 - Build: geslaagd. Exacte releasecommit, staged/live deployment en livechecks worden in het eindrapport toegevoegd na release.
+
+Legacy prijs-sync gebruikt nu actuele sync.run; import vereist data.correct; calibratie/retention vereisen system.manage (super_admin). Beide Edge Functions behouden getUser-JWT-validatie en hun bestaande Vault-scheduler. Geen nieuwe scraper. Achtergrond-scheduler blijft functioneren zonder browserrol.
 
 ## Rollback
 

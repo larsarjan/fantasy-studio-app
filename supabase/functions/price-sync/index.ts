@@ -3,19 +3,22 @@ import {syncPrices} from '../../../src/services/priceCollector.js'
 import {PRICE_MODEL_VERSION} from '../../../src/services/priceModel.js'
 const headers={'Content-Type':'application/json','Cache-Control':'no-store','Access-Control-Allow-Origin':'https://fantasy-studio-app.vercel.app','Access-Control-Allow-Headers':'authorization, apikey, content-type, x-client-info','Access-Control-Allow-Methods':'POST, OPTIONS'}
 Deno.serve(async req=>{
- const reply=(body:unknown,status=200)=>new Response(JSON.stringify(body),{status,headers})
+ const origin=req.headers.get('origin');const cors={...headers,Vary:'Origin',...(['https://fantasyvoetbaltalk.nl','https://www.fantasyvoetbaltalk.nl','https://fantasy-studio-app.vercel.app','http://localhost:5173','http://localhost:4173'].includes(origin||'')?{'Access-Control-Allow-Origin':origin!}:{})};
+ const reply=(body:unknown,status=200)=>new Response(JSON.stringify(body),{status,headers:cors})
  if(req.method==='OPTIONS')return reply({})
  if(req.method!=='POST')return reply({error:'Method not allowed'},405)
  const db=createClient(Deno.env.get('SUPABASE_URL')!,Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,{auth:{persistSession:false,autoRefreshToken:false}})
  try{
   let scheduled=false
+  let actor:ReturnType<typeof createClient>|null=null
   const scheduleToken=req.headers.get('x-sync-token')
   if(scheduleToken){const r=await db.rpc('prominent_check_scheduler',{supplied_token:scheduleToken});if(r.error||r.data!==true)return reply({error:'Unauthorized'},401);scheduled=true}
-  else{const token=req.headers.get('authorization')?.replace(/^Bearer /,'');if(!token)return reply({error:'Unauthorized'},401);const user=await db.auth.getUser(token);if(user.error||!user.data.user)return reply({error:'Unauthorized'},401);const profile=await db.from('profiles').select('role').eq('id',user.data.user.id).single();if(profile.error||profile.data?.role!=='admin')return reply({error:'Forbidden'},403)}
+  else{const token=req.headers.get('authorization')?.replace(/^Bearer /,'');if(!token)return reply({error:'Unauthorized'},401);const user=await db.auth.getUser(token);if(user.error||!user.data.user)return reply({error:'Unauthorized'},401);actor=createClient(Deno.env.get('SUPABASE_URL')!,Deno.env.get('SUPABASE_ANON_KEY')!,{auth:{persistSession:false,autoRefreshToken:false},global:{headers:{Authorization:`Bearer ${token}`}}});const access=await actor.rpc('current_access');if(access.error||!access.data?.permissions?.includes('sync.run'))return reply({error:'Forbidden'},403)}
   // Bounded stream read also protects requests without Content-Length.
   let length=0;const chunks=[];for await(const chunk of req.body||[]){length+=chunk.length;if(length>8*1024*1024)return reply({error:'Body too large'},413);chunks.push(chunk)}
   const buffer=new Uint8Array(length);let offset=0;for(const chunk of chunks){buffer.set(chunk,offset);offset+=chunk.length}
   const text=new TextDecoder().decode(buffer),body=text?JSON.parse(text):{}
+  if(actor){const audit=await actor.rpc('admin_sync_action',{kind:'price',operation:body.action||'sync'});if(audit.error)return reply({error:'Forbidden'},403)}
   if(body.action==='calibrate'){
    if(scheduled)return reply({error:'Admin required'},403)
    if(body.model_version!==PRICE_MODEL_VERSION)return reply({error:'Model version mismatch'},400)
