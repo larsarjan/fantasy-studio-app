@@ -1,4 +1,4 @@
-import { getPlayerImage } from '../services/playerImages.js'
+import { renderPlayerAvatar } from '../services/playerPhotos.js'
 export { logoSlug } from '../services/clubIdentity.js'
 import { logoSlug } from '../services/clubIdentity.js'
 
@@ -6,7 +6,7 @@ export const esc = (value) => String(value ?? '').replaceAll('&', '&amp;').repla
 export const fmt = (value, digits = 1) => value === null || value === undefined || value === '' || !Number.isFinite(Number(value)) ? '—' : Number(value).toLocaleString('nl-NL', { minimumFractionDigits: digits, maximumFractionDigits: digits })
 export const positionLabel = (value) => ({ keeper: 'Doelman', verdediger: 'Verdediger', middenvelder: 'Middenvelder', aanvaller: 'Aanvaller' }[String(value ?? '').toLowerCase()] ?? value ?? 'Speler')
 export const clubLogo = (club) => `<img class="intel-club-logo" src="./club-logos/${logoSlug(club)}.png" alt="${esc(club)}" onerror="this.hidden=true">`
-export function playerPhoto(player, className = 'intel-player-photo') { const src = getPlayerImage(`${player?.id}.webp`); return src ? `<img class="${className}" src="${src}" alt="${esc(player?.name)}" loading="lazy">` : `<span class="${className} intel-photo-fallback">${esc(player?.name?.[0] ?? '?')}</span>` }
+export function playerPhoto(player, className = 'intel-player-photo') { return renderPlayerAvatar(player, { className, size: className.includes('mini') ? 32 : 64 }) }
 export function scoreBar(value, label = '') { return `<div class="intel-scorebar" title="${esc(label)} ${fmt(value, 0)}/100"><i style="--score:${Math.max(0, Math.min(100, Number(value) || 0))}%"></i></div>` }
 export function playerLine(player, scoreKey = 'trajectoryScore') { return `<button class="intel-player-line" data-intel-player="${esc(player.id)}"><span>${playerPhoto(player, 'intel-mini-photo')}<span><strong>${esc(player.name)}</strong><small>${esc(player.club)} · ${esc(positionLabel(player.position))}</small></span></span><b>${fmt(player[scoreKey], 0)}</b></button>` }
 function opportunityMatrixBase(points, { highlight = {} } = {}) {

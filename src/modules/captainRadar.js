@@ -3,7 +3,7 @@ import { renderPersonalContext } from './personalContext.js'
 import { getChipUsage, getDatabaseSummary, getElitePlayerStats, getEnrichedPlayers, getFixtures } from '../services/database.js'
 import { eliteNumericSort, formatEliteMetric, selectEliteView } from '../services/eliteManagerIntelligence.js'
 import { buildCaptainRadar, CAPTAIN_RADAR_CONFIG, getCaptainRadarAvailableRounds, getCaptainRadarDefaultRound } from '../services/captainRadarEngine.js'
-import { getPlayerImage } from '../services/playerImages.js'
+import { renderPlayerAvatar } from '../services/playerPhotos.js'
 import { getPlayerDetailProfile, renderPlayerDetailProfile } from './players.js'
 
 const state = { season: '', round: 0, position: 'all', club: 'all', type: 'all', sort: 'radarScore', direction: 'desc', showAll: false, selectedId: '', selectedTab: 'overview' }
@@ -12,7 +12,7 @@ const esc = (v) => String(v ?? '').replaceAll('&', '&amp;').replaceAll('<', '&lt
 const number = (v, digits = 1) => Number.isFinite(Number(v)) ? Number(v).toLocaleString('nl-NL', { minimumFractionDigits: digits, maximumFractionDigits: digits }) : '—'
 const positionLabel = (v) => ({ keeper: 'Doelman', verdediger: 'Verdediger', middenvelder: 'Middenvelder', aanvaller: 'Spits' }[String(v ?? '').toLowerCase()] ?? v ?? 'Speler')
 const logoSlug = (club) => ({ 'ado den haag': 'ado-den-haag', cambuur: 'cambuur-leeuwarden', 'cambuur leeuwarden': 'cambuur-leeuwarden', 'fc groningen': 'fc-groningen', 'fc twente': 'fc-twente', 'fc utrecht': 'fc-utrecht', 'fortuna sittard': 'fortuna-sittard', 'go ahead eagles': 'go-ahead-eagles', 'n.e.c.': 'nec', nec: 'nec', 'pec zwolle': 'pec-zwolle', 'sc heerenveen': 'sc-heerenveen', heerenveen: 'sc-heerenveen', 'sparta rotterdam': 'sparta-rotterdam', 'willem ii': 'willem-ii' }[String(club ?? '').toLowerCase()] ?? String(club ?? '').toLowerCase().replace(/[^a-z0-9]+/g, '-'))
-const photo = (p, className) => { const src = getPlayerImage(`${p.id}.webp`); return src ? `<img class="${className}" src="${src}" alt="${esc(p.name)}" loading="lazy">` : `<span class="${className} radar-photo-fallback">${esc(p.name?.[0] ?? '?')}</span>` }
+const photo = (p, className) => renderPlayerAvatar(p, { className, size: className.includes('hero') ? 80 : 36 })
 const logo = (club) => `<img class="radar-club-logo" src="./club-logos/${logoSlug(club)}.png" alt="${esc(club)}" onerror="this.hidden=true">`
 
 function ensureState() {

@@ -1,3 +1,6 @@
+import { initializePlayerPhotos } from './services/playerPhotoRuntime.js'
+import './playerPhotos.css'
+import { supabase as photoClient } from './platform/client.js'
 import { safeHtml } from './platform/html.js'
 import './style.css'
 import './fixtures.css'
@@ -74,6 +77,7 @@ import { createAnalysisScreen, mountAnalysisScreen } from './modules/analysis.js
 import { createDifferentialsScreen, mountDifferentialsScreen } from './modules/differentials.js'
 import { createDashboardScreen, mountDashboardScreen } from './modules/dashboard.js'
 
+initializePlayerPhotos(photoClient)
 await initializeDatabase()
 
 let activeScreenName = 'dashboard'

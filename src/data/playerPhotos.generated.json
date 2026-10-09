@@ -1,0 +1,1598 @@
+{
+  "provenance": "Existing explicit elite_player_stats playerId/espnPlayerId pairs; no new name matching. Local filename IDs belong to Studio 2026/2027.",
+  "aliases": {
+    "espn:2026/2027:340": "studio:2026/2027:20260072",
+    "espn:2026/2027:173": "studio:2026/2027:20260140",
+    "espn:2026/2027:367": "studio:2026/2027:20260200",
+    "espn:2026/2027:584": "studio:2026/2027:20260573",
+    "espn:2026/2027:120": "studio:2026/2027:20260255",
+    "espn:2026/2027:334": "studio:2026/2027:20260025",
+    "espn:2026/2027:411": "studio:2026/2027:20260045",
+    "espn:2026/2027:79": "studio:2026/2027:20260296",
+    "espn:2026/2027:510": "studio:2026/2027:20260510",
+    "espn:2026/2027:273": "studio:2026/2027:20260336",
+    "espn:2026/2027:539": "studio:2026/2027:20260533",
+    "espn:2026/2027:453": "studio:2026/2027:20260440",
+    "espn:2026/2027:54": "studio:2026/2027:20260016",
+    "espn:2026/2027:437": "studio:2026/2027:20260188",
+    "espn:2026/2027:502": "studio:2026/2027:20260499",
+    "espn:2026/2027:239": "studio:2026/2027:20260450",
+    "espn:2026/2027:241": "studio:2026/2027:20260014",
+    "espn:2026/2027:463": "studio:2026/2027:20260212",
+    "espn:2026/2027:554": "studio:2026/2027:20260576",
+    "espn:2026/2027:18": "studio:2026/2027:20260468",
+    "espn:2026/2027:446": "studio:2026/2027:20260283",
+    "espn:2026/2027:394": "studio:2026/2027:20260144",
+    "espn:2026/2027:190": "studio:2026/2027:20260366",
+    "espn:2026/2027:397": "studio:2026/2027:20260242",
+    "espn:2026/2027:318": "studio:2026/2027:20260158",
+    "espn:2026/2027:501": "studio:2026/2027:20260496",
+    "espn:2026/2027:432": "studio:2026/2027:20260451",
+    "espn:2026/2027:516": "studio:2026/2027:20260508",
+    "espn:2026/2027:86": "studio:2026/2027:20260005",
+    "espn:2026/2027:31": "studio:2026/2027:20260123",
+    "espn:2026/2027:577": "studio:2026/2027:20260587",
+    "espn:2026/2027:64": "studio:2026/2027:20260128",
+    "espn:2026/2027:444": "studio:2026/2027:20260190",
+    "espn:2026/2027:493": "studio:2026/2027:20260489",
+    "espn:2026/2027:183": "studio:2026/2027:20260288",
+    "espn:2026/2027:139": "studio:2026/2027:20260057",
+    "espn:2026/2027:413": "studio:2026/2027:20260070",
+    "espn:2026/2027:90": "studio:2026/2027:20260145",
+    "espn:2026/2027:504": "studio:2026/2027:20260503",
+    "espn:2026/2027:134": "studio:2026/2027:20260032",
+    "espn:2026/2027:308": "studio:2026/2027:20260389",
+    "espn:2026/2027:320": "studio:2026/2027:20260161",
+    "espn:2026/2027:348": "studio:2026/2027:20260217",
+    "espn:2026/2027:468": "studio:2026/2027:20260422",
+    "espn:2026/2027:26": "studio:2026/2027:20260083",
+    "espn:2026/2027:47": "studio:2026/2027:20260374",
+    "espn:2026/2027:13": "studio:2026/2027:20260404",
+    "espn:2026/2027:177": "studio:2026/2027:20260173",
+    "espn:2026/2027:277": "studio:2026/2027:20260224",
+    "espn:2026/2027:297": "studio:2026/2027:20260235",
+    "espn:2026/2027:196": "studio:2026/2027:20260445",
+    "espn:2026/2027:181": "studio:2026/2027:20260345",
+    "espn:2026/2027:416": "studio:2026/2027:20260186",
+    "espn:2026/2027:266": "studio:2026/2027:20260105",
+    "espn:2026/2027:401": "studio:2026/2027:20260216",
+    "espn:2026/2027:101": "studio:2026/2027:20260229",
+    "espn:2026/2027:574": "studio:2026/2027:20260549",
+    "espn:2026/2027:492": "studio:2026/2027:20260509",
+    "espn:2026/2027:212": "studio:2026/2027:20260074",
+    "espn:2026/2027:293": "studio:2026/2027:20260180",
+    "espn:2026/2027:69": "studio:2026/2027:20260313",
+    "espn:2026/2027:205": "studio:2026/2027:20260096",
+    "espn:2026/2027:327": "studio:2026/2027:20260332",
+    "espn:2026/2027:261": "studio:2026/2027:20260040",
+    "espn:2026/2027:6": "studio:2026/2027:20260196",
+    "espn:2026/2027:362": "studio:2026/2027:20260456",
+    "espn:2026/2027:169": "studio:2026/2027:20260035",
+    "espn:2026/2027:112": "studio:2026/2027:20260130",
+    "espn:2026/2027:508": "studio:2026/2027:20260507",
+    "espn:2026/2027:217": "studio:2026/2027:20260321",
+    "espn:2026/2027:557": "studio:2026/2027:20260547",
+    "espn:2026/2027:262": "studio:2026/2027:20260041",
+    "espn:2026/2027:583": "studio:2026/2027:20260552",
+    "espn:2026/2027:459": "studio:2026/2027:20260208",
+    "espn:2026/2027:5": "studio:2026/2027:20260195",
+    "espn:2026/2027:371": "studio:2026/2027:20260204",
+    "espn:2026/2027:122": "studio:2026/2027:20260349",
+    "espn:2026/2027:447": "studio:2026/2027:20260263",
+    "espn:2026/2027:41": "studio:2026/2027:20260266",
+    "espn:2026/2027:290": "studio:2026/2027:20260135",
+    "espn:2026/2027:332": "studio:2026/2027:20260392",
+    "espn:2026/2027:188": "studio:2026/2027:20260346",
+    "espn:2026/2027:88": "studio:2026/2027:20260028",
+    "espn:2026/2027:537": "studio:2026/2027:20260526",
+    "espn:2026/2027:114": "studio:2026/2027:20260063",
+    "espn:2026/2027:495": "studio:2026/2027:20260490",
+    "espn:2026/2027:70": "studio:2026/2027:20260375",
+    "espn:2026/2027:402": "studio:2026/2027:20260329",
+    "espn:2026/2027:346": "studio:2026/2027:20260108",
+    "espn:2026/2027:145": "studio:2026/2027:20260171",
+    "espn:2026/2027:287": "studio:2026/2027:20260042",
+    "espn:2026/2027:225": "studio:2026/2027:20260310",
+    "espn:2026/2027:242": "studio:2026/2027:20260018",
+    "espn:2026/2027:237": "studio:2026/2027:20260425",
+    "espn:2026/2027:89": "studio:2026/2027:20260085",
+    "espn:2026/2027:319": "studio:2026/2027:20260142",
+    "espn:2026/2027:222": "studio:2026/2027:20260247",
+    "espn:2026/2027:373": "studio:2026/2027:20260409",
+    "espn:2026/2027:166": "studio:2026/2027:20260002",
+    "espn:2026/2027:165": "studio:2026/2027:20260434",
+    "espn:2026/2027:247": "studio:2026/2027:20260110",
+    "espn:2026/2027:476": "studio:2026/2027:20260498",
+    "espn:2026/2027:71": "studio:2026/2027:20260291",
+    "espn:2026/2027:323": "studio:2026/2027:20260280",
+    "espn:2026/2027:172": "studio:2026/2027:20260088",
+    "espn:2026/2027:325": "studio:2026/2027:20260328",
+    "espn:2026/2027:284": "studio:2026/2027:20260448",
+    "espn:2026/2027:451": "studio:2026/2027:20260446",
+    "espn:2026/2027:487": "studio:2026/2027:20260477",
+    "espn:2026/2027:507": "studio:2026/2027:20260506",
+    "espn:2026/2027:74": "studio:2026/2027:20260271",
+    "espn:2026/2027:529": "studio:2026/2027:20260536",
+    "espn:2026/2027:393": "studio:2026/2027:20260071",
+    "espn:2026/2027:234": "studio:2026/2027:20260218",
+    "espn:2026/2027:505": "studio:2026/2027:20260500",
+    "espn:2026/2027:35": "studio:2026/2027:20260165",
+    "espn:2026/2027:146": "studio:2026/2027:20260084",
+    "espn:2026/2027:150": "studio:2026/2027:20260289",
+    "espn:2026/2027:133": "studio:2026/2027:20260011",
+    "espn:2026/2027:264": "studio:2026/2027:20260067",
+    "espn:2026/2027:386": "studio:2026/2027:20260020",
+    "espn:2026/2027:494": "studio:2026/2027:20260486",
+    "espn:2026/2027:486": "studio:2026/2027:20260482",
+    "espn:2026/2027:295": "studio:2026/2027:20260157",
+    "espn:2026/2027:317": "studio:2026/2027:20260090",
+    "espn:2026/2027:250": "studio:2026/2027:20260267",
+    "espn:2026/2027:16": "studio:2026/2027:20260407",
+    "espn:2026/2027:306": "studio:2026/2027:20260302",
+    "espn:2026/2027:37": "studio:2026/2027:20260245",
+    "espn:2026/2027:238": "studio:2026/2027:20260454",
+    "espn:2026/2027:56": "studio:2026/2027:20260077",
+    "espn:2026/2027:127": "studio:2026/2027:20260274",
+    "espn:2026/2027:201": "studio:2026/2027:20260037",
+    "espn:2026/2027:25": "studio:2026/2027:20260080",
+    "espn:2026/2027:478": "studio:2026/2027:20260494",
+    "espn:2026/2027:17": "studio:2026/2027:20260408",
+    "espn:2026/2027:113": "studio:2026/2027:20260066",
+    "espn:2026/2027:42": "studio:2026/2027:20260284",
+    "espn:2026/2027:391": "studio:2026/2027:20260138",
+    "espn:2026/2027:304": "studio:2026/2027:20260357",
+    "espn:2026/2027:207": "studio:2026/2027:20260127",
+    "espn:2026/2027:352": "studio:2026/2027:20260262",
+    "espn:2026/2027:272": "studio:2026/2027:20260323",
+    "espn:2026/2027:33": "studio:2026/2027:20260160",
+    "espn:2026/2027:528": "studio:2026/2027:20260523",
+    "espn:2026/2027:168": "studio:2026/2027:20260034",
+    "espn:2026/2027:535": "studio:2026/2027:20260529",
+    "espn:2026/2027:251": "studio:2026/2027:20260265",
+    "espn:2026/2027:418": "studio:2026/2027:20260150",
+    "espn:2026/2027:67": "studio:2026/2027:20260312",
+    "espn:2026/2027:524": "studio:2026/2027:20260519",
+    "espn:2026/2027:220": "studio:2026/2027:20260261",
+    "espn:2026/2027:32": "studio:2026/2027:20260164",
+    "espn:2026/2027:390": "studio:2026/2027:20260134",
+    "espn:2026/2027:506": "studio:2026/2027:20260502",
+    "espn:2026/2027:186": "studio:2026/2027:20260237",
+    "espn:2026/2027:83": "studio:2026/2027:20260442",
+    "espn:2026/2027:576": "studio:2026/2027:20260568",
+    "espn:2026/2027:244": "studio:2026/2027:20260124",
+    "espn:2026/2027:423": "studio:2026/2027:20260236",
+    "espn:2026/2027:193": "studio:2026/2027:20260277",
+    "espn:2026/2027:51": "studio:2026/2027:20260455",
+    "espn:2026/2027:409": "studio:2026/2027:20260318",
+    "espn:2026/2027:462": "studio:2026/2027:20260211",
+    "espn:2026/2027:206": "studio:2026/2027:20260154",
+    "espn:2026/2027:14": "studio:2026/2027:20260405",
+    "espn:2026/2027:517": "studio:2026/2027:20260512",
+    "espn:2026/2027:27": "studio:2026/2027:20260272",
+    "espn:2026/2027:187": "studio:2026/2027:20260340",
+    "espn:2026/2027:153": "studio:2026/2027:20260222",
+    "espn:2026/2027:333": "studio:2026/2027:20260428",
+    "espn:2026/2027:341": "studio:2026/2027:20260059",
+    "espn:2026/2027:538": "studio:2026/2027:20260525",
+    "espn:2026/2027:24": "studio:2026/2027:20260060",
+    "espn:2026/2027:438": "studio:2026/2027:20260056",
+    "espn:2026/2027:268": "studio:2026/2027:20260148",
+    "espn:2026/2027:357": "studio:2026/2027:20260333",
+    "espn:2026/2027:336": "studio:2026/2027:20260043",
+    "espn:2026/2027:412": "studio:2026/2027:20260046",
+    "espn:2026/2027:368": "studio:2026/2027:20260201",
+    "espn:2026/2027:497": "studio:2026/2027:20260488",
+    "espn:2026/2027:385": "studio:2026/2027:20260009",
+    "espn:2026/2027:4": "studio:2026/2027:20260194",
+    "espn:2026/2027:475": "studio:2026/2027:20260475",
+    "espn:2026/2027:164": "studio:2026/2027:20260432",
+    "espn:2026/2027:347": "studio:2026/2027:20260314",
+    "espn:2026/2027:414": "studio:2026/2027:20260078",
+    "espn:2026/2027:111": "studio:2026/2027:20260027",
+    "espn:2026/2027:356": "studio:2026/2027:20260276",
+    "espn:2026/2027:488": "studio:2026/2027:20260476",
+    "espn:2026/2027:34": "studio:2026/2027:20260112",
+    "espn:2026/2027:128": "studio:2026/2027:20260275",
+    "espn:2026/2027:460": "studio:2026/2027:20260209",
+    "espn:2026/2027:363": "studio:2026/2027:20260050",
+    "espn:2026/2027:137": "studio:2026/2027:20260168",
+    "espn:2026/2027:126": "studio:2026/2027:20260344",
+    "espn:2026/2027:170": "studio:2026/2027:20260106",
+    "espn:2026/2027:58": "studio:2026/2027:20260146",
+    "espn:2026/2027:420": "studio:2026/2027:20260187",
+    "espn:2026/2027:29": "studio:2026/2027:20260099",
+    "espn:2026/2027:160": "studio:2026/2027:20260225",
+    "espn:2026/2027:427": "studio:2026/2027:20260305",
+    "espn:2026/2027:472": "studio:2026/2027:20260472",
+    "espn:2026/2027:184": "studio:2026/2027:20260258",
+    "espn:2026/2027:310": "studio:2026/2027:20260426",
+    "espn:2026/2027:141": "studio:2026/2027:20260081",
+    "espn:2026/2027:344": "studio:2026/2027:20260073",
+    "espn:2026/2027:585": "studio:2026/2027:20260559",
+    "espn:2026/2027:275": "studio:2026/2027:20260299",
+    "espn:2026/2027:154": "studio:2026/2027:20260376",
+    "espn:2026/2027:98": "studio:2026/2027:20260243",
+    "espn:2026/2027:408": "studio:2026/2027:20260373",
+    "espn:2026/2027:82": "studio:2026/2027:20260427",
+    "espn:2026/2027:419": "studio:2026/2027:20260098",
+    "espn:2026/2027:132": "studio:2026/2027:20260457",
+    "espn:2026/2027:258": "studio:2026/2027:20260447",
+    "espn:2026/2027:59": "studio:2026/2027:20260152",
+    "espn:2026/2027:2": "studio:2026/2027:20260049",
+    "espn:2026/2027:198": "studio:2026/2027:20260461",
+    "espn:2026/2027:149": "studio:2026/2027:20260320",
+    "espn:2026/2027:278": "studio:2026/2027:20260335",
+    "espn:2026/2027:174": "studio:2026/2027:20260155",
+    "espn:2026/2027:202": "studio:2026/2027:20260064",
+    "espn:2026/2027:288": "studio:2026/2027:20260118",
+    "espn:2026/2027:84": "studio:2026/2027:20260437",
+    "espn:2026/2027:315": "studio:2026/2027:20260086",
+    "espn:2026/2027:387": "studio:2026/2027:20260044",
+    "espn:2026/2027:135": "studio:2026/2027:20260033",
+    "espn:2026/2027:383": "studio:2026/2027:20260470",
+    "espn:2026/2027:351": "studio:2026/2027:20260221",
+    "espn:2026/2027:11": "studio:2026/2027:20260402",
+    "espn:2026/2027:255": "studio:2026/2027:20260369",
+    "espn:2026/2027:405": "studio:2026/2027:20260233",
+    "espn:2026/2027:280": "studio:2026/2027:20260240",
+    "espn:2026/2027:171": "studio:2026/2027:20260113",
+    "espn:2026/2027:46": "studio:2026/2027:20260363",
+    "espn:2026/2027:289": "studio:2026/2027:20260087",
+    "espn:2026/2027:203": "studio:2026/2027:20260153",
+    "espn:2026/2027:354": "studio:2026/2027:20260347",
+    "espn:2026/2027:335": "studio:2026/2027:20260008",
+    "espn:2026/2027:28": "studio:2026/2027:20260095",
+    "espn:2026/2027:443": "studio:2026/2027:20260136",
+    "espn:2026/2027:143": "studio:2026/2027:20260100",
+    "espn:2026/2027:8": "studio:2026/2027:20260198",
+    "espn:2026/2027:546": "studio:2026/2027:20260540",
+    "espn:2026/2027:254": "studio:2026/2027:20260322",
+    "espn:2026/2027:435": "studio:2026/2027:20260047",
+    "espn:2026/2027:99": "studio:2026/2027:20260397",
+    "espn:2026/2027:430": "studio:2026/2027:20260334",
+    "espn:2026/2027:159": "studio:2026/2027:20260249",
+    "espn:2026/2027:115": "studio:2026/2027:20260166",
+    "espn:2026/2027:1": "studio:2026/2027:20260048",
+    "espn:2026/2027:457": "studio:2026/2027:20260206",
+    "espn:2026/2027:291": "studio:2026/2027:20260149",
+    "espn:2026/2027:182": "studio:2026/2027:20260264",
+    "espn:2026/2027:282": "studio:2026/2027:20260462",
+    "espn:2026/2027:129": "studio:2026/2027:20260429",
+    "espn:2026/2027:142": "studio:2026/2027:20260170",
+    "espn:2026/2027:301": "studio:2026/2027:20260259",
+    "espn:2026/2027:211": "studio:2026/2027:20260120",
+    "espn:2026/2027:19": "studio:2026/2027:20260469",
+    "espn:2026/2027:302": "studio:2026/2027:20260257",
+    "espn:2026/2027:224": "studio:2026/2027:20260223",
+    "espn:2026/2027:366": "studio:2026/2027:20260199",
+    "espn:2026/2027:311": "studio:2026/2027:20260430",
+    "espn:2026/2027:355": "studio:2026/2027:20260238",
+    "espn:2026/2027:7": "studio:2026/2027:20260197",
+    "espn:2026/2027:279": "studio:2026/2027:20260295",
+    "espn:2026/2027:407": "studio:2026/2027:20260353",
+    "espn:2026/2027:426": "studio:2026/2027:20260282",
+    "espn:2026/2027:388": "studio:2026/2027:20260091",
+    "espn:2026/2027:131": "studio:2026/2027:20260449",
+    "espn:2026/2027:80": "studio:2026/2027:20260292",
+    "espn:2026/2027:121": "studio:2026/2027:20260256",
+    "espn:2026/2027:399": "studio:2026/2027:20260268",
+    "espn:2026/2027:392": "studio:2026/2027:20260075",
+    "espn:2026/2027:570": "studio:2026/2027:20260586",
+    "espn:2026/2027:227": "studio:2026/2027:20260341",
+    "espn:2026/2027:481": "studio:2026/2027:20260516",
+    "espn:2026/2027:105": "studio:2026/2027:20260398",
+    "espn:2026/2027:350": "studio:2026/2027:20260215",
+    "espn:2026/2027:204": "studio:2026/2027:20260058",
+    "espn:2026/2027:382": "studio:2026/2027:20260418",
+    "espn:2026/2027:94": "studio:2026/2027:20260137",
+    "espn:2026/2027:123": "studio:2026/2027:20260355",
+    "espn:2026/2027:218": "studio:2026/2027:20260381",
+    "espn:2026/2027:485": "studio:2026/2027:20260478",
+    "espn:2026/2027:50": "studio:2026/2027:20260443",
+    "espn:2026/2027:246": "studio:2026/2027:20260114",
+    "espn:2026/2027:361": "studio:2026/2027:20260431",
+    "espn:2026/2027:461": "studio:2026/2027:20260210",
+    "espn:2026/2027:15": "studio:2026/2027:20260406",
+    "espn:2026/2027:167": "studio:2026/2027:20260022",
+    "espn:2026/2027:309": "studio:2026/2027:20260435",
+    "espn:2026/2027:471": "studio:2026/2027:20260307",
+    "espn:2026/2027:52": "studio:2026/2027:20260013",
+    "espn:2026/2027:138": "studio:2026/2027:20260169",
+    "espn:2026/2027:292": "studio:2026/2027:20260115",
+    "espn:2026/2027:313": "studio:2026/2027:20260023",
+    "espn:2026/2027:245": "studio:2026/2027:20260141",
+    "espn:2026/2027:199": "studio:2026/2027:20260036",
+    "espn:2026/2027:312": "studio:2026/2027:20260012",
+    "espn:2026/2027:561": "studio:2026/2027:20260551",
+    "espn:2026/2027:396": "studio:2026/2027:20260185",
+    "espn:2026/2027:235": "studio:2026/2027:20260385",
+    "espn:2026/2027:197": "studio:2026/2027:20260444",
+    "espn:2026/2027:425": "studio:2026/2027:20260330",
+    "espn:2026/2027:417": "studio:2026/2027:20260082",
+    "espn:2026/2027:175": "studio:2026/2027:20260079",
+    "espn:2026/2027:299": "studio:2026/2027:20260220",
+    "espn:2026/2027:76": "studio:2026/2027:20260311",
+    "espn:2026/2027:331": "studio:2026/2027:20260281",
+    "espn:2026/2027:162": "studio:2026/2027:20260304",
+    "espn:2026/2027:214": "studio:2026/2027:20260177",
+    "espn:2026/2027:316": "studio:2026/2027:20260107",
+    "espn:2026/2027:91": "studio:2026/2027:20260076",
+    "espn:2026/2027:39": "studio:2026/2027:20260214",
+    "espn:2026/2027:270": "studio:2026/2027:20260117",
+    "espn:2026/2027:223": "studio:2026/2027:20260383",
+    "espn:2026/2027:514": "studio:2026/2027:20260513",
+    "espn:2026/2027:345": "studio:2026/2027:20260162",
+    "espn:2026/2027:442": "studio:2026/2027:20260156",
+    "espn:2026/2027:404": "studio:2026/2027:20260250",
+    "espn:2026/2027:38": "studio:2026/2027:20260246",
+    "espn:2026/2027:422": "studio:2026/2027:20260131",
+    "espn:2026/2027:359": "studio:2026/2027:20260361",
+    "espn:2026/2027:249": "studio:2026/2027:20260306",
+    "espn:2026/2027:496": "studio:2026/2027:20260491",
+    "espn:2026/2027:296": "studio:2026/2027:20260232",
+    "espn:2026/2027:45": "studio:2026/2027:20260348",
+    "espn:2026/2027:119": "studio:2026/2027:20260253",
+    "espn:2026/2027:230": "studio:2026/2027:20260331",
+    "espn:2026/2027:136": "studio:2026/2027:20260017",
+    "espn:2026/2027:410": "studio:2026/2027:20260433",
+    "espn:2026/2027:23": "studio:2026/2027:20260062",
+    "espn:2026/2027:294": "studio:2026/2027:20260181",
+    "espn:2026/2027:298": "studio:2026/2027:20260287",
+    "espn:2026/2027:513": "studio:2026/2027:20260520",
+    "espn:2026/2027:479": "studio:2026/2027:20260493",
+    "espn:2026/2027:253": "studio:2026/2027:20260227",
+    "espn:2026/2027:92": "studio:2026/2027:20260132",
+    "espn:2026/2027:140": "studio:2026/2027:20260129",
+    "espn:2026/2027:265": "studio:2026/2027:20260102",
+    "espn:2026/2027:271": "studio:2026/2027:20260179",
+    "espn:2026/2027:108": "studio:2026/2027:20260467",
+    "espn:2026/2027:406": "studio:2026/2027:20260239",
+    "espn:2026/2027:563": "studio:2026/2027:20260562",
+    "espn:2026/2027:452": "studio:2026/2027:20260453",
+    "espn:2026/2027:330": "studio:2026/2027:20260230",
+    "espn:2026/2027:436": "studio:2026/2027:20260019",
+    "espn:2026/2027:40": "studio:2026/2027:20260279",
+    "espn:2026/2027:72": "studio:2026/2027:20260297",
+    "espn:2026/2027:66": "studio:2026/2027:20260273",
+    "espn:2026/2027:107": "studio:2026/2027:20260463",
+    "espn:2026/2027:360": "studio:2026/2027:20260219",
+    "espn:2026/2027:449": "studio:2026/2027:20260228",
+    "espn:2026/2027:321": "studio:2026/2027:20260101",
+    "espn:2026/2027:240": "studio:2026/2027:20260465",
+    "espn:2026/2027:109": "studio:2026/2027:20260010",
+    "espn:2026/2027:339": "studio:2026/2027:20260092",
+    "espn:2026/2027:228": "studio:2026/2027:20260316",
+    "espn:2026/2027:213": "studio:2026/2027:20260133",
+    "espn:2026/2027:62": "studio:2026/2027:20260119",
+    "espn:2026/2027:259": "studio:2026/2027:20260387",
+    "espn:2026/2027:269": "studio:2026/2027:20260143",
+    "espn:2026/2027:157": "studio:2026/2027:20260226",
+    "espn:2026/2027:389": "studio:2026/2027:20260089",
+    "espn:2026/2027:509": "studio:2026/2027:20260504",
+    "espn:2026/2027:395": "studio:2026/2027:20260184",
+    "espn:2026/2027:445": "studio:2026/2027:20260061",
+    "espn:2026/2027:477": "studio:2026/2027:20260479",
+    "espn:2026/2027:285": "studio:2026/2027:20260466",
+    "espn:2026/2027:219": "studio:2026/2027:20260382",
+    "espn:2026/2027:540": "studio:2026/2027:20260541",
+    "espn:2026/2027:454": "studio:2026/2027:20260053",
+    "espn:2026/2027:260": "studio:2026/2027:20260039",
+    "espn:2026/2027:208": "studio:2026/2027:20260176",
+    "espn:2026/2027:144": "studio:2026/2027:20260093",
+    "espn:2026/2027:338": "studio:2026/2027:20260122",
+    "espn:2026/2027:424": "studio:2026/2027:20260244",
+    "espn:2026/2027:63": "studio:2026/2027:20260109",
+    "espn:2026/2027:9": "studio:2026/2027:20260400",
+    "espn:2026/2027:221": "studio:2026/2027:20260251",
+    "espn:2026/2027:274": "studio:2026/2027:20260285",
+    "espn:2026/2027:286": "studio:2026/2027:20260007",
+    "espn:2026/2027:500": "studio:2026/2027:20260495",
+    "espn:2026/2027:314": "studio:2026/2027:20260024",
+    "espn:2026/2027:3": "studio:2026/2027:20260193",
+    "espn:2026/2027:130": "studio:2026/2027:20260439",
+    "espn:2026/2027:102": "studio:2026/2027:20260290",
+    "espn:2026/2027:61": "studio:2026/2027:20260069",
+    "espn:2026/2027:530": "studio:2026/2027:20260524",
+    "espn:2026/2027:480": "studio:2026/2027:20260517",
+    "espn:2026/2027:148": "studio:2026/2027:20260241",
+    "espn:2026/2027:81": "studio:2026/2027:20260460",
+    "espn:2026/2027:55": "studio:2026/2027:20260003",
+    "espn:2026/2027:210": "studio:2026/2027:20260103",
+    "espn:2026/2027:117": "studio:2026/2027:20260167",
+    "espn:2026/2027:12": "studio:2026/2027:20260403",
+    "espn:2026/2027:473": "studio:2026/2027:20260473",
+    "espn:2026/2027:421": "studio:2026/2027:20260159",
+    "espn:2026/2027:434": "studio:2026/2027:20260004",
+    "espn:2026/2027:104": "studio:2026/2027:20260234",
+    "espn:2026/2027:85": "studio:2026/2027:20260441",
+    "espn:2026/2027:433": "studio:2026/2027:20260438",
+    "espn:2026/2027:233": "studio:2026/2027:20260252",
+    "espn:2026/2027:281": "studio:2026/2027:20260436",
+    "espn:2026/2027:283": "studio:2026/2027:20260452",
+    "espn:2026/2027:364": "studio:2026/2027:20260051",
+    "espn:2026/2027:68": "studio:2026/2027:20260260",
+    "espn:2026/2027:163": "studio:2026/2027:20260458",
+    "espn:2026/2027:456": "studio:2026/2027:20260055",
+    "espn:2026/2027:431": "studio:2026/2027:20260298",
+    "espn:2026/2027:100": "studio:2026/2027:20260358",
+    "espn:2026/2027:322": "studio:2026/2027:20260303",
+    "espn:2026/2027:455": "studio:2026/2027:20260054",
+    "espn:2026/2027:337": "studio:2026/2027:20260001",
+    "espn:2026/2027:257": "studio:2026/2027:20260459",
+    "espn:2026/2027:178": "studio:2026/2027:20260174",
+    "espn:2026/2027:176": "studio:2026/2027:20260094",
+    "espn:2026/2027:380": "studio:2026/2027:20260416",
+    "espn:2026/2027:551": "studio:2026/2027:20260546",
+    "espn:2026/2027:20": "studio:2026/2027:20260015"
+  },
+  "local": {
+    "studio:2026/2027:20260001": {
+      "thumbnail": "/player-photos/20260001-8f907ff17e00-thumbnail.webp",
+      "detail": "/player-photos/20260001-8f907ff17e00-detail.webp"
+    },
+    "studio:2026/2027:20260002": {
+      "thumbnail": "/player-photos/20260002-3294e2a9f0ff-thumbnail.webp",
+      "detail": "/player-photos/20260002-3294e2a9f0ff-detail.webp"
+    },
+    "studio:2026/2027:20260003": {
+      "thumbnail": "/player-photos/20260003-2bef1d7f51d8-thumbnail.webp",
+      "detail": "/player-photos/20260003-2bef1d7f51d8-detail.webp"
+    },
+    "studio:2026/2027:20260004": {
+      "thumbnail": "/player-photos/20260004-22790a07850f-thumbnail.webp",
+      "detail": "/player-photos/20260004-22790a07850f-detail.webp"
+    },
+    "studio:2026/2027:20260005": {
+      "thumbnail": "/player-photos/20260005-b36b5230d71e-thumbnail.webp",
+      "detail": "/player-photos/20260005-b36b5230d71e-detail.webp"
+    },
+    "studio:2026/2027:20260007": {
+      "thumbnail": "/player-photos/20260007-d6c975d2c525-thumbnail.webp",
+      "detail": "/player-photos/20260007-d6c975d2c525-detail.webp"
+    },
+    "studio:2026/2027:20260008": {
+      "thumbnail": "/player-photos/20260008-d20b2cd0145a-thumbnail.webp",
+      "detail": "/player-photos/20260008-d20b2cd0145a-detail.webp"
+    },
+    "studio:2026/2027:20260009": {
+      "thumbnail": "/player-photos/20260009-4e766d002318-thumbnail.webp",
+      "detail": "/player-photos/20260009-4e766d002318-detail.webp"
+    },
+    "studio:2026/2027:20260010": {
+      "thumbnail": "/player-photos/20260010-1c2be3d20ee1-thumbnail.webp",
+      "detail": "/player-photos/20260010-1c2be3d20ee1-detail.webp"
+    },
+    "studio:2026/2027:20260011": {
+      "thumbnail": "/player-photos/20260011-667522d46bb0-thumbnail.webp",
+      "detail": "/player-photos/20260011-667522d46bb0-detail.webp"
+    },
+    "studio:2026/2027:20260012": {
+      "thumbnail": "/player-photos/20260012-10d5ee1cb702-thumbnail.webp",
+      "detail": "/player-photos/20260012-10d5ee1cb702-detail.webp"
+    },
+    "studio:2026/2027:20260013": {
+      "thumbnail": "/player-photos/20260013-b25d2a862cdb-thumbnail.webp",
+      "detail": "/player-photos/20260013-b25d2a862cdb-detail.webp"
+    },
+    "studio:2026/2027:20260014": {
+      "thumbnail": "/player-photos/20260014-088917df22dd-thumbnail.webp",
+      "detail": "/player-photos/20260014-088917df22dd-detail.webp"
+    },
+    "studio:2026/2027:20260016": {
+      "thumbnail": "/player-photos/20260016-7fce9fd1e20f-thumbnail.webp",
+      "detail": "/player-photos/20260016-7fce9fd1e20f-detail.webp"
+    },
+    "studio:2026/2027:20260017": {
+      "thumbnail": "/player-photos/20260017-c71ec4e94e07-thumbnail.webp",
+      "detail": "/player-photos/20260017-c71ec4e94e07-detail.webp"
+    },
+    "studio:2026/2027:20260018": {
+      "thumbnail": "/player-photos/20260018-b45a2d8ae3f5-thumbnail.webp",
+      "detail": "/player-photos/20260018-b45a2d8ae3f5-detail.webp"
+    },
+    "studio:2026/2027:20260019": {
+      "thumbnail": "/player-photos/20260019-c6ebf4173e2a-thumbnail.webp",
+      "detail": "/player-photos/20260019-c6ebf4173e2a-detail.webp"
+    },
+    "studio:2026/2027:20260020": {
+      "thumbnail": "/player-photos/20260020-e672a8926bcf-thumbnail.webp",
+      "detail": "/player-photos/20260020-e672a8926bcf-detail.webp"
+    },
+    "studio:2026/2027:20260021": {
+      "thumbnail": "/player-photos/20260021-dfc0e2cd2611-thumbnail.webp",
+      "detail": "/player-photos/20260021-dfc0e2cd2611-detail.webp"
+    },
+    "studio:2026/2027:20260022": {
+      "thumbnail": "/player-photos/20260022-68b14d46051c-thumbnail.webp",
+      "detail": "/player-photos/20260022-68b14d46051c-detail.webp"
+    },
+    "studio:2026/2027:20260023": {
+      "thumbnail": "/player-photos/20260023-3aff361dc722-thumbnail.webp",
+      "detail": "/player-photos/20260023-3aff361dc722-detail.webp"
+    },
+    "studio:2026/2027:20260024": {
+      "thumbnail": "/player-photos/20260024-d43c59ff98ad-thumbnail.webp",
+      "detail": "/player-photos/20260024-d43c59ff98ad-detail.webp"
+    },
+    "studio:2026/2027:20260025": {
+      "thumbnail": "/player-photos/20260025-4e555336dc11-thumbnail.webp",
+      "detail": "/player-photos/20260025-4e555336dc11-detail.webp"
+    },
+    "studio:2026/2027:20260026": {
+      "thumbnail": "/player-photos/20260026-dff25454fd48-thumbnail.webp",
+      "detail": "/player-photos/20260026-dff25454fd48-detail.webp"
+    },
+    "studio:2026/2027:20260027": {
+      "thumbnail": "/player-photos/20260027-7e3f787f7480-thumbnail.webp",
+      "detail": "/player-photos/20260027-7e3f787f7480-detail.webp"
+    },
+    "studio:2026/2027:20260028": {
+      "thumbnail": "/player-photos/20260028-5e47885148dd-thumbnail.webp",
+      "detail": "/player-photos/20260028-5e47885148dd-detail.webp"
+    },
+    "studio:2026/2027:20260029": {
+      "thumbnail": "/player-photos/20260029-a9f244542fa7-thumbnail.webp",
+      "detail": "/player-photos/20260029-a9f244542fa7-detail.webp"
+    },
+    "studio:2026/2027:20260030": {
+      "thumbnail": "/player-photos/20260030-11720a00b740-thumbnail.webp",
+      "detail": "/player-photos/20260030-11720a00b740-detail.webp"
+    },
+    "studio:2026/2027:20260031": {
+      "thumbnail": "/player-photos/20260031-878d4e4c0c29-thumbnail.webp",
+      "detail": "/player-photos/20260031-878d4e4c0c29-detail.webp"
+    },
+    "studio:2026/2027:20260033": {
+      "thumbnail": "/player-photos/20260033-44eee02d2d3f-thumbnail.webp",
+      "detail": "/player-photos/20260033-44eee02d2d3f-detail.webp"
+    },
+    "studio:2026/2027:20260034": {
+      "thumbnail": "/player-photos/20260034-b1ef7c189dcc-thumbnail.webp",
+      "detail": "/player-photos/20260034-b1ef7c189dcc-detail.webp"
+    },
+    "studio:2026/2027:20260036": {
+      "thumbnail": "/player-photos/20260036-0034ea803198-thumbnail.webp",
+      "detail": "/player-photos/20260036-0034ea803198-detail.webp"
+    },
+    "studio:2026/2027:20260037": {
+      "thumbnail": "/player-photos/20260037-96fa95febdc8-thumbnail.webp",
+      "detail": "/player-photos/20260037-96fa95febdc8-detail.webp"
+    },
+    "studio:2026/2027:20260039": {
+      "thumbnail": "/player-photos/20260039-d00852dcd973-thumbnail.webp",
+      "detail": "/player-photos/20260039-d00852dcd973-detail.webp"
+    },
+    "studio:2026/2027:20260044": {
+      "thumbnail": "/player-photos/20260044-2c36a00de49a-thumbnail.webp",
+      "detail": "/player-photos/20260044-2c36a00de49a-detail.webp"
+    },
+    "studio:2026/2027:20260045": {
+      "thumbnail": "/player-photos/20260045-476896b4c142-thumbnail.webp",
+      "detail": "/player-photos/20260045-476896b4c142-detail.webp"
+    },
+    "studio:2026/2027:20260046": {
+      "thumbnail": "/player-photos/20260046-99594615a4c3-thumbnail.webp",
+      "detail": "/player-photos/20260046-99594615a4c3-detail.webp"
+    },
+    "studio:2026/2027:20260056": {
+      "thumbnail": "/player-photos/20260056-46b7aaa65153-thumbnail.webp",
+      "detail": "/player-photos/20260056-46b7aaa65153-detail.webp"
+    },
+    "studio:2026/2027:20260057": {
+      "thumbnail": "/player-photos/20260057-b6316d5b19db-thumbnail.webp",
+      "detail": "/player-photos/20260057-b6316d5b19db-detail.webp"
+    },
+    "studio:2026/2027:20260058": {
+      "thumbnail": "/player-photos/20260058-97fa2ac953a9-thumbnail.webp",
+      "detail": "/player-photos/20260058-97fa2ac953a9-detail.webp"
+    },
+    "studio:2026/2027:20260059": {
+      "thumbnail": "/player-photos/20260059-7fd58de3ecaa-thumbnail.webp",
+      "detail": "/player-photos/20260059-7fd58de3ecaa-detail.webp"
+    },
+    "studio:2026/2027:20260060": {
+      "thumbnail": "/player-photos/20260060-447ee0f79f83-thumbnail.webp",
+      "detail": "/player-photos/20260060-447ee0f79f83-detail.webp"
+    },
+    "studio:2026/2027:20260061": {
+      "thumbnail": "/player-photos/20260061-553f81a7ab35-thumbnail.webp",
+      "detail": "/player-photos/20260061-553f81a7ab35-detail.webp"
+    },
+    "studio:2026/2027:20260062": {
+      "thumbnail": "/player-photos/20260062-301a4149095e-thumbnail.webp",
+      "detail": "/player-photos/20260062-301a4149095e-detail.webp"
+    },
+    "studio:2026/2027:20260063": {
+      "thumbnail": "/player-photos/20260063-ece43c88b68d-thumbnail.webp",
+      "detail": "/player-photos/20260063-ece43c88b68d-detail.webp"
+    },
+    "studio:2026/2027:20260064": {
+      "thumbnail": "/player-photos/20260064-a6bb37198468-thumbnail.webp",
+      "detail": "/player-photos/20260064-a6bb37198468-detail.webp"
+    },
+    "studio:2026/2027:20260065": {
+      "thumbnail": "/player-photos/20260065-57c0a246467a-thumbnail.webp",
+      "detail": "/player-photos/20260065-57c0a246467a-detail.webp"
+    },
+    "studio:2026/2027:20260066": {
+      "thumbnail": "/player-photos/20260066-b4142a7ac21e-thumbnail.webp",
+      "detail": "/player-photos/20260066-b4142a7ac21e-detail.webp"
+    },
+    "studio:2026/2027:20260067": {
+      "thumbnail": "/player-photos/20260067-81079c49bc76-thumbnail.webp",
+      "detail": "/player-photos/20260067-81079c49bc76-detail.webp"
+    },
+    "studio:2026/2027:20260069": {
+      "thumbnail": "/player-photos/20260069-d441dcb5d918-thumbnail.webp",
+      "detail": "/player-photos/20260069-d441dcb5d918-detail.webp"
+    },
+    "studio:2026/2027:20260070": {
+      "thumbnail": "/player-photos/20260070-a9413be1f446-thumbnail.webp",
+      "detail": "/player-photos/20260070-a9413be1f446-detail.webp"
+    },
+    "studio:2026/2027:20260071": {
+      "thumbnail": "/player-photos/20260071-84296c79d1e5-thumbnail.webp",
+      "detail": "/player-photos/20260071-84296c79d1e5-detail.webp"
+    },
+    "studio:2026/2027:20260072": {
+      "thumbnail": "/player-photos/20260072-1a6c18ffdd2f-thumbnail.webp",
+      "detail": "/player-photos/20260072-1a6c18ffdd2f-detail.webp"
+    },
+    "studio:2026/2027:20260073": {
+      "thumbnail": "/player-photos/20260073-acea6e3e6f9e-thumbnail.webp",
+      "detail": "/player-photos/20260073-acea6e3e6f9e-detail.webp"
+    },
+    "studio:2026/2027:20260074": {
+      "thumbnail": "/player-photos/20260074-d099bfd82603-thumbnail.webp",
+      "detail": "/player-photos/20260074-d099bfd82603-detail.webp"
+    },
+    "studio:2026/2027:20260075": {
+      "thumbnail": "/player-photos/20260075-e0bbc682dd10-thumbnail.webp",
+      "detail": "/player-photos/20260075-e0bbc682dd10-detail.webp"
+    },
+    "studio:2026/2027:20260076": {
+      "thumbnail": "/player-photos/20260076-24a4458d40cd-thumbnail.webp",
+      "detail": "/player-photos/20260076-24a4458d40cd-detail.webp"
+    },
+    "studio:2026/2027:20260077": {
+      "thumbnail": "/player-photos/20260077-e792d072fc7a-thumbnail.webp",
+      "detail": "/player-photos/20260077-e792d072fc7a-detail.webp"
+    },
+    "studio:2026/2027:20260078": {
+      "thumbnail": "/player-photos/20260078-1d3f5f190ddc-thumbnail.webp",
+      "detail": "/player-photos/20260078-1d3f5f190ddc-detail.webp"
+    },
+    "studio:2026/2027:20260079": {
+      "thumbnail": "/player-photos/20260079-d3a85b43c44c-thumbnail.webp",
+      "detail": "/player-photos/20260079-d3a85b43c44c-detail.webp"
+    },
+    "studio:2026/2027:20260080": {
+      "thumbnail": "/player-photos/20260080-cd7f71d1a45f-thumbnail.webp",
+      "detail": "/player-photos/20260080-cd7f71d1a45f-detail.webp"
+    },
+    "studio:2026/2027:20260081": {
+      "thumbnail": "/player-photos/20260081-1e04425a4842-thumbnail.webp",
+      "detail": "/player-photos/20260081-1e04425a4842-detail.webp"
+    },
+    "studio:2026/2027:20260082": {
+      "thumbnail": "/player-photos/20260082-fc2a6e85ba65-thumbnail.webp",
+      "detail": "/player-photos/20260082-fc2a6e85ba65-detail.webp"
+    },
+    "studio:2026/2027:20260083": {
+      "thumbnail": "/player-photos/20260083-586a88652aff-thumbnail.webp",
+      "detail": "/player-photos/20260083-586a88652aff-detail.webp"
+    },
+    "studio:2026/2027:20260085": {
+      "thumbnail": "/player-photos/20260085-e7db8006f4b5-thumbnail.webp",
+      "detail": "/player-photos/20260085-e7db8006f4b5-detail.webp"
+    },
+    "studio:2026/2027:20260087": {
+      "thumbnail": "/player-photos/20260087-80261d52ee1b-thumbnail.webp",
+      "detail": "/player-photos/20260087-80261d52ee1b-detail.webp"
+    },
+    "studio:2026/2027:20260088": {
+      "thumbnail": "/player-photos/20260088-093980a3f210-thumbnail.webp",
+      "detail": "/player-photos/20260088-093980a3f210-detail.webp"
+    },
+    "studio:2026/2027:20260089": {
+      "thumbnail": "/player-photos/20260089-2197c25e6600-thumbnail.webp",
+      "detail": "/player-photos/20260089-2197c25e6600-detail.webp"
+    },
+    "studio:2026/2027:20260090": {
+      "thumbnail": "/player-photos/20260090-b51c2c0b3569-thumbnail.webp",
+      "detail": "/player-photos/20260090-b51c2c0b3569-detail.webp"
+    },
+    "studio:2026/2027:20260091": {
+      "thumbnail": "/player-photos/20260091-0be3795466aa-thumbnail.webp",
+      "detail": "/player-photos/20260091-0be3795466aa-detail.webp"
+    },
+    "studio:2026/2027:20260092": {
+      "thumbnail": "/player-photos/20260092-4df4dda7a80e-thumbnail.webp",
+      "detail": "/player-photos/20260092-4df4dda7a80e-detail.webp"
+    },
+    "studio:2026/2027:20260093": {
+      "thumbnail": "/player-photos/20260093-b47eeed699ff-thumbnail.webp",
+      "detail": "/player-photos/20260093-b47eeed699ff-detail.webp"
+    },
+    "studio:2026/2027:20260094": {
+      "thumbnail": "/player-photos/20260094-2ae81eea512c-thumbnail.webp",
+      "detail": "/player-photos/20260094-2ae81eea512c-detail.webp"
+    },
+    "studio:2026/2027:20260095": {
+      "thumbnail": "/player-photos/20260095-9acdd0c76a91-thumbnail.webp",
+      "detail": "/player-photos/20260095-9acdd0c76a91-detail.webp"
+    },
+    "studio:2026/2027:20260096": {
+      "thumbnail": "/player-photos/20260096-11cfff80e5c0-thumbnail.webp",
+      "detail": "/player-photos/20260096-11cfff80e5c0-detail.webp"
+    },
+    "studio:2026/2027:20260097": {
+      "thumbnail": "/player-photos/20260097-ca4928afd53c-thumbnail.webp",
+      "detail": "/player-photos/20260097-ca4928afd53c-detail.webp"
+    },
+    "studio:2026/2027:20260098": {
+      "thumbnail": "/player-photos/20260098-b2309ce239c4-thumbnail.webp",
+      "detail": "/player-photos/20260098-b2309ce239c4-detail.webp"
+    },
+    "studio:2026/2027:20260099": {
+      "thumbnail": "/player-photos/20260099-309b2c27e028-thumbnail.webp",
+      "detail": "/player-photos/20260099-309b2c27e028-detail.webp"
+    },
+    "studio:2026/2027:20260100": {
+      "thumbnail": "/player-photos/20260100-77758add292f-thumbnail.webp",
+      "detail": "/player-photos/20260100-77758add292f-detail.webp"
+    },
+    "studio:2026/2027:20260101": {
+      "thumbnail": "/player-photos/20260101-508e2ddd7f47-thumbnail.webp",
+      "detail": "/player-photos/20260101-508e2ddd7f47-detail.webp"
+    },
+    "studio:2026/2027:20260102": {
+      "thumbnail": "/player-photos/20260102-bea99704e3db-thumbnail.webp",
+      "detail": "/player-photos/20260102-bea99704e3db-detail.webp"
+    },
+    "studio:2026/2027:20260103": {
+      "thumbnail": "/player-photos/20260103-79e5ca0de783-thumbnail.webp",
+      "detail": "/player-photos/20260103-79e5ca0de783-detail.webp"
+    },
+    "studio:2026/2027:20260105": {
+      "thumbnail": "/player-photos/20260105-680c207ba6f3-thumbnail.webp",
+      "detail": "/player-photos/20260105-680c207ba6f3-detail.webp"
+    },
+    "studio:2026/2027:20260106": {
+      "thumbnail": "/player-photos/20260106-75f28f5368f6-thumbnail.webp",
+      "detail": "/player-photos/20260106-75f28f5368f6-detail.webp"
+    },
+    "studio:2026/2027:20260107": {
+      "thumbnail": "/player-photos/20260107-6baa20635c1b-thumbnail.webp",
+      "detail": "/player-photos/20260107-6baa20635c1b-detail.webp"
+    },
+    "studio:2026/2027:20260108": {
+      "thumbnail": "/player-photos/20260108-02b96e98986a-thumbnail.webp",
+      "detail": "/player-photos/20260108-02b96e98986a-detail.webp"
+    },
+    "studio:2026/2027:20260109": {
+      "thumbnail": "/player-photos/20260109-89c8f6613231-thumbnail.webp",
+      "detail": "/player-photos/20260109-89c8f6613231-detail.webp"
+    },
+    "studio:2026/2027:20260110": {
+      "thumbnail": "/player-photos/20260110-2628085ccc69-thumbnail.webp",
+      "detail": "/player-photos/20260110-2628085ccc69-detail.webp"
+    },
+    "studio:2026/2027:20260111": {
+      "thumbnail": "/player-photos/20260111-901ba2d2f5b5-thumbnail.webp",
+      "detail": "/player-photos/20260111-901ba2d2f5b5-detail.webp"
+    },
+    "studio:2026/2027:20260112": {
+      "thumbnail": "/player-photos/20260112-462d904cd2c2-thumbnail.webp",
+      "detail": "/player-photos/20260112-462d904cd2c2-detail.webp"
+    },
+    "studio:2026/2027:20260113": {
+      "thumbnail": "/player-photos/20260113-cc76ce10e397-thumbnail.webp",
+      "detail": "/player-photos/20260113-cc76ce10e397-detail.webp"
+    },
+    "studio:2026/2027:20260114": {
+      "thumbnail": "/player-photos/20260114-ba2e027d0675-thumbnail.webp",
+      "detail": "/player-photos/20260114-ba2e027d0675-detail.webp"
+    },
+    "studio:2026/2027:20260115": {
+      "thumbnail": "/player-photos/20260115-74835835ddac-thumbnail.webp",
+      "detail": "/player-photos/20260115-74835835ddac-detail.webp"
+    },
+    "studio:2026/2027:20260116": {
+      "thumbnail": "/player-photos/20260116-74a1db9b9c64-thumbnail.webp",
+      "detail": "/player-photos/20260116-74a1db9b9c64-detail.webp"
+    },
+    "studio:2026/2027:20260118": {
+      "thumbnail": "/player-photos/20260118-444404aa9054-thumbnail.webp",
+      "detail": "/player-photos/20260118-444404aa9054-detail.webp"
+    },
+    "studio:2026/2027:20260119": {
+      "thumbnail": "/player-photos/20260119-9b37dc2cc1c1-thumbnail.webp",
+      "detail": "/player-photos/20260119-9b37dc2cc1c1-detail.webp"
+    },
+    "studio:2026/2027:20260120": {
+      "thumbnail": "/player-photos/20260120-b7478bb80370-thumbnail.webp",
+      "detail": "/player-photos/20260120-b7478bb80370-detail.webp"
+    },
+    "studio:2026/2027:20260121": {
+      "thumbnail": "/player-photos/20260121-b5e51ee1879e-thumbnail.webp",
+      "detail": "/player-photos/20260121-b5e51ee1879e-detail.webp"
+    },
+    "studio:2026/2027:20260122": {
+      "thumbnail": "/player-photos/20260122-aee3816df605-thumbnail.webp",
+      "detail": "/player-photos/20260122-aee3816df605-detail.webp"
+    },
+    "studio:2026/2027:20260123": {
+      "thumbnail": "/player-photos/20260123-24d8782b70fe-thumbnail.webp",
+      "detail": "/player-photos/20260123-24d8782b70fe-detail.webp"
+    },
+    "studio:2026/2027:20260124": {
+      "thumbnail": "/player-photos/20260124-5dee49dee20a-thumbnail.webp",
+      "detail": "/player-photos/20260124-5dee49dee20a-detail.webp"
+    },
+    "studio:2026/2027:20260125": {
+      "thumbnail": "/player-photos/20260125-52f6b87ba2d6-thumbnail.webp",
+      "detail": "/player-photos/20260125-52f6b87ba2d6-detail.webp"
+    },
+    "studio:2026/2027:20260126": {
+      "thumbnail": "/player-photos/20260126-a88e097786ba-thumbnail.webp",
+      "detail": "/player-photos/20260126-a88e097786ba-detail.webp"
+    },
+    "studio:2026/2027:20260127": {
+      "thumbnail": "/player-photos/20260127-e9c93dfb16fe-thumbnail.webp",
+      "detail": "/player-photos/20260127-e9c93dfb16fe-detail.webp"
+    },
+    "studio:2026/2027:20260128": {
+      "thumbnail": "/player-photos/20260128-edb6b3434066-thumbnail.webp",
+      "detail": "/player-photos/20260128-edb6b3434066-detail.webp"
+    },
+    "studio:2026/2027:20260129": {
+      "thumbnail": "/player-photos/20260129-9489a2a1e1d4-thumbnail.webp",
+      "detail": "/player-photos/20260129-9489a2a1e1d4-detail.webp"
+    },
+    "studio:2026/2027:20260130": {
+      "thumbnail": "/player-photos/20260130-a1538a25813d-thumbnail.webp",
+      "detail": "/player-photos/20260130-a1538a25813d-detail.webp"
+    },
+    "studio:2026/2027:20260132": {
+      "thumbnail": "/player-photos/20260132-9de92e36070d-thumbnail.webp",
+      "detail": "/player-photos/20260132-9de92e36070d-detail.webp"
+    },
+    "studio:2026/2027:20260133": {
+      "thumbnail": "/player-photos/20260133-bd5794c3fb66-thumbnail.webp",
+      "detail": "/player-photos/20260133-bd5794c3fb66-detail.webp"
+    },
+    "studio:2026/2027:20260134": {
+      "thumbnail": "/player-photos/20260134-fad2adb090b3-thumbnail.webp",
+      "detail": "/player-photos/20260134-fad2adb090b3-detail.webp"
+    },
+    "studio:2026/2027:20260135": {
+      "thumbnail": "/player-photos/20260135-96b1ee6dd44a-thumbnail.webp",
+      "detail": "/player-photos/20260135-96b1ee6dd44a-detail.webp"
+    },
+    "studio:2026/2027:20260136": {
+      "thumbnail": "/player-photos/20260136-423ed822e9c1-thumbnail.webp",
+      "detail": "/player-photos/20260136-423ed822e9c1-detail.webp"
+    },
+    "studio:2026/2027:20260137": {
+      "thumbnail": "/player-photos/20260137-9a377dc339a9-thumbnail.webp",
+      "detail": "/player-photos/20260137-9a377dc339a9-detail.webp"
+    },
+    "studio:2026/2027:20260138": {
+      "thumbnail": "/player-photos/20260138-a705c058e0a2-thumbnail.webp",
+      "detail": "/player-photos/20260138-a705c058e0a2-detail.webp"
+    },
+    "studio:2026/2027:20260139": {
+      "thumbnail": "/player-photos/20260139-a3abf3a26331-thumbnail.webp",
+      "detail": "/player-photos/20260139-a3abf3a26331-detail.webp"
+    },
+    "studio:2026/2027:20260140": {
+      "thumbnail": "/player-photos/20260140-c9fcf6dc8045-thumbnail.webp",
+      "detail": "/player-photos/20260140-c9fcf6dc8045-detail.webp"
+    },
+    "studio:2026/2027:20260141": {
+      "thumbnail": "/player-photos/20260141-24582cea80a6-thumbnail.webp",
+      "detail": "/player-photos/20260141-24582cea80a6-detail.webp"
+    },
+    "studio:2026/2027:20260142": {
+      "thumbnail": "/player-photos/20260142-27c36da8adcc-thumbnail.webp",
+      "detail": "/player-photos/20260142-27c36da8adcc-detail.webp"
+    },
+    "studio:2026/2027:20260143": {
+      "thumbnail": "/player-photos/20260143-ea11d2a7fc19-thumbnail.webp",
+      "detail": "/player-photos/20260143-ea11d2a7fc19-detail.webp"
+    },
+    "studio:2026/2027:20260144": {
+      "thumbnail": "/player-photos/20260144-1796e98431bc-thumbnail.webp",
+      "detail": "/player-photos/20260144-1796e98431bc-detail.webp"
+    },
+    "studio:2026/2027:20260145": {
+      "thumbnail": "/player-photos/20260145-50cf617ad521-thumbnail.webp",
+      "detail": "/player-photos/20260145-50cf617ad521-detail.webp"
+    },
+    "studio:2026/2027:20260146": {
+      "thumbnail": "/player-photos/20260146-d6f1fdba9ead-thumbnail.webp",
+      "detail": "/player-photos/20260146-d6f1fdba9ead-detail.webp"
+    },
+    "studio:2026/2027:20260148": {
+      "thumbnail": "/player-photos/20260148-6e313caa4756-thumbnail.webp",
+      "detail": "/player-photos/20260148-6e313caa4756-detail.webp"
+    },
+    "studio:2026/2027:20260150": {
+      "thumbnail": "/player-photos/20260150-3585d5f6001c-thumbnail.webp",
+      "detail": "/player-photos/20260150-3585d5f6001c-detail.webp"
+    },
+    "studio:2026/2027:20260151": {
+      "thumbnail": "/player-photos/20260151-b4b36586f7f3-thumbnail.webp",
+      "detail": "/player-photos/20260151-b4b36586f7f3-detail.webp"
+    },
+    "studio:2026/2027:20260152": {
+      "thumbnail": "/player-photos/20260152-32718b372db7-thumbnail.webp",
+      "detail": "/player-photos/20260152-32718b372db7-detail.webp"
+    },
+    "studio:2026/2027:20260153": {
+      "thumbnail": "/player-photos/20260153-40499b710549-thumbnail.webp",
+      "detail": "/player-photos/20260153-40499b710549-detail.webp"
+    },
+    "studio:2026/2027:20260156": {
+      "thumbnail": "/player-photos/20260156-3ffad00becc2-thumbnail.webp",
+      "detail": "/player-photos/20260156-3ffad00becc2-detail.webp"
+    },
+    "studio:2026/2027:20260157": {
+      "thumbnail": "/player-photos/20260157-5f4b7516b04a-thumbnail.webp",
+      "detail": "/player-photos/20260157-5f4b7516b04a-detail.webp"
+    },
+    "studio:2026/2027:20260158": {
+      "thumbnail": "/player-photos/20260158-5cbbb573cb2e-thumbnail.webp",
+      "detail": "/player-photos/20260158-5cbbb573cb2e-detail.webp"
+    },
+    "studio:2026/2027:20260160": {
+      "thumbnail": "/player-photos/20260160-2fbe80616ee6-thumbnail.webp",
+      "detail": "/player-photos/20260160-2fbe80616ee6-detail.webp"
+    },
+    "studio:2026/2027:20260166": {
+      "thumbnail": "/player-photos/20260166-0ab10d7c3753-thumbnail.webp",
+      "detail": "/player-photos/20260166-0ab10d7c3753-detail.webp"
+    },
+    "studio:2026/2027:20260167": {
+      "thumbnail": "/player-photos/20260167-080d7e806408-thumbnail.webp",
+      "detail": "/player-photos/20260167-080d7e806408-detail.webp"
+    },
+    "studio:2026/2027:20260168": {
+      "thumbnail": "/player-photos/20260168-ee818ec879c0-thumbnail.webp",
+      "detail": "/player-photos/20260168-ee818ec879c0-detail.webp"
+    },
+    "studio:2026/2027:20260170": {
+      "thumbnail": "/player-photos/20260170-fe1de279df44-thumbnail.webp",
+      "detail": "/player-photos/20260170-fe1de279df44-detail.webp"
+    },
+    "studio:2026/2027:20260183": {
+      "thumbnail": "/player-photos/20260183-47ebc9b2cc31-thumbnail.webp",
+      "detail": "/player-photos/20260183-47ebc9b2cc31-detail.webp"
+    },
+    "studio:2026/2027:20260184": {
+      "thumbnail": "/player-photos/20260184-e1ab3c23cd7d-thumbnail.webp",
+      "detail": "/player-photos/20260184-e1ab3c23cd7d-detail.webp"
+    },
+    "studio:2026/2027:20260187": {
+      "thumbnail": "/player-photos/20260187-d31cb4dcf49e-thumbnail.webp",
+      "detail": "/player-photos/20260187-d31cb4dcf49e-detail.webp"
+    },
+    "studio:2026/2027:20260188": {
+      "thumbnail": "/player-photos/20260188-d72cd650cf48-thumbnail.webp",
+      "detail": "/player-photos/20260188-d72cd650cf48-detail.webp"
+    },
+    "studio:2026/2027:20260189": {
+      "thumbnail": "/player-photos/20260189-72a136870f9e-thumbnail.webp",
+      "detail": "/player-photos/20260189-72a136870f9e-detail.webp"
+    },
+    "studio:2026/2027:20260204": {
+      "thumbnail": "/player-photos/20260204-f27ecbffc125-thumbnail.webp",
+      "detail": "/player-photos/20260204-f27ecbffc125-detail.webp"
+    },
+    "studio:2026/2027:20260214": {
+      "thumbnail": "/player-photos/20260214-324d95c13d30-thumbnail.webp",
+      "detail": "/player-photos/20260214-324d95c13d30-detail.webp"
+    },
+    "studio:2026/2027:20260215": {
+      "thumbnail": "/player-photos/20260215-f46b6142a5c0-thumbnail.webp",
+      "detail": "/player-photos/20260215-f46b6142a5c0-detail.webp"
+    },
+    "studio:2026/2027:20260216": {
+      "thumbnail": "/player-photos/20260216-08db766094ba-thumbnail.webp",
+      "detail": "/player-photos/20260216-08db766094ba-detail.webp"
+    },
+    "studio:2026/2027:20260217": {
+      "thumbnail": "/player-photos/20260217-3464bc3f8039-thumbnail.webp",
+      "detail": "/player-photos/20260217-3464bc3f8039-detail.webp"
+    },
+    "studio:2026/2027:20260218": {
+      "thumbnail": "/player-photos/20260218-7f562884d17a-thumbnail.webp",
+      "detail": "/player-photos/20260218-7f562884d17a-detail.webp"
+    },
+    "studio:2026/2027:20260219": {
+      "thumbnail": "/player-photos/20260219-2984997b41d7-thumbnail.webp",
+      "detail": "/player-photos/20260219-2984997b41d7-detail.webp"
+    },
+    "studio:2026/2027:20260220": {
+      "thumbnail": "/player-photos/20260220-c364ed964d2d-thumbnail.webp",
+      "detail": "/player-photos/20260220-c364ed964d2d-detail.webp"
+    },
+    "studio:2026/2027:20260221": {
+      "thumbnail": "/player-photos/20260221-b767db032287-thumbnail.webp",
+      "detail": "/player-photos/20260221-b767db032287-detail.webp"
+    },
+    "studio:2026/2027:20260222": {
+      "thumbnail": "/player-photos/20260222-023bafce269d-thumbnail.webp",
+      "detail": "/player-photos/20260222-023bafce269d-detail.webp"
+    },
+    "studio:2026/2027:20260223": {
+      "thumbnail": "/player-photos/20260223-197b21f61b0d-thumbnail.webp",
+      "detail": "/player-photos/20260223-197b21f61b0d-detail.webp"
+    },
+    "studio:2026/2027:20260224": {
+      "thumbnail": "/player-photos/20260224-d6b0ebb302f9-thumbnail.webp",
+      "detail": "/player-photos/20260224-d6b0ebb302f9-detail.webp"
+    },
+    "studio:2026/2027:20260225": {
+      "thumbnail": "/player-photos/20260225-796345732c34-thumbnail.webp",
+      "detail": "/player-photos/20260225-796345732c34-detail.webp"
+    },
+    "studio:2026/2027:20260226": {
+      "thumbnail": "/player-photos/20260226-e092364efee0-thumbnail.webp",
+      "detail": "/player-photos/20260226-e092364efee0-detail.webp"
+    },
+    "studio:2026/2027:20260227": {
+      "thumbnail": "/player-photos/20260227-17f074f3b667-thumbnail.webp",
+      "detail": "/player-photos/20260227-17f074f3b667-detail.webp"
+    },
+    "studio:2026/2027:20260228": {
+      "thumbnail": "/player-photos/20260228-a892e11bf497-thumbnail.webp",
+      "detail": "/player-photos/20260228-a892e11bf497-detail.webp"
+    },
+    "studio:2026/2027:20260229": {
+      "thumbnail": "/player-photos/20260229-6d2650d2c5bf-thumbnail.webp",
+      "detail": "/player-photos/20260229-6d2650d2c5bf-detail.webp"
+    },
+    "studio:2026/2027:20260230": {
+      "thumbnail": "/player-photos/20260230-8c995bf254e6-thumbnail.webp",
+      "detail": "/player-photos/20260230-8c995bf254e6-detail.webp"
+    },
+    "studio:2026/2027:20260231": {
+      "thumbnail": "/player-photos/20260231-34061560fb37-thumbnail.webp",
+      "detail": "/player-photos/20260231-34061560fb37-detail.webp"
+    },
+    "studio:2026/2027:20260232": {
+      "thumbnail": "/player-photos/20260232-ea4b5b9654cd-thumbnail.webp",
+      "detail": "/player-photos/20260232-ea4b5b9654cd-detail.webp"
+    },
+    "studio:2026/2027:20260233": {
+      "thumbnail": "/player-photos/20260233-c37c697752c9-thumbnail.webp",
+      "detail": "/player-photos/20260233-c37c697752c9-detail.webp"
+    },
+    "studio:2026/2027:20260234": {
+      "thumbnail": "/player-photos/20260234-dd7902263d28-thumbnail.webp",
+      "detail": "/player-photos/20260234-dd7902263d28-detail.webp"
+    },
+    "studio:2026/2027:20260235": {
+      "thumbnail": "/player-photos/20260235-95952a1698d6-thumbnail.webp",
+      "detail": "/player-photos/20260235-95952a1698d6-detail.webp"
+    },
+    "studio:2026/2027:20260236": {
+      "thumbnail": "/player-photos/20260236-cec00a9d1930-thumbnail.webp",
+      "detail": "/player-photos/20260236-cec00a9d1930-detail.webp"
+    },
+    "studio:2026/2027:20260237": {
+      "thumbnail": "/player-photos/20260237-dd689ffe494e-thumbnail.webp",
+      "detail": "/player-photos/20260237-dd689ffe494e-detail.webp"
+    },
+    "studio:2026/2027:20260238": {
+      "thumbnail": "/player-photos/20260238-82df41d8dd39-thumbnail.webp",
+      "detail": "/player-photos/20260238-82df41d8dd39-detail.webp"
+    },
+    "studio:2026/2027:20260239": {
+      "thumbnail": "/player-photos/20260239-69b57029f15a-thumbnail.webp",
+      "detail": "/player-photos/20260239-69b57029f15a-detail.webp"
+    },
+    "studio:2026/2027:20260240": {
+      "thumbnail": "/player-photos/20260240-1bf8fba3bfeb-thumbnail.webp",
+      "detail": "/player-photos/20260240-1bf8fba3bfeb-detail.webp"
+    },
+    "studio:2026/2027:20260241": {
+      "thumbnail": "/player-photos/20260241-a70edd1f77d1-thumbnail.webp",
+      "detail": "/player-photos/20260241-a70edd1f77d1-detail.webp"
+    },
+    "studio:2026/2027:20260242": {
+      "thumbnail": "/player-photos/20260242-29380a39f87c-thumbnail.webp",
+      "detail": "/player-photos/20260242-29380a39f87c-detail.webp"
+    },
+    "studio:2026/2027:20260243": {
+      "thumbnail": "/player-photos/20260243-58707441660e-thumbnail.webp",
+      "detail": "/player-photos/20260243-58707441660e-detail.webp"
+    },
+    "studio:2026/2027:20260244": {
+      "thumbnail": "/player-photos/20260244-08d824bc4e9b-thumbnail.webp",
+      "detail": "/player-photos/20260244-08d824bc4e9b-detail.webp"
+    },
+    "studio:2026/2027:20260245": {
+      "thumbnail": "/player-photos/20260245-f62226f77293-thumbnail.webp",
+      "detail": "/player-photos/20260245-f62226f77293-detail.webp"
+    },
+    "studio:2026/2027:20260246": {
+      "thumbnail": "/player-photos/20260246-e0d291fb8c67-thumbnail.webp",
+      "detail": "/player-photos/20260246-e0d291fb8c67-detail.webp"
+    },
+    "studio:2026/2027:20260247": {
+      "thumbnail": "/player-photos/20260247-4c9d4869e906-thumbnail.webp",
+      "detail": "/player-photos/20260247-4c9d4869e906-detail.webp"
+    },
+    "studio:2026/2027:20260248": {
+      "thumbnail": "/player-photos/20260248-d1c1d6ecaaf5-thumbnail.webp",
+      "detail": "/player-photos/20260248-d1c1d6ecaaf5-detail.webp"
+    },
+    "studio:2026/2027:20260249": {
+      "thumbnail": "/player-photos/20260249-48d7fdbecf09-thumbnail.webp",
+      "detail": "/player-photos/20260249-48d7fdbecf09-detail.webp"
+    },
+    "studio:2026/2027:20260250": {
+      "thumbnail": "/player-photos/20260250-a5312e4d5156-thumbnail.webp",
+      "detail": "/player-photos/20260250-a5312e4d5156-detail.webp"
+    },
+    "studio:2026/2027:20260251": {
+      "thumbnail": "/player-photos/20260251-6038250cbb03-thumbnail.webp",
+      "detail": "/player-photos/20260251-6038250cbb03-detail.webp"
+    },
+    "studio:2026/2027:20260252": {
+      "thumbnail": "/player-photos/20260252-2da2e75ad435-thumbnail.webp",
+      "detail": "/player-photos/20260252-2da2e75ad435-detail.webp"
+    },
+    "studio:2026/2027:20260253": {
+      "thumbnail": "/player-photos/20260253-0008163027b4-thumbnail.webp",
+      "detail": "/player-photos/20260253-0008163027b4-detail.webp"
+    },
+    "studio:2026/2027:20260254": {
+      "thumbnail": "/player-photos/20260254-377c27a0011a-thumbnail.webp",
+      "detail": "/player-photos/20260254-377c27a0011a-detail.webp"
+    },
+    "studio:2026/2027:20260255": {
+      "thumbnail": "/player-photos/20260255-5c975e725992-thumbnail.webp",
+      "detail": "/player-photos/20260255-5c975e725992-detail.webp"
+    },
+    "studio:2026/2027:20260256": {
+      "thumbnail": "/player-photos/20260256-2d9526994274-thumbnail.webp",
+      "detail": "/player-photos/20260256-2d9526994274-detail.webp"
+    },
+    "studio:2026/2027:20260257": {
+      "thumbnail": "/player-photos/20260257-d9579e89f4c3-thumbnail.webp",
+      "detail": "/player-photos/20260257-d9579e89f4c3-detail.webp"
+    },
+    "studio:2026/2027:20260258": {
+      "thumbnail": "/player-photos/20260258-2281350d0ff3-thumbnail.webp",
+      "detail": "/player-photos/20260258-2281350d0ff3-detail.webp"
+    },
+    "studio:2026/2027:20260259": {
+      "thumbnail": "/player-photos/20260259-4c55a92a9522-thumbnail.webp",
+      "detail": "/player-photos/20260259-4c55a92a9522-detail.webp"
+    },
+    "studio:2026/2027:20260261": {
+      "thumbnail": "/player-photos/20260261-8a719594c5c8-thumbnail.webp",
+      "detail": "/player-photos/20260261-8a719594c5c8-detail.webp"
+    },
+    "studio:2026/2027:20260262": {
+      "thumbnail": "/player-photos/20260262-a1024f6c3ef5-thumbnail.webp",
+      "detail": "/player-photos/20260262-a1024f6c3ef5-detail.webp"
+    },
+    "studio:2026/2027:20260263": {
+      "thumbnail": "/player-photos/20260263-050f353bc9f1-thumbnail.webp",
+      "detail": "/player-photos/20260263-050f353bc9f1-detail.webp"
+    },
+    "studio:2026/2027:20260264": {
+      "thumbnail": "/player-photos/20260264-8f9fe8a6e304-thumbnail.webp",
+      "detail": "/player-photos/20260264-8f9fe8a6e304-detail.webp"
+    },
+    "studio:2026/2027:20260265": {
+      "thumbnail": "/player-photos/20260265-ace81371dcd4-thumbnail.webp",
+      "detail": "/player-photos/20260265-ace81371dcd4-detail.webp"
+    },
+    "studio:2026/2027:20260266": {
+      "thumbnail": "/player-photos/20260266-f79c451016e2-thumbnail.webp",
+      "detail": "/player-photos/20260266-f79c451016e2-detail.webp"
+    },
+    "studio:2026/2027:20260267": {
+      "thumbnail": "/player-photos/20260267-b748d6897e88-thumbnail.webp",
+      "detail": "/player-photos/20260267-b748d6897e88-detail.webp"
+    },
+    "studio:2026/2027:20260268": {
+      "thumbnail": "/player-photos/20260268-e2a5ccfdf761-thumbnail.webp",
+      "detail": "/player-photos/20260268-e2a5ccfdf761-detail.webp"
+    },
+    "studio:2026/2027:20260269": {
+      "thumbnail": "/player-photos/20260269-b56bdd05485d-thumbnail.webp",
+      "detail": "/player-photos/20260269-b56bdd05485d-detail.webp"
+    },
+    "studio:2026/2027:20260270": {
+      "thumbnail": "/player-photos/20260270-5ab839b43c40-thumbnail.webp",
+      "detail": "/player-photos/20260270-5ab839b43c40-detail.webp"
+    },
+    "studio:2026/2027:20260271": {
+      "thumbnail": "/player-photos/20260271-c1cdc3e4de39-thumbnail.webp",
+      "detail": "/player-photos/20260271-c1cdc3e4de39-detail.webp"
+    },
+    "studio:2026/2027:20260272": {
+      "thumbnail": "/player-photos/20260272-5d6394b8989f-thumbnail.webp",
+      "detail": "/player-photos/20260272-5d6394b8989f-detail.webp"
+    },
+    "studio:2026/2027:20260273": {
+      "thumbnail": "/player-photos/20260273-8fbf9d3e56cd-thumbnail.webp",
+      "detail": "/player-photos/20260273-8fbf9d3e56cd-detail.webp"
+    },
+    "studio:2026/2027:20260274": {
+      "thumbnail": "/player-photos/20260274-60610568ada1-thumbnail.webp",
+      "detail": "/player-photos/20260274-60610568ada1-detail.webp"
+    },
+    "studio:2026/2027:20260275": {
+      "thumbnail": "/player-photos/20260275-f4eee424f0af-thumbnail.webp",
+      "detail": "/player-photos/20260275-f4eee424f0af-detail.webp"
+    },
+    "studio:2026/2027:20260276": {
+      "thumbnail": "/player-photos/20260276-eeca24dab060-thumbnail.webp",
+      "detail": "/player-photos/20260276-eeca24dab060-detail.webp"
+    },
+    "studio:2026/2027:20260278": {
+      "thumbnail": "/player-photos/20260278-29c6b8ac612e-thumbnail.webp",
+      "detail": "/player-photos/20260278-29c6b8ac612e-detail.webp"
+    },
+    "studio:2026/2027:20260279": {
+      "thumbnail": "/player-photos/20260279-90caa28d4dfb-thumbnail.webp",
+      "detail": "/player-photos/20260279-90caa28d4dfb-detail.webp"
+    },
+    "studio:2026/2027:20260280": {
+      "thumbnail": "/player-photos/20260280-eb2fcf3b9e39-thumbnail.webp",
+      "detail": "/player-photos/20260280-eb2fcf3b9e39-detail.webp"
+    },
+    "studio:2026/2027:20260282": {
+      "thumbnail": "/player-photos/20260282-397e96548c74-thumbnail.webp",
+      "detail": "/player-photos/20260282-397e96548c74-detail.webp"
+    },
+    "studio:2026/2027:20260283": {
+      "thumbnail": "/player-photos/20260283-d262fdb482a5-thumbnail.webp",
+      "detail": "/player-photos/20260283-d262fdb482a5-detail.webp"
+    },
+    "studio:2026/2027:20260284": {
+      "thumbnail": "/player-photos/20260284-91a574098534-thumbnail.webp",
+      "detail": "/player-photos/20260284-91a574098534-detail.webp"
+    },
+    "studio:2026/2027:20260285": {
+      "thumbnail": "/player-photos/20260285-71ac2ce1dbd3-thumbnail.webp",
+      "detail": "/player-photos/20260285-71ac2ce1dbd3-detail.webp"
+    },
+    "studio:2026/2027:20260286": {
+      "thumbnail": "/player-photos/20260286-afe575fdd0d7-thumbnail.webp",
+      "detail": "/player-photos/20260286-afe575fdd0d7-detail.webp"
+    },
+    "studio:2026/2027:20260287": {
+      "thumbnail": "/player-photos/20260287-2ebbb8329422-thumbnail.webp",
+      "detail": "/player-photos/20260287-2ebbb8329422-detail.webp"
+    },
+    "studio:2026/2027:20260289": {
+      "thumbnail": "/player-photos/20260289-f0796c9224fa-thumbnail.webp",
+      "detail": "/player-photos/20260289-f0796c9224fa-detail.webp"
+    },
+    "studio:2026/2027:20260290": {
+      "thumbnail": "/player-photos/20260290-789fa2c5d0e4-thumbnail.webp",
+      "detail": "/player-photos/20260290-789fa2c5d0e4-detail.webp"
+    },
+    "studio:2026/2027:20260291": {
+      "thumbnail": "/player-photos/20260291-4d6af190b2db-thumbnail.webp",
+      "detail": "/player-photos/20260291-4d6af190b2db-detail.webp"
+    },
+    "studio:2026/2027:20260292": {
+      "thumbnail": "/player-photos/20260292-add447793c25-thumbnail.webp",
+      "detail": "/player-photos/20260292-add447793c25-detail.webp"
+    },
+    "studio:2026/2027:20260293": {
+      "thumbnail": "/player-photos/20260293-d3ee10d11141-thumbnail.webp",
+      "detail": "/player-photos/20260293-d3ee10d11141-detail.webp"
+    },
+    "studio:2026/2027:20260294": {
+      "thumbnail": "/player-photos/20260294-32a1fa0132f6-thumbnail.webp",
+      "detail": "/player-photos/20260294-32a1fa0132f6-detail.webp"
+    },
+    "studio:2026/2027:20260295": {
+      "thumbnail": "/player-photos/20260295-1887bfdbc126-thumbnail.webp",
+      "detail": "/player-photos/20260295-1887bfdbc126-detail.webp"
+    },
+    "studio:2026/2027:20260296": {
+      "thumbnail": "/player-photos/20260296-ae8311e827ea-thumbnail.webp",
+      "detail": "/player-photos/20260296-ae8311e827ea-detail.webp"
+    },
+    "studio:2026/2027:20260297": {
+      "thumbnail": "/player-photos/20260297-5edb87cefcf0-thumbnail.webp",
+      "detail": "/player-photos/20260297-5edb87cefcf0-detail.webp"
+    },
+    "studio:2026/2027:20260298": {
+      "thumbnail": "/player-photos/20260298-8826807f8450-thumbnail.webp",
+      "detail": "/player-photos/20260298-8826807f8450-detail.webp"
+    },
+    "studio:2026/2027:20260299": {
+      "thumbnail": "/player-photos/20260299-5bd8ff13e80e-thumbnail.webp",
+      "detail": "/player-photos/20260299-5bd8ff13e80e-detail.webp"
+    },
+    "studio:2026/2027:20260300": {
+      "thumbnail": "/player-photos/20260300-7e2a5b80cb52-thumbnail.webp",
+      "detail": "/player-photos/20260300-7e2a5b80cb52-detail.webp"
+    },
+    "studio:2026/2027:20260301": {
+      "thumbnail": "/player-photos/20260301-6749398cc118-thumbnail.webp",
+      "detail": "/player-photos/20260301-6749398cc118-detail.webp"
+    },
+    "studio:2026/2027:20260302": {
+      "thumbnail": "/player-photos/20260302-3c681675806c-thumbnail.webp",
+      "detail": "/player-photos/20260302-3c681675806c-detail.webp"
+    },
+    "studio:2026/2027:20260303": {
+      "thumbnail": "/player-photos/20260303-0b94e01d84be-thumbnail.webp",
+      "detail": "/player-photos/20260303-0b94e01d84be-detail.webp"
+    },
+    "studio:2026/2027:20260304": {
+      "thumbnail": "/player-photos/20260304-822f8db16e53-thumbnail.webp",
+      "detail": "/player-photos/20260304-822f8db16e53-detail.webp"
+    },
+    "studio:2026/2027:20260305": {
+      "thumbnail": "/player-photos/20260305-8343de5b1212-thumbnail.webp",
+      "detail": "/player-photos/20260305-8343de5b1212-detail.webp"
+    },
+    "studio:2026/2027:20260306": {
+      "thumbnail": "/player-photos/20260306-f52e7ce5b4bf-thumbnail.webp",
+      "detail": "/player-photos/20260306-f52e7ce5b4bf-detail.webp"
+    },
+    "studio:2026/2027:20260307": {
+      "thumbnail": "/player-photos/20260307-72037acc02bd-thumbnail.webp",
+      "detail": "/player-photos/20260307-72037acc02bd-detail.webp"
+    },
+    "studio:2026/2027:20260308": {
+      "thumbnail": "/player-photos/20260308-ea212ad274d7-thumbnail.webp",
+      "detail": "/player-photos/20260308-ea212ad274d7-detail.webp"
+    },
+    "studio:2026/2027:20260309": {
+      "thumbnail": "/player-photos/20260309-8811695534d2-thumbnail.webp",
+      "detail": "/player-photos/20260309-8811695534d2-detail.webp"
+    },
+    "studio:2026/2027:20260310": {
+      "thumbnail": "/player-photos/20260310-7163b2ae5ff1-thumbnail.webp",
+      "detail": "/player-photos/20260310-7163b2ae5ff1-detail.webp"
+    },
+    "studio:2026/2027:20260312": {
+      "thumbnail": "/player-photos/20260312-ed45b957cfab-thumbnail.webp",
+      "detail": "/player-photos/20260312-ed45b957cfab-detail.webp"
+    },
+    "studio:2026/2027:20260313": {
+      "thumbnail": "/player-photos/20260313-f4dc3d0b0d70-thumbnail.webp",
+      "detail": "/player-photos/20260313-f4dc3d0b0d70-detail.webp"
+    },
+    "studio:2026/2027:20260314": {
+      "thumbnail": "/player-photos/20260314-c1722c5b52e7-thumbnail.webp",
+      "detail": "/player-photos/20260314-c1722c5b52e7-detail.webp"
+    },
+    "studio:2026/2027:20260315": {
+      "thumbnail": "/player-photos/20260315-f2a62297d9fc-thumbnail.webp",
+      "detail": "/player-photos/20260315-f2a62297d9fc-detail.webp"
+    },
+    "studio:2026/2027:20260316": {
+      "thumbnail": "/player-photos/20260316-aeccfa405b4a-thumbnail.webp",
+      "detail": "/player-photos/20260316-aeccfa405b4a-detail.webp"
+    },
+    "studio:2026/2027:20260317": {
+      "thumbnail": "/player-photos/20260317-422cc2a0990c-thumbnail.webp",
+      "detail": "/player-photos/20260317-422cc2a0990c-detail.webp"
+    },
+    "studio:2026/2027:20260319": {
+      "thumbnail": "/player-photos/20260319-a4822d5abf55-thumbnail.webp",
+      "detail": "/player-photos/20260319-a4822d5abf55-detail.webp"
+    },
+    "studio:2026/2027:20260320": {
+      "thumbnail": "/player-photos/20260320-2babdf3ad157-thumbnail.webp",
+      "detail": "/player-photos/20260320-2babdf3ad157-detail.webp"
+    },
+    "studio:2026/2027:20260321": {
+      "thumbnail": "/player-photos/20260321-f8e4f15db035-thumbnail.webp",
+      "detail": "/player-photos/20260321-f8e4f15db035-detail.webp"
+    },
+    "studio:2026/2027:20260323": {
+      "thumbnail": "/player-photos/20260323-f3d9c5d84dea-thumbnail.webp",
+      "detail": "/player-photos/20260323-f3d9c5d84dea-detail.webp"
+    },
+    "studio:2026/2027:20260324": {
+      "thumbnail": "/player-photos/20260324-e3cb0790c16a-thumbnail.webp",
+      "detail": "/player-photos/20260324-e3cb0790c16a-detail.webp"
+    },
+    "studio:2026/2027:20260325": {
+      "thumbnail": "/player-photos/20260325-4b8bf0bf6e9f-thumbnail.webp",
+      "detail": "/player-photos/20260325-4b8bf0bf6e9f-detail.webp"
+    },
+    "studio:2026/2027:20260326": {
+      "thumbnail": "/player-photos/20260326-e632319e95ba-thumbnail.webp",
+      "detail": "/player-photos/20260326-e632319e95ba-detail.webp"
+    },
+    "studio:2026/2027:20260327": {
+      "thumbnail": "/player-photos/20260327-e56d775029c1-thumbnail.webp",
+      "detail": "/player-photos/20260327-e56d775029c1-detail.webp"
+    },
+    "studio:2026/2027:20260328": {
+      "thumbnail": "/player-photos/20260328-5f1f39a87b24-thumbnail.webp",
+      "detail": "/player-photos/20260328-5f1f39a87b24-detail.webp"
+    },
+    "studio:2026/2027:20260329": {
+      "thumbnail": "/player-photos/20260329-0f60655d2afd-thumbnail.webp",
+      "detail": "/player-photos/20260329-0f60655d2afd-detail.webp"
+    },
+    "studio:2026/2027:20260330": {
+      "thumbnail": "/player-photos/20260330-42ca1ca0d563-thumbnail.webp",
+      "detail": "/player-photos/20260330-42ca1ca0d563-detail.webp"
+    },
+    "studio:2026/2027:20260425": {
+      "thumbnail": "/player-photos/20260425-4953609aea1f-thumbnail.webp",
+      "detail": "/player-photos/20260425-4953609aea1f-detail.webp"
+    },
+    "studio:2026/2027:20260426": {
+      "thumbnail": "/player-photos/20260426-bb8d4c54a958-thumbnail.webp",
+      "detail": "/player-photos/20260426-bb8d4c54a958-detail.webp"
+    },
+    "studio:2026/2027:20260427": {
+      "thumbnail": "/player-photos/20260427-e5af6426bdaf-thumbnail.webp",
+      "detail": "/player-photos/20260427-e5af6426bdaf-detail.webp"
+    },
+    "studio:2026/2027:20260428": {
+      "thumbnail": "/player-photos/20260428-f23f71d8206e-thumbnail.webp",
+      "detail": "/player-photos/20260428-f23f71d8206e-detail.webp"
+    },
+    "studio:2026/2027:20260429": {
+      "thumbnail": "/player-photos/20260429-c2be912140fe-thumbnail.webp",
+      "detail": "/player-photos/20260429-c2be912140fe-detail.webp"
+    },
+    "studio:2026/2027:20260430": {
+      "thumbnail": "/player-photos/20260430-5eedc02c57f2-thumbnail.webp",
+      "detail": "/player-photos/20260430-5eedc02c57f2-detail.webp"
+    },
+    "studio:2026/2027:20260431": {
+      "thumbnail": "/player-photos/20260431-d06302e0cebf-thumbnail.webp",
+      "detail": "/player-photos/20260431-d06302e0cebf-detail.webp"
+    },
+    "studio:2026/2027:20260432": {
+      "thumbnail": "/player-photos/20260432-5928c00a51f2-thumbnail.webp",
+      "detail": "/player-photos/20260432-5928c00a51f2-detail.webp"
+    },
+    "studio:2026/2027:20260433": {
+      "thumbnail": "/player-photos/20260433-e6ea37725aa7-thumbnail.webp",
+      "detail": "/player-photos/20260433-e6ea37725aa7-detail.webp"
+    },
+    "studio:2026/2027:20260434": {
+      "thumbnail": "/player-photos/20260434-45252a7b55b0-thumbnail.webp",
+      "detail": "/player-photos/20260434-45252a7b55b0-detail.webp"
+    },
+    "studio:2026/2027:20260435": {
+      "thumbnail": "/player-photos/20260435-550dbf6cfaf4-thumbnail.webp",
+      "detail": "/player-photos/20260435-550dbf6cfaf4-detail.webp"
+    },
+    "studio:2026/2027:20260436": {
+      "thumbnail": "/player-photos/20260436-c70b21ef95f6-thumbnail.webp",
+      "detail": "/player-photos/20260436-c70b21ef95f6-detail.webp"
+    },
+    "studio:2026/2027:20260437": {
+      "thumbnail": "/player-photos/20260437-ecd0a26da989-thumbnail.webp",
+      "detail": "/player-photos/20260437-ecd0a26da989-detail.webp"
+    },
+    "studio:2026/2027:20260438": {
+      "thumbnail": "/player-photos/20260438-eb849795cb2f-thumbnail.webp",
+      "detail": "/player-photos/20260438-eb849795cb2f-detail.webp"
+    },
+    "studio:2026/2027:20260439": {
+      "thumbnail": "/player-photos/20260439-56517f632de3-thumbnail.webp",
+      "detail": "/player-photos/20260439-56517f632de3-detail.webp"
+    },
+    "studio:2026/2027:20260440": {
+      "thumbnail": "/player-photos/20260440-8daabf6d73d6-thumbnail.webp",
+      "detail": "/player-photos/20260440-8daabf6d73d6-detail.webp"
+    },
+    "studio:2026/2027:20260442": {
+      "thumbnail": "/player-photos/20260442-1a05b5aa3c9e-thumbnail.webp",
+      "detail": "/player-photos/20260442-1a05b5aa3c9e-detail.webp"
+    },
+    "studio:2026/2027:20260443": {
+      "thumbnail": "/player-photos/20260443-7783798d9578-thumbnail.webp",
+      "detail": "/player-photos/20260443-7783798d9578-detail.webp"
+    },
+    "studio:2026/2027:20260444": {
+      "thumbnail": "/player-photos/20260444-af39848333e4-thumbnail.webp",
+      "detail": "/player-photos/20260444-af39848333e4-detail.webp"
+    },
+    "studio:2026/2027:20260446": {
+      "thumbnail": "/player-photos/20260446-fb17d29a565e-thumbnail.webp",
+      "detail": "/player-photos/20260446-fb17d29a565e-detail.webp"
+    },
+    "studio:2026/2027:20260447": {
+      "thumbnail": "/player-photos/20260447-4ea6bfb8864c-thumbnail.webp",
+      "detail": "/player-photos/20260447-4ea6bfb8864c-detail.webp"
+    },
+    "studio:2026/2027:20260449": {
+      "thumbnail": "/player-photos/20260449-04b0740dde52-thumbnail.webp",
+      "detail": "/player-photos/20260449-04b0740dde52-detail.webp"
+    },
+    "studio:2026/2027:20260450": {
+      "thumbnail": "/player-photos/20260450-acf5074f3b00-thumbnail.webp",
+      "detail": "/player-photos/20260450-acf5074f3b00-detail.webp"
+    },
+    "studio:2026/2027:20260451": {
+      "thumbnail": "/player-photos/20260451-68d28b98b18f-thumbnail.webp",
+      "detail": "/player-photos/20260451-68d28b98b18f-detail.webp"
+    },
+    "studio:2026/2027:20260452": {
+      "thumbnail": "/player-photos/20260452-de2ba86834fa-thumbnail.webp",
+      "detail": "/player-photos/20260452-de2ba86834fa-detail.webp"
+    },
+    "studio:2026/2027:20260455": {
+      "thumbnail": "/player-photos/20260455-e42f48948434-thumbnail.webp",
+      "detail": "/player-photos/20260455-e42f48948434-detail.webp"
+    },
+    "studio:2026/2027:20260456": {
+      "thumbnail": "/player-photos/20260456-406a7e3d5e28-thumbnail.webp",
+      "detail": "/player-photos/20260456-406a7e3d5e28-detail.webp"
+    },
+    "studio:2026/2027:20260458": {
+      "thumbnail": "/player-photos/20260458-5c9d71f48768-thumbnail.webp",
+      "detail": "/player-photos/20260458-5c9d71f48768-detail.webp"
+    },
+    "studio:2026/2027:20260459": {
+      "thumbnail": "/player-photos/20260459-fbcfabeb55e8-thumbnail.webp",
+      "detail": "/player-photos/20260459-fbcfabeb55e8-detail.webp"
+    },
+    "studio:2026/2027:20260461": {
+      "thumbnail": "/player-photos/20260461-faac28fafa10-thumbnail.webp",
+      "detail": "/player-photos/20260461-faac28fafa10-detail.webp"
+    },
+    "studio:2026/2027:20260462": {
+      "thumbnail": "/player-photos/20260462-26e2bf164ed6-thumbnail.webp",
+      "detail": "/player-photos/20260462-26e2bf164ed6-detail.webp"
+    },
+    "studio:2026/2027:20260463": {
+      "thumbnail": "/player-photos/20260463-06d5ed9ecf80-thumbnail.webp",
+      "detail": "/player-photos/20260463-06d5ed9ecf80-detail.webp"
+    },
+    "studio:2026/2027:20260464": {
+      "thumbnail": "/player-photos/20260464-360157a77220-thumbnail.webp",
+      "detail": "/player-photos/20260464-360157a77220-detail.webp"
+    },
+    "studio:2026/2027:20260470": {
+      "thumbnail": "/player-photos/20260470-c13a77761a64-thumbnail.webp",
+      "detail": "/player-photos/20260470-c13a77761a64-detail.webp"
+    }
+  },
+  "stats": {
+    "studioPlayers": 576,
+    "espnPlayers": 602,
+    "mapped": 423,
+    "rejected": 1,
+    "studioUnmapped": 153,
+    "espnUnmapped": 179,
+    "validLocalPhotos": 285,
+    "studioPhotos": 277,
+    "espnPhotos": 248,
+    "studioFallbacks": 299,
+    "espnFallbacks": 354,
+    "sizes": {
+      "original": 27524387,
+      "thumbnail": 1238336,
+      "detail": 3211210
+    },
+    "excluded": [
+      {
+        "file": "20260288.webp",
+        "reason": "invalid-image"
+      },
+      {
+        "file": "placeholder.png",
+        "reason": "not-player-id"
+      }
+    ]
+  }
+}

@@ -2,9 +2,7 @@ import {
   buildFantasyOutlookComparison,
 } from '../services/fantasyOutlookComparisonEngine.js'
 
-import {
-  getPlayerImage,
-} from '../services/playerImages.js'
+import { renderPlayerAvatar } from '../services/playerPhotos.js'
 
 import {
   getFixtureScoreColor,
@@ -91,63 +89,13 @@ function getScoreColor(
   return '#d7192d'
 }
 
-function getPlayerInitial(
-  player,
-) {
-  return String(
-    player?.name ??
-    '?',
-  )
-    .trim()
-    .charAt(0)
-    .toUpperCase()
-}
-
 /*
 |--------------------------------------------------------------------------
 | Spelerkaart
 |--------------------------------------------------------------------------
 */
 
-function renderPlayerImage(
-  player,
-) {
-  const image =
-    getPlayerImage(
-      `${player.id}.webp`,
-    )
-
-  if (!image) {
-    return `
-      <span>
-        ${getPlayerInitial(
-          player,
-        )}
-      </span>
-    `
-  }
-
-  return `
-    <img
-      src="${image}"
-      alt="${player.name}"
-      loading="lazy"
-      onerror="
-        this.replaceWith(
-          Object.assign(
-            document.createElement('span'),
-            {
-              textContent:
-                '${getPlayerInitial(
-                  player,
-                )}'
-            },
-          ),
-        )
-      "
-    />
-  `
-}
+function renderPlayerImage(player) { return renderPlayerAvatar(player, { size: 64 }) }
 
 function renderPlayerHeader(
   report,

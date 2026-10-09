@@ -84,6 +84,7 @@
 
 .analysis-toolbar {
   display: flex;
+  flex-wrap: wrap;
   gap: 24px;
   align-items: flex-end;
   margin-bottom: 18px;

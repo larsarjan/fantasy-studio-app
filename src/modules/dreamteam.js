@@ -11,9 +11,7 @@ import {
   getDreamTeamAvailableRounds,
 } from '../services/dreamTeamEngine.js'
 
-import {
-  getPlayerImage,
-} from '../services/playerImages.js'
+import { renderPlayerAvatar } from '../services/playerPhotos.js'
 
 import {
   getPlayerDetailProfile,
@@ -183,18 +181,6 @@ function renderPitchPlayer(player) {
     return ''
   }
 
-  const playerImage =
-    getPlayerImage(
-      `${player.id}.webp`,
-    )
-
-  const initial =
-    cleanText(
-      player.name,
-    )
-      .charAt(0)
-      .toUpperCase()
-
   return `
     <article
       class="dreamteam-player dreamteam-player-clickable"
@@ -210,26 +196,7 @@ function renderPitchPlayer(player) {
       role="button"
       tabindex="0"
     >
-      <div class="dreamteam-player-avatar">
-        ${
-          playerImage
-            ? `
-              <img
-                class="dreamteam-player-photo"
-                src="${playerImage}"
-                alt="${escapeHtml(
-                  player.name,
-                )}"
-                loading="lazy"
-              />
-            `
-            : `
-              <span aria-hidden="true">
-                ${escapeHtml(initial)}
-              </span>
-            `
-        }
-      </div>
+      ${renderPlayerAvatar(player, { size: 48, className: 'dreamteam-player-avatar' })}
 
       <strong>
         ${escapeHtml(player.name)}

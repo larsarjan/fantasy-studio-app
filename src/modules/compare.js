@@ -16,9 +16,7 @@ import {
   getFantasyLabelMeta,
 } from '../constants/fantasyLabels.js'
 
-import {
-  getPlayerImage,
-} from '../services/playerImages.js'
+import { renderPlayerAvatar } from '../services/playerPhotos.js'
 
 import {
   renderFantasyOutlookComparison,
@@ -919,12 +917,7 @@ function renderPlayerCard(player) {
     `
   }
 
-  const playerImage =
-  getPlayerImage(
-    `${player.id}.webp`,
-  )
-
-  const statusMeta =
+const statusMeta =
     getStatusMeta(player.status)
 
   const roleLabels =
@@ -957,47 +950,7 @@ const playingChance =
   return `
     <article class="analysis-player-card">
       <div class="analysis-player-card-top">
-        <div
-  class="
-    analysis-avatar
-    ${playerImage ? 'has-image' : 'has-studio-placeholder'}
-  "
->
-  ${
-    playerImage
-      ? `
-        <img
-          src="${playerImage}"
-          alt="${player.name}"
-        />
-      `
-      : `
-        <div
-          class="analysis-photo-studio"
-          role="img"
-          aria-label="Geen spelersfoto beschikbaar"
-        >
-          <span
-            class="analysis-photo-studio-light"
-            aria-hidden="true"
-          ></span>
-
-          <span
-            class="analysis-photo-studio-floor"
-            aria-hidden="true"
-          ></span>
-
-          <span
-            class="analysis-photo-studio-logo"
-            aria-hidden="true"
-          >
-            <strong>FVT</strong>
-            <small>STUDIO</small>
-          </span>
-        </div>
-      `
-  }
-</div>
+        ${renderPlayerAvatar(player, { size: 80, className: 'analysis-avatar' })}
 
         <div class="analysis-card-main">
           <span class="analysis-position">

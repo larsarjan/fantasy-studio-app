@@ -1,3 +1,4 @@
+import { renderPlayerAvatar } from '../services/playerPhotos.js'
 import { safeHtml } from '../platform/html.js'
 import { compactManagerImport } from '../services/managerPersistence.js'
 import { createManagerOptimizerRequest } from '../services/optimizer/managerOptimizerRequest.js'
@@ -464,9 +465,7 @@ function createPlayerCard({
       ${captainLabel}
       ${isHighlighted ? '<span class="optimizer-player-new">Nieuw</span>' : ''}
 
-      <span class="optimizer-player-shirt">
-        👕
-      </span>
+      ${renderPlayerAvatar(getCandidatePlayer(candidate), { size: compact ? 32 : 48 })}
 
       <strong class="optimizer-player-name">
         ${name}

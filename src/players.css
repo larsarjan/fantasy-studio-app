@@ -1,6 +1,7 @@
 /* Fantasy Studio — Sprint 3 spelersmodule */
 .players-heading {
   gap: 20px;
+  flex-wrap: wrap;
 }
 
 .player-total {

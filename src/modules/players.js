@@ -22,9 +22,7 @@ import {
   calculatePlayerMatchProfile,
 } from '../services/playerMatchStatsEngine.js'
 
-import {
-  getPlayerImage,
-} from '../services/playerImages.js'
+import { renderPlayerAvatar } from '../services/playerPhotos.js'
 
 import {
   calculateFantasyOutlook,
@@ -991,102 +989,14 @@ function renderScoutStars(stars) {
   ).join('')
 }
 
-function renderPlayerPhoto(player) {
-  const playerImage =
-    getPlayerImage(
-      `${player.id}.webp`,
-    )
-
-  if (playerImage) {
-    return `
-      <div class="player-detail-photo has-image">
-        <img
-          src="${playerImage}"
-          alt="${player.name}"
-          loading="lazy"
-        />
-      </div>
-    `
-  }
-
-  return `
-    <div class="player-detail-photo has-placeholder">
-      <div
-        class="player-detail-photo-studio"
-        role="img"
-        aria-label="Geen spelersfoto beschikbaar"
-      >
-        <span
-          class="player-detail-photo-light"
-          aria-hidden="true"
-        ></span>
-
-        <span
-          class="player-detail-photo-floor"
-          aria-hidden="true"
-        ></span>
-
-        <span
-          class="player-detail-photo-logo"
-          aria-hidden="true"
-        >
-          <strong>FVT</strong>
-          <small>STUDIO</small>
-        </span>
-      </div>
-    </div>
-  `
-}
+function renderPlayerPhoto(player) { return renderPlayerAvatar(player, { size: 180, className: 'player-detail-photo' }) }
 
 function renderPlayerTableIdentity(
   player,
 ) {
-  const playerImage =
-    getPlayerImage(
-      `${player.id}.webp`,
-    )
-
-  const initial =
-    String(
-      player.name ?? '?',
-    )
-      .trim()
-      .charAt(0)
-      .toUpperCase()
-
   return `
     <div class="player-table-identity">
-      <div
-        class="
-          player-table-avatar
-          ${
-            playerImage
-              ? 'has-image'
-              : 'has-placeholder'
-          }
-        "
-      >
-        ${
-          playerImage
-            ? `
-              <img
-                src="${playerImage}"
-                alt=""
-                loading="lazy"
-              />
-            `
-            : `
-              <span aria-hidden="true">
-                ${initial}
-              </span>
-            `
-        }
-
-        <span
-          class="player-table-avatar-status"
-          aria-hidden="true"
-        ></span>
-      </div>
+      ${renderPlayerAvatar(player, { size: 40, className: 'player-table-avatar' })}
 
       <div class="player-table-identity-copy">
         <strong class="player-table-name">

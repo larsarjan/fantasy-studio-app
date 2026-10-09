@@ -1,3 +1,4 @@
+import { renderPlayerAvatar } from '../services/playerPhotos.js'
 import { buildDashboardIntelligence } from '../services/dashboardIntelligence.js'
 
 const esc = value => String(value ?? '').replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[character]))
@@ -44,7 +45,7 @@ export function renderDashboardMarketBlock(data) {
     if (!item) return `<article><small>${title}</small><strong>Geen betrouwbaar signaal</strong><span>Historische veranderingen ontbreken.</span></article>`
     const player = item.player ?? item
     const explanation = item.signals?.map(signal => signal.label).slice(0, 2).join(' · ') || item.label || 'Bestaande markt- en profielverandering'
-    return `<article><small>${title}</small><strong>${esc(player.name)}</strong><b class="${direction}">${item.score > 0 ? '+' : ''}${number(item.score ?? item.delta)}</b><span>${esc(explanation)}</span></article>`
+    return `<article><small>${title}</small>${renderPlayerAvatar(player,{size:32})}<strong>${esc(player.name)}</strong><b class="${direction}">${item.score > 0 ? '+' : ''}${number(item.score ?? item.delta)}</b><span>${esc(explanation)}</span></article>`
   }
   const elite = data.elite
   const eliteItem = (title, row, formatter) => `<article><small>${title}</small><strong>${row ? esc(playerName(row)) : 'Geen betrouwbare data'}</strong>${row ? `<b>${formatter(row)}</b>` : ''}<span>${row ? `Top ${elite.cohort} · deadline SR${elite.round}` : 'Elite-data ontbreekt.'}</span></article>`
@@ -74,7 +75,7 @@ export function formatDashboardFixtureMoment(fixture) {
 function fixtureBlock(fixture) {
   if (!fixture) return `<section class="panel dashboard-fixture"><span class="eyebrow">Wedstrijd van de ronde</span><h2>Geen wedstrijdgegevens</h2><p>Er is voor deze speelronde geen betrouwbare fixture beschikbaar.</p></section>`
   const moment = formatDashboardFixtureMoment(fixture)
-  return `<section class="panel dashboard-fixture"><div><span class="eyebrow">Wedstrijd van de ronde</span><h2>${esc(fixture.home)} – ${esc(fixture.away)}</h2>${moment ? `<small class="dashboard-fixture-moment">${esc(moment)}</small>` : ''}<p>${esc(fixture.reason)}</p></div><div class="dashboard-fixture-assets">${fixture.players.map(player => `<button data-dashboard-screen="players"><strong>${esc(player.name)}</strong><span>${esc(player.club)} · ${number(player.expectedPoints)} xP</span></button>`).join('') || '<span class="dashboard-neutral">Geen betrouwbare spelersprojecties.</span>'}</div><button class="dashboard-link" data-dashboard-screen="fixtures">Bekijk speelschema →</button></section>`
+  return `<section class="panel dashboard-fixture"><div><span class="eyebrow">Wedstrijd van de ronde</span><h2>${esc(fixture.home)} – ${esc(fixture.away)}</h2>${moment ? `<small class="dashboard-fixture-moment">${esc(moment)}</small>` : ''}<p>${esc(fixture.reason)}</p></div><div class="dashboard-fixture-assets">${fixture.players.map(player => `<button data-dashboard-screen="players">${renderPlayerAvatar(player,{size:32})}<strong>${esc(player.name)}</strong><span>${esc(player.club)} · ${number(player.expectedPoints)} xP</span></button>`).join('') || '<span class="dashboard-neutral">Geen betrouwbare spelersprojecties.</span>'}</div><button class="dashboard-link" data-dashboard-screen="fixtures">Bekijk speelschema →</button></section>`
 }
 
 function chipBlock(signal) {
