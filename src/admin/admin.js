@@ -148,12 +148,12 @@ async function community() {
 }
 async function users() {
   const page = pageNumber(), params = new URLSearchParams(location.search), q = searchText(params.get('q'))
-  let query = supabase.from('profiles').select('id,display_name,favorite_club,account_status,created_at,user_roles(role_key)').order('created_at', { ascending: false }).order('id').range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE)
+  let query = supabase.from('profiles').select('id,display_name,favorite_club,account_status,created_at,user_roles:user_roles!user_roles_user_id_fkey(role_key)').order('created_at', { ascending: false }).order('id').range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE)
   if (q) query = query.ilike('display_name', '%' + q + '%')
   const rows = unwrap(await query), id = params.get('user')
   html(card('Gebruikers', `<form class="admin-filters" method="get">${field('Zoek weergavenaam', 'q', q, 'type="search"')}<button>Zoeken</button></form>${table(['Naam', 'Club', 'Rollen', 'Status', 'Aangemaakt', 'Actie'], rows.slice(0, PAGE_SIZE).map(u => `<tr><td>${esc(u.display_name || 'FVT-lid')}</td><td>${esc(u.favorite_club || '—')}</td><td>${u.user_roles.map(r => chip(r.role_key)).join(' ')}</td><td>${chip(u.account_status)}</td><td>${date(u.created_at)}</td><td>${link('users', 'Rechten bekijken', '?user=' + u.id)}</td></tr>`).join(''))}${pageNavigation('users', page, rows.length > PAGE_SIZE, '&q=' + encodeURIComponent(q))}<p class="admin-muted">E-mail en laatste login worden niet opgehaald uit Auth. Geen sessies of tokens worden getoond.</p>`))
   if (!id) return
-  const user = unwrap(await supabase.from('profiles').select('id,display_name,account_status,user_roles(role_key)').eq('id', id).single()), roles = unwrap(await supabase.from('roles').select('*').order('key'))
+  const user = unwrap(await supabase.from('profiles').select('id,display_name,account_status,user_roles:user_roles!user_roles_user_id_fkey(role_key)').eq('id', id).single()), roles = unwrap(await supabase.from('roles').select('*').order('key'))
   permissionMap = unwrap(await supabase.from('role_permissions').select('*'))
   const allPermissions = unwrap(await supabase.from('permissions').select('key').order('key')), current = user.user_roles.map(r => r.role_key)
   root.insertAdjacentHTML('beforeend', safeHtml(card('Rechten · ' + (user.display_name || user.id), `<form id="roles-form" class="admin-form"><div class="admin-checks">${roles.map(r => check(r.label, 'role_' + r.key, current.includes(r.key))).join('')}</div><div id="permissions-preview"></div>${allowed('users.manage_roles') ? '<button type="submit">Rollen wijzigen</button>' : ''}<p data-status class="admin-status" aria-live="polite"></p></form>${action(user.account_status === 'blocked' ? 'Deblokkeren' : 'Blokkeren', 'user-status', 'users.manage_status', true)}`)))
