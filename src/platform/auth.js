@@ -2,6 +2,11 @@ import { renderPublic, icon } from '../public/homepage.js'
 import { loginDestination } from './routes.js'
 import { supabase, appUrl, friendlyError } from './client.js'
 import './platform.css'
+import { mountTurnstile } from '../services/turnstile.js'
+
+const captchaEnabled = import.meta.env.VITE_AUTH_CAPTCHA_ENABLED === 'true'
+const captchaLogin = import.meta.env.VITE_AUTH_CAPTCHA_LOGIN === 'true'
+let captcha
 
 let authMode = 'login'
 let recovery = new URLSearchParams(location.search).get('flow') === 'recovery'
@@ -10,7 +15,10 @@ const requestedPath = loginDestination(location.pathname, import.meta.env.BASE_U
 function message(text) { const el = document.querySelector('#auth-message'); if (el) el.textContent = text }
 
 export function renderAuth(mode = 'login', notice = '') {
+  captcha?.destroy(); captcha = null
   authMode = mode
+  const protectedForm = captchaEnabled && (['signup','forgot'].includes(mode) || mode === 'login' && captchaLogin)
+  let submitting = false
   const titles = { login: 'Welkom terug', signup: 'Jouw Studio begint hier', forgot: 'Wachtwoord vergeten?', reset: 'Nieuw wachtwoord instellen' }
   const buttons = { login: 'Inloggen', signup: 'Account aanmaken', forgot: 'Verstuur herstelmail', reset: 'Wachtwoord opslaan' }
   renderPublic(`<span class="fvt-eyebrow">FANTASY STUDIO</span><h2>${titles[mode]}</h2>
@@ -19,7 +27,8 @@ export function renderAuth(mode = 'login', notice = '') {
         ${mode !== 'reset' ? '<label for="auth-email">E-mailadres</label><input id="auth-email" name="email" type="email" autocomplete="email" required maxlength="254" placeholder="jouw@email.nl">' : ''}
         ${mode !== 'forgot' ? `<label for="auth-password">Wachtwoord</label><div class="fvt-password"><input id="auth-password" name="password" type="password" autocomplete="${mode === 'login' ? 'current-password' : 'new-password'}" minlength="${mode === 'login' ? 1 : 12}" maxlength="128" placeholder="Je wachtwoord" required><button class="fvt-password-toggle" type="button" aria-controls="auth-password" aria-pressed="false" aria-label="Wachtwoord tonen">Toon</button></div>` : ''}
         ${mode === 'reset' || mode === 'signup' ? '<label for="auth-confirmation">Herhaal wachtwoord</label><input id="auth-confirmation" name="confirmation" type="password" autocomplete="new-password" minlength="12" maxlength="128" required>' : ''}
-        <p id="auth-message" role="status" aria-live="polite"></p><button class="platform-primary" type="submit">${buttons[mode]} ${icon('arrow')}</button>
+        ${protectedForm ? '<div id="auth-captcha"></div><p id="captcha-message" role="status" aria-live="polite"></p><button id="captcha-retry" type="button">Verificatie opnieuw laden</button>' : ''}
+        <p id="auth-message" role="status" aria-live="polite"></p><button class="platform-primary" type="submit" ${protectedForm?'disabled':''}>${buttons[mode]} ${icon('arrow')}</button>
       </form><div class="auth-links">${mode === 'login' ? '<button data-auth="forgot" type="button">Wachtwoord vergeten?</button><button data-auth="signup" type="button">Nog geen account? Account aanmaken</button>' : '<button data-auth="login" type="button">Terug naar inloggen</button>'}</div>
       <p class="fvt-account-note">${icon('lock')} Je selectie, instellingen en analyses blijven veilig bewaard.</p>`)
   const toggle = document.querySelector('.fvt-password-toggle')
@@ -29,28 +38,42 @@ export function renderAuth(mode = 'login', notice = '') {
     toggle.setAttribute('aria-pressed', String(visible)); toggle.setAttribute('aria-label', visible ? 'Wachtwoord verbergen' : 'Wachtwoord tonen')
   }
   message(notice)
+  const submit = document.querySelector('#auth-form [type=submit]')
+  if (protectedForm) {
+    captcha = mountTurnstile(document.querySelector('#auth-captcha'), { sitekey: import.meta.env.VITE_TURNSTILE_SITE_KEY, onChange: ({token,message:text}) => {
+      document.querySelector('#captcha-message').textContent = text
+      submit.disabled = submitting || !token
+    } })
+    document.querySelector('#captcha-retry').onclick = () => captcha.reset()
+  }
   document.querySelectorAll('[data-auth]').forEach(button => button.onclick = () => renderAuth(button.dataset.auth))
   document.querySelector('#auth-form').onsubmit = async event => {
     event.preventDefault()
     const form = event.currentTarget
     const values = Object.fromEntries(new FormData(form))
+    if (submitting) return
+    const captchaToken = protectedForm ? captcha?.token() : undefined
+    const submittedCaptcha = captcha
+    if (protectedForm && !captchaToken) return message('Rond eerst de beveiligingscontrole af.')
     if (values.confirmation !== undefined && values.password !== values.confirmation) return message('De wachtwoorden komen niet overeen.')
     const button = form.querySelector('[type=submit]')
     button.disabled = true
+    submitting = true
     message('Even geduld…')
     try {
       if (!supabase) throw new Error('configuration')
       let result
-      if (authMode === 'login') result = await supabase.auth.signInWithPassword({ email: values.email, password: values.password })
-      if (authMode === 'signup') result = await supabase.auth.signUp({ email: values.email, password: values.password, options: { emailRedirectTo: appUrl('auth/callback') } })
-      if (authMode === 'forgot') result = await supabase.auth.resetPasswordForEmail(values.email, { redirectTo: appUrl('auth/callback?flow=recovery') })
-      if (authMode === 'reset') result = await supabase.auth.updateUser({ password: values.password })
+      if (mode === 'login') result = await supabase.auth.signInWithPassword({ email: values.email, password: values.password, options: { captchaToken } })
+      if (mode === 'signup') result = await supabase.auth.signUp({ email: values.email, password: values.password, options: { emailRedirectTo: appUrl('auth/callback'), captchaToken } })
+      if (mode === 'forgot') result = await supabase.auth.resetPasswordForEmail(values.email, { redirectTo: appUrl('auth/callback?flow=recovery'), captchaToken })
+      if (mode === 'reset') result = await supabase.auth.updateUser({ password: values.password })
       if (result.error) throw result.error
-      if (authMode === 'signup' || authMode === 'forgot') message('Controleer je e-mail. Als je aanvraag kan worden verwerkt, ontvang je een link. Kijk ook in je spammap.')
-      else if (authMode === 'reset') { recovery = false; location.replace(appUrl('studio/dashboard')) }
+      if (!form.isConnected) return
+      if (mode === 'signup' || mode === 'forgot') message('Controleer je e-mail. Als je aanvraag kan worden verwerkt, ontvang je een link. Kijk ook in je spammap.')
+      else if (mode === 'reset') { recovery = false; location.replace(appUrl('studio/dashboard')) }
       else location.replace(new URL(requestedPath, location.origin).href)
-    } catch (error) { message(friendlyError(error)) }
-    finally { button.disabled = false }
+    } catch (error) { if (form.isConnected) message(friendlyError(error)) }
+    finally { submitting = false; if (protectedForm && form.isConnected) submittedCaptcha?.reset(); button.disabled = protectedForm }
   }
 }
 

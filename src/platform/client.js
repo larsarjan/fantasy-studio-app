@@ -14,6 +14,7 @@ export function appUrl(path = '') {
 
 export function friendlyError(error) {
   const code = error?.code ?? ''
+  if (code === 'captcha_failed') return 'De beveiligingscontrole is ongeldig of verlopen. Verifieer opnieuw en probeer het nogmaals.'
   if (!navigator.onLine) return 'Geen internetverbinding. Je wijzigingen zijn nog niet opgeslagen. Probeer het opnieuw zodra je online bent.'
   if (code === 'invalid_credentials') return 'Dit e-mailadres of wachtwoord klopt niet.'
   if (code === 'email_not_confirmed') return 'Bevestig eerst je e-mailadres via de link in je e-mail.'

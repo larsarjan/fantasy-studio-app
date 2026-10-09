@@ -24,3 +24,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 @media(max-width:650px) { body .app { grid-template-columns:1fr; }.app .sidebar { min-height:auto; }.navigation { display:flex;overflow:auto;gap:8px; }.navigation .menu { flex:0 0 auto; }.app .main-content { padding:12px; }.app .logo { margin-bottom:14px; } }
 
 .platform-field {display:grid;gap:8px;font-size:13px;margin:20px 0}.platform-field input{color:#f3f8ff;background:#111c2b;border:1px solid #35445b;border-radius:9px;padding:14px;font:inherit}
+
+.account-danger{margin-top:28px;padding:20px;border:1px solid #a84750;border-radius:12px;max-width:720px}.account-danger p{line-height:1.6}.account-danger summary{cursor:pointer;color:#ffb2b9;font-weight:700}.account-danger form{display:grid;gap:12px;margin-top:16px}.account-danger input{max-width:100%;min-width:0}.account-danger .account-delete-button{background:#a91e32;color:white;border:1px solid #f27c8c;padding:12px 16px;border-radius:8px;font-weight:700;white-space:normal}.account-delete-button:disabled{opacity:.5;cursor:not-allowed}
+
+#auth-captcha{width:100%;min-width:0;min-height:65px}#captcha-message{font-size:13px;line-height:1.5}#captcha-retry{font-size:12px;padding:6px 0;background:transparent;color:#7dd3fc;border:0;text-align:left}

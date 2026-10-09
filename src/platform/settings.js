@@ -1,3 +1,4 @@
+import { accountDeletionMarkup, mountAccountDeletion } from './accountDeletion.js'
 import { navigationMarkup } from '../public/navigation.js'
 import { access, hasPermission } from './access.js'
 import '../public/content.css'
@@ -8,6 +9,8 @@ import { flushSelection, selectionDirty, startSelectionAutosave } from './select
 import { setProfileAccount, profileName, initials } from '../modules/profile.js'
 import { flushUserStorage, hasPendingUserStorage } from '../services/userStorage.js'
 
+let accountDeleted = false
+window.addEventListener('studio:account-deleted', () => { accountDeleted = true })
 let busy = false
 function status(text) { const node = document.querySelector('#account-status'); if (node) node.textContent = text }
 
@@ -54,7 +57,7 @@ export function mountAccount(session) {
     const { error } = await supabase.auth.signOut()
     if (error) status(friendlyError(error))
   }
-  window.addEventListener('beforeunload', event => { if (selectionDirty() || busy || hasPendingUserStorage()) { event.preventDefault(); event.returnValue = '' } })
+  window.addEventListener('beforeunload', event => { if (!accountDeleted && (selectionDirty() || busy || hasPendingUserStorage())) { event.preventDefault(); event.returnValue = '' } })
   window.addEventListener('offline', () => status('Je bent offline. Bewaar je wijzigingen zodra de verbinding terug is.'))
   window.addEventListener('online', () => status('Verbinding hersteld. Je kunt weer opslaan.'))
   window.addEventListener('studio:editorial-saved', () => status('Transfernotities opgeslagen in je account'))
@@ -66,10 +69,11 @@ export function createSettingsScreen() {
   <section><h3>Profiel</h3><a href="/studio/profile">Weergavenaam en favoriete club wijzigen</a></section><section><h3>Voorkeuren</h3><label><input id="compact-view" type="checkbox"> Compacte weergave</label><br><button id="save-preferences" class="platform-primary">Voorkeuren opslaan</button></section>
   <section><h3>Mijn gegevens</h3><p>Download een kopie van je opgeslagen selecties en instellingen.</p><button id="export-data">Gegevens downloaden</button></section>
   <section><h3>Bestaande desktopgegevens</h3><p>Importeer oude transfernotities uit deze browser. Bestaande cloudnotities worden niet overschreven en de lokale bron blijft bewaard. Selecties uit een screenshot of tekst importeer je via FVT Manager.</p><button id="legacy-import">Lokale transfernotities importeren</button></section>
-  <p id="settings-status" class="platform-status" role="status"></p></div>`
+  ${accountDeletionMarkup()}<p id="settings-status" class="platform-status" role="status"></p></div>`
 }
 
 export function mountSettingsScreen() {
+  mountAccountDeletion()
   const report = text => document.querySelector('#settings-status').textContent = text
   document.querySelector('#compact-view').checked = preferences.compact === true
   const run = (id, fn) => { document.querySelector(id).onclick = async event => { event.currentTarget.disabled = true; try { await fn() } catch (error) { report(friendlyError(error)) } finally { const button = document.querySelector(id); if (button) button.disabled = false } } }
