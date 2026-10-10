@@ -1,0 +1,50 @@
+import {execFileSync} from 'node:child_process'
+import {readFileSync,writeFileSync} from 'node:fs'
+import assert from 'node:assert/strict'
+const browser='node_modules/agent-browser/bin/agent-browser-win32-x64.exe'
+const run=(...args)=>execFileSync(browser,['--session','availability-local',...args],{encoding:'utf8',timeout:65000})
+const ev=code=>{const v=JSON.parse(run('eval',`JSON.stringify(${code})`));return typeof v==='string'?JSON.parse(v):v}
+const click=selector=>run('click',selector),wait=condition=>run('wait','--fn',condition)
+const checks=[],ok=(value,label)=>{assert(value,label);checks.push(label);console.log(label)}
+const [injury,suspended,doubt]=JSON.parse(readFileSync('test-results/availability/fixture-players.json','utf8'))
+run('open','http://127.0.0.1:5180/test-results/availability/harness.html');run('wait','#av-search')
+ok(ev('document.querySelectorAll(".availability-card").length')===60,'Admin overview paginates at 60 cards')
+for(const width of [390,820,1366,1920]){
+ run('set','viewport',String(width),'1000')
+ ok(ev('document.documentElement.scrollWidth<=innerWidth+1'),`Admin responsive ${width}px without overflow`)
+ run('screenshot',`test-results/availability/admin-${width}.png`)
+}
+run('select','[data-av-filter=status]','suspension');ok(ev('document.querySelectorAll(".availability-card").length')===1,'Suspension filter finds one distinct card')
+ok(ev('document.querySelector(".availability-badge").textContent').includes('■ GESCHORST'),'Suspension has card icon and text')
+run('select','[data-av-filter=status]','');run('select','[data-av-filter=percentage]','75');ok(ev('document.querySelectorAll(".availability-card").length')===1,'75% filter works independently of status')
+run('select','[data-av-filter=percentage]','');run('fill','#av-search',String(injury.id));ok(ev('document.querySelectorAll(".availability-card").length')===1,'Exact player ID search is unambiguous')
+run('focus','.availability-badge');ok(ev('getComputedStyle(document.querySelector(".availability-tooltip")).display')!=='none','Keyboard focus exposes status explanation')
+click(`[data-edit="${injury.id}"]`);run('select','dialog [name=availability_percentage]','25');run('fill','dialog [name=reason]','Bijgewerkt via lokale UI');click('dialog [type=submit]');wait('!document.querySelector("dialog")')
+ok(ev('document.querySelector(".availability-card").textContent').includes('25%'),'Editing persists percentage and refreshes card')
+click('.availability-badge');run('wait','.availability-history');ok(ev('document.querySelector(".availability-history").textContent').includes('Bijgewerkt via lokale UI'),'History shows actual persisted change')
+click('dialog [data-close]')
+run('set','viewport','390','844');click('.availability-badge');run('wait','.availability-history')
+ok(ev('document.querySelector("dialog").getBoundingClientRect().right<=innerWidth'),'Mobile tap opens contained detail dialog');run('screenshot','test-results/availability/mobile-detail.png');click('dialog [data-close]')
+click(`[data-return="${injury.id}"]`);click('dialog [type=submit]');wait('!document.querySelector("dialog")')
+ok(ev('document.querySelector(".availability-card").textContent').includes('Recent terug'),'Return removes warning and shows temporary return marker')
+run('eval','document.querySelector(".availability-sources").open=true')
+ok(ev('document.querySelectorAll(".availability-conflict").length')===2,'Source versus FVT comparison visible')
+click('[data-decision=keep]');wait('document.querySelectorAll(".availability-conflict").length===1')
+run('eval','document.querySelector(".availability-sources").open=true');click('[data-decision=accept]');wait('document.querySelectorAll(".availability-conflict").length===0')
+ok(ev('document.querySelector(".availability-card").textContent').includes('50%'),'Explicit source acceptance changes effective status')
+ok(ev('document.querySelector(".availability-card").textContent').includes('override: nee'),'Explicit source acceptance releases manual override')
+run('eval','document.querySelector(".availability-sources").open=true');run('fill','#av-source-form [name=key]','ui-source');run('fill','#av-source-form [name=source_name]','Lokale UI-bron');click('#av-source-form [type=submit]');wait('document.querySelector(".availability-sources").textContent.includes("Lokale UI-bron")');ok(true,'Source management form persists approved state')
+click('[data-mode=studio]');wait('document.body.dataset.ready==="studio"')
+ok(ev('document.querySelectorAll("[data-edit],[data-add],.availability-sources").length')===0,'Studio overview contains no admin controls or notes')
+for(const width of [390,820,1366,1920]){run('set','viewport',String(width),'1000');ok(ev('document.documentElement.scrollWidth<=innerWidth+1'),`Studio responsive ${width}px`)}
+click('[data-mode=selection]');wait('document.body.dataset.ready==="selection"')
+ok(ev('document.querySelectorAll(".selection-player .availability-badge").length')===3,'Mijn selectie uses all three central statuses')
+click(`[data-selection-profile="${injury.id}"]`);run('wait','.personal-detail .availability-detail');ok(true,'Player detail exposes current status and history entry point')
+click('[data-mode=players]');wait('document.body.dataset.ready==="players"');run('fill','#player-search',injury.name)
+wait('document.querySelector(".player-table-identity .availability-badge")!==null');ok(true,'Main players list displays central availability badge')
+click('[data-mode=captain]');wait('document.body.dataset.ready==="captain"')
+ok(ev('Array.from(document.querySelectorAll(".radar-hero-card[data-radar-player]"),el=>el.dataset.radarPlayer)').every(id=>id!==String(suspended.id)),'Suspended player is absent from captain recommendations')
+ok(ev('document.querySelector(".personal-context").textContent').includes('Jouw beste captain'),'Personal captain integration remains active')
+ok(run('errors').trim()==='','No browser runtime errors')
+writeFileSync('test-results/availability/ui.json',JSON.stringify({checks,scope:'Isolated PGlite RPC backend; actual application components; no production writes'},null,2))
+console.log(`${checks.length} availability UI checks passed`)

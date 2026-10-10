@@ -1,0 +1,31 @@
+<!doctype html><html lang="nl"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Lokale beschikbaarheidstest</title><body style="margin:0;background:#0d1623;color:#e6edf5;font-family:Arial,sans-serif"><header style="padding:16px"><strong>LOKALE ACCEPTATIETEST — geen productiestatussen</strong><nav id="test-nav"><button data-mode="admin">Admin overzicht</button><button data-mode="studio">Studio overzicht</button><button data-mode="players">Spelerslijst</button><button data-mode="selection">Mijn selectie</button><button data-mode="captain">Captain Radar</button></nav></header><main id="page-content" style="padding:20px;min-width:0"></main><script type="module">
+// Intercept every Supabase request before importing the real application modules.
+const originalFetch=window.fetch.bind(window)
+window.fetch=(input,init={})=>{
+ const url=String(input?.url||input)
+ if(url.includes('.supabase.co/'))return originalFetch('http://127.0.0.1:5191/',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({url,body:init.body?JSON.parse(init.body):null})})
+ return originalFetch(input,init)
+}
+const {initializeDatabase,getPlayers,getFixtures}=await import('/src/services/database.js')
+const {safeHtml}=await import('/src/platform/html.js')
+const {refreshAvailability}=await import('/src/platform/availabilityRepository.js')
+const {mountAvailabilityPage}=await import('/src/modules/availabilityPage.js')
+await import('/src/players.css');await import('/src/personal.css');await import('/src/captainRadar.css');await import('/src/playerPhotos.css')
+await initializeDatabase();await refreshAvailability()
+const selected=getPlayers().slice(0,3)
+const {restoreManagerState}=await import('/src/modules/optimizer.js')
+restoreManagerState({importResult:{players:selected.map(player=>({player,currentPrice:player.endPrice})),lineupMetadata:{starters:selected.map(p=>String(p.id)),captainId:String(selected[0].id),viceCaptainId:String(selected[1].id)}},bank:5,bankKnown:true,freeTransfers:1,plannedTransfers:[]},{})
+const root=document.querySelector('#page-content')
+async function render(mode){
+ await refreshAvailability(mode==='admin');root.innerHTML=''
+ if(mode==='admin'||mode==='studio'){
+  root.className='availability-page';await mountAvailabilityPage(root,{players:getPlayers(),fixtures:getFixtures(),admin:mode==='admin',access:{permissions:['admin.access','availability.view','availability.manage']}})
+ }else{
+  root.className='';const modules={players:['/src/modules/players.js','createPlayersScreen','mountPlayersScreen'],selection:['/src/modules/selection.js','createSelectionScreen','mountSelectionScreen'],captain:['/src/modules/captainRadar.js','createCaptainRadarScreen','mountCaptainRadarScreen']}
+  const [path,create,mount]=modules[mode],module=await import(path);root.innerHTML=safeHtml(module[create]());await module[mount]()
+ }
+ document.body.dataset.ready=mode
+}
+document.querySelectorAll('[data-mode]').forEach(button=>button.onclick=()=>render(button.dataset.mode))
+await render('admin')
+</script></body></html>

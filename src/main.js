@@ -1,4 +1,8 @@
 import { initializePlayerPhotos } from './services/playerPhotoRuntime.js'
+import { createAvailabilityScreen, mountAvailabilityScreen } from './modules/availabilityPage.js'
+import { ensureAvailability } from './platform/availabilityRepository.js'
+import { availabilityReady } from './services/availability.js'
+import { bindAvailabilityDetails } from './modules/availabilityUI.js'
 import './playerPhotos.css'
 import { supabase as photoClient } from './platform/client.js'
 import { safeHtml } from './platform/html.js'
@@ -80,6 +84,8 @@ import { createDashboardScreen, mountDashboardScreen } from './modules/dashboard
 
 initializePlayerPhotos(photoClient)
 await initializeDatabase()
+try { await ensureAvailability() } catch { /* Explicit warning and advice gate below. */ }
+bindAvailabilityDetails()
 
 let activeScreenName = 'dashboard'
 let previousStandardScreenName = 'dashboard'
@@ -109,6 +115,7 @@ function getScreens() {
   return {
     ...(pricePredictionModule ? {prices: {title: 'Prijsvoorspelling',get content(){return pricePredictionModule.createPricePredictionScreen()},mount:pricePredictionModule.mountPricePredictionScreen}} : {}),
     selection: { title: 'Mijn selectie', get content() { return createSelectionScreen() }, mount: mountSelectionScreen },
+    beschikbaarheid: { title: 'Beschikbaarheid', get content() { return createAvailabilityScreen() }, mount: mountAvailabilityScreen },
     profile: { title: 'Mijn profiel', get content() { return createProfileScreen() }, mount: mountProfileScreen },
     dashboard: {
       title: 'Dashboard',
@@ -232,6 +239,7 @@ document.querySelector('#app').innerHTML = safeHtml(`
         <button class="menu" data-screen="history">📚 Historische Data</button>
         <button class="menu" data-screen="analysis">📈 Analyse</button>
         <button class="menu" data-screen="captain">👑 Captain Radar</button>
+        <button class="menu" data-screen="beschikbaarheid">✚ Beschikbaarheid</button>
         <button class="menu" data-screen="differentials">💎 Differentials</button>
         <button class="menu" data-screen="optimizer">🤖 FVT Manager</button>
         <button class="menu" data-screen="dreamteam">🏆 Dream Team</button>
@@ -308,6 +316,7 @@ function showNotice(message, type = 'success') {
 }
 
 async function showScreen(screenName) {
+  try { await ensureAvailability() } catch { /* Keep Studio usable; advice remains gated. */ }
   if (screenName === 'input') { location.assign(basePath + 'admin/input'); return }
   if (!await featureAllowed(FEATURE_ROUTES[screenName])) {
     pageTitle.textContent = 'Geen toegang'
@@ -339,6 +348,7 @@ async function showScreen(screenName) {
   pageTitle.textContent = screen.title
   pageContent.innerHTML = safeHtml(screen.content)
   if (['dashboard'].includes(screenName)) pageContent.insertAdjacentHTML('afterbegin', safeHtml(renderPersonalContext(screenName)))
+  if (!availabilityReady()) pageContent.insertAdjacentHTML('afterbegin',safeHtml('<p class="panel" role="alert">Beschikbaarheid kon niet worden gecontroleerd. Captain- en koopadviezen zijn tijdelijk beperkt. Herlaad de pagina om opnieuw te proberen.</p>'))
 
   menuButtons.forEach((button) => {
     button.classList.toggle(

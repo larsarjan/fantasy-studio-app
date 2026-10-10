@@ -1,4 +1,5 @@
 import { getFixtures, getPlayerProfiles, getResults, getSyncStatus, getTeamRatings } from './database.js'
+import { availabilityPolicy, availabilityVersion } from './availability.js'
 import { calculatePlayerExpectedPointsRange } from './expectedPoints/expectedPointsEngine.js'
 import { calculatePlayerFixtureOutlook } from './fixtureIntelligenceEngine.js'
 import { getAutomaticOutlookStartRound } from './fantasyOutlookComparisonEngine.js'
@@ -81,7 +82,7 @@ export function buildPlayerIntelligence(player, context) {
   const form = finite(player?.outlook?.form, finite(player?.profile?.fantasy?.outlook?.scores?.form, 5))
   const fixtureScore = clamp(finite(fixture?.score, 5) * 10)
   const minutesTarget = 90 * Math.max(1, projection.fixtureCount)
-  const availability = projection.fixtureCount ? clamp((projection.expectedMinutes / minutesTarget) * 100) : 0
+  const availability = projection.fixtureCount ? clamp((projection.expectedMinutes / minutesTarget) * 100) * availabilityPolicy(player).factor : 0
   const reliability = clamp(availability * .65 + projection.appearanceProbability * 100 * .25 + (player?.rotationRisk ? 0 : 10) - (player?.injuryRisk ? 20 : 0))
   const value = price > 0 ? projection.expectedPoints / price : 0
   const trend = minutesTrend(normalizedPlayer, season)
@@ -107,7 +108,7 @@ export function createIntelligenceContext({ season, startRound, horizon = 3, pla
     fixtures: sourceFixtures,
     results: results ?? getResults(),
     teamRatings: teamRatings ?? getTeamRatings(),
-    syncVersion: getSyncStatus()?.lastSync || 'local',
+    syncVersion: `${getSyncStatus()?.lastSync || 'local'}|${availabilityVersion()}`,
   }
 }
 

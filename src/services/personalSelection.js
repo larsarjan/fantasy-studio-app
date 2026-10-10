@@ -1,5 +1,6 @@
 import { FANTASY_GAME_RULES, normalizeFantasyPosition, validateSquad, validateStartingLineup, getEffectiveSellingPrice } from './fantasyGameRulesEngine.js'
 import { createScreenshotImportResult } from './optimizer/screenshotTeamImport.js'
+import { availabilityPolicy, availabilityAdjustedPoints } from './availability.js'
 
 export const playerId = p => String(p?.id ?? p?.playerId ?? '')
 export const playerPrice = p => {
@@ -48,9 +49,10 @@ export function canAddPlayer(players, player) {
 export function personalAdvice({ state, players, candidates, horizonCandidates = candidates }) {
   const owned = selectionPlayers(state, players), ids = new Set(owned.map(playerId))
   const own = candidates.filter(p => ids.has(playerId(p)))
-  const captains = own.filter(p => p.fixtureCount > 0 && p.expectedMinutes / p.fixtureCount >= 45).sort((a,b) => b.radarScore - a.radarScore)
+  const captains = own.filter(p => availabilityPolicy(p).captainEligible && p.fixtureCount > 0 && p.expectedMinutes / p.fixtureCount >= 45).sort((a,b) => b.radarScore - a.radarScore)
   const horizon = new Map(horizonCandidates.map(p => [playerId(p), p]))
-  const sales = own.slice().sort((a,b) => (horizon.get(playerId(a))?.expectedPoints ?? a.expectedPoints) - (horizon.get(playerId(b))?.expectedPoints ?? b.expectedPoints))
+  const saleValue = p => availabilityAdjustedPoints(horizon.get(playerId(p))??p) - availabilityPolicy(p).sellPenalty
+  const sales = own.slice().sort((a,b) => saleValue(a) - saleValue(b))
   const bankKnown = state.bankKnown === true
   const transfers = []
   const reserved = new Set((state.plannedTransfers ?? []).map(t => String(t.inId)))
@@ -70,12 +72,13 @@ export function personalAdvice({ state, players, candidates, horizonCandidates =
     const raw = (state.importResult?.players ?? []).find(r => playerId(r.player) === playerId(out))
     const sale = getEffectiveSellingPrice({ manualSellingPrice: state.manualSellingPrices?.[playerId(out)] ?? raw?.sellingPrice, purchasePrice: state.purchasePrices?.[playerId(out)] ?? raw?.purchasePrice, currentPrice: playerPrice(out) })
     for (const incoming of horizonCandidates) {
+      if (!availabilityPolicy(incoming).buyEligible) continue
       const price = playerPrice(incoming)
       if (ids.has(playerId(incoming)) || reserved.has(playerId(incoming)) || normalizeFantasyPosition(incoming.fantasyPosition ?? incoming.position) !== normalizeFantasyPosition(out.fantasyPosition ?? out.position)) continue
       if (virtualOwned.filter(p => playerId(p) !== playerId(out) && p.club === incoming.club).length >= FANTASY_GAME_RULES.squad.maxPlayersPerClub) continue
       if (price === null || sale === null || (bankKnown && price > sale + Number(state.bank) - reservedCost + .0001)) continue
       const pointsCost = (state.plannedTransfers?.length ?? 0) >= Number(state.freeTransfers ?? 1) ? FANTASY_GAME_RULES.transfers.pointsCostPerExtraTransfer : 0
-      const grossGain = incoming.expectedPoints - (horizon.get(playerId(out))?.expectedPoints ?? out.expectedPoints)
+      const grossGain = Number(incoming.expectedPoints)*availabilityPolicy(incoming).factor - availabilityAdjustedPoints(horizon.get(playerId(out))??out)
       const gain = grossGain - pointsCost
       if (gain > 0 && incoming.expectedMinutes > 0) transfers.push({ out, incoming, gain, grossGain, pointsCost, sale, cost: price - sale, budgetConfirmed: bankKnown, priceEstimated: raw?.sellingPrice == null && state.manualSellingPrices?.[playerId(out)] == null && state.purchasePrices?.[playerId(out)] == null && raw?.purchasePrice == null })
     }

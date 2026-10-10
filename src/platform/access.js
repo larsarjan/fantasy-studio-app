@@ -21,6 +21,7 @@ export async function featureAllowed(key) {
   return data === true
 }
 export const ADMIN_SECTIONS = [
+  ['beschikbaarheid', 'Beschikbaarheid', 'availability.view'],
   ['dashboard', 'Dashboard', 'admin.access'], ['nieuws', 'Nieuws', 'articles.read'], ['videos', "Video's", 'videos.read'],
   ['community', 'Community', 'forum.moderate'], ['users', 'Gebruikers', 'users.view'],
   ['features', 'Site & features', 'features.view'], ['studio', 'Studio-beheer', 'features.view'],

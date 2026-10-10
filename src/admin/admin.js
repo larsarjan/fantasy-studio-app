@@ -68,7 +68,7 @@ export async function renderAdmin(route, session) {
   document.addEventListener('keydown', event => { if (event.key === 'Escape') { document.querySelector('.admin-shell')?.classList.remove('menu-open'); document.querySelector('#admin-menu')?.setAttribute('aria-expanded', 'false') } })
   document.querySelector('#admin-signout').onclick = async () => { await supabase.auth.signOut(); location.assign(appUrl()) }
   try {
-    const loaders = { dashboard, nieuws: articles, videos, community, users, features, studio: features, photos, sync, data: dataPage, audit, system, input }
+    const loaders = { beschikbaarheid: async()=>{const page=await import('../modules/availabilityPage.js');html(page.createAvailabilityScreen());await page.mountAvailabilityPage(root.querySelector('#availability-root'),{admin:true,access:account})}, dashboard, nieuws: articles, videos, community, users, features, studio: features, photos, sync, data: dataPage, audit, system, input }
     await loaders[section](session)
   } catch (error) { html(card('Gegevens konden niet worden geladen', `<p>${esc(friendlyError(error))}</p><button id="admin-retry">Opnieuw proberen</button>`)); bindAction('admin-retry', () => location.reload()) }
 }

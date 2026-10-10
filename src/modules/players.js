@@ -23,6 +23,7 @@ import {
 } from '../services/playerMatchStatsEngine.js'
 
 import { renderPlayerAvatar } from '../services/playerPhotos.js'
+import { availabilityBadge, availabilityDetail } from './availabilityUI.js'
 
 import {
   calculateFantasyOutlook,
@@ -1002,6 +1003,7 @@ function renderPlayerTableIdentity(
         <strong class="player-table-name">
           ${player.name}
         </strong>
+        ${availabilityBadge(player)}
 
         <div class="player-table-meta">
           <span class="player-table-club">
@@ -3571,6 +3573,7 @@ const scout =
         </div>
       </header>
 
+      ${availabilityDetail(player, getFixtures())}
       <nav
         class="player-detail-tabs"
         aria-label="Spelerinformatie"

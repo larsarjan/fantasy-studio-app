@@ -3,6 +3,7 @@ import { calculatePlayerExpectedPointsRange } from './expectedPoints/expectedPoi
 import { calculatePlayerFixtureOutlook } from './fixtureIntelligenceEngine.js'
 import { calculatePlayerForm } from './formIntelligenceEngine.js'
 import { getAutomaticOutlookStartRound } from './fantasyOutlookComparisonEngine.js'
+import { availabilityPolicy, availabilityVersion } from './availability.js'
 
 export const CAPTAIN_RADAR_CONFIG = Object.freeze({
   weights: Object.freeze({ expectedPoints: .35, availability: .20, fixture: .15, form: .10, captainProfile: .10, upside: .05, reliability: .05 }),
@@ -116,6 +117,8 @@ function createBreakdown(components, weights) {
 
 function makeReasons(candidate, leaders) {
   const reasons = []
+  const availability = availabilityPolicy(candidate)
+  if (availability.reason) reasons.push(`${!availability.captainEligible?'Niet geadviseerd als captain:':availability.factor<1?'Beschikbaarheid verlaagt de captainwaardering:':'Aandachtspunt:'} ${availability.reason}`)
   if (candidate.expectedPoints >= leaders.maxXp * .95) reasons.push('Heeft één van de hoogste expected-pointsprojecties van deze speelronde.')
   if (candidate.breakdown.availability.score >= 90) reasons.push(`Wordt voor circa ${Math.round(candidate.expectedMinutes)} minuten verwacht en heeft daardoor weinig minutenrisico.`)
   else if (candidate.breakdown.availability.score < 55) reasons.push('Het verwachte aantal minuten zorgt voor duidelijk captainrisico.')
@@ -128,6 +131,8 @@ function makeReasons(candidate, leaders) {
 
 function makeBadges(candidate) {
   const badges = []
+  const availability = availabilityPolicy(candidate)
+  if(availability.reason) badges.push({icon:availability.suspended?'■':'⚠',label:availability.suspended?'Geschorst':availability.out?'OUT':availability.recent?'Recent terug':`${availability.pct}% beschikbaar`})
   if (candidate.breakdown.upside.score >= 75) badges.push({ icon: '🔥', label: 'Hoge upside' })
   if (candidate.expectedPoints >= 7) badges.push({ icon: '🎯', label: 'Hoge xP' })
   if (candidate.fixtures.some((fixture) => fixture.isHome) && candidate.breakdown.fixture.score >= 65) badges.push({ icon: '🏠', label: 'Sterke thuiswedstrijd' })
@@ -141,11 +146,11 @@ export function compareCaptainCandidates(a, b) {
 }
 
 export function selectCaptainRecommendations(candidates, config = CAPTAIN_RADAR_CONFIG) {
-  const eligible = candidates.filter((item) => item.fixtureCount > 0 && item.expectedMinutes / item.fixtureCount >= config.minimumCandidateMinutesPerFixture).sort(compareCaptainCandidates)
+  const eligible = candidates.filter((item) => availabilityPolicy(item).captainEligible && item.fixtureCount > 0 && item.expectedMinutes / item.fixtureCount >= config.minimumCandidateMinutesPerFixture).sort(compareCaptainCandidates)
   const bestCaptain = eligible[0] ?? null
   eligible.forEach((candidate) => {
     const safeResult = calculateSafeCaptainScore(candidate, config)
-    candidate.safeCaptainScore = round(safeResult.score, 1)
+    candidate.safeCaptainScore = round(safeResult.score * availabilityPolicy(candidate).factor, 1)
     candidate.safeCaptainBreakdown = safeResult.breakdown
   })
   const safeRank = eligible.filter((candidate) => candidate.id !== bestCaptain?.id && candidate.safeCaptainScore >= config.safeAlternativeMinimumScore).sort((a, b) => b.safeCaptainScore - a.safeCaptainScore || b.reliabilityScore - a.reliabilityScore || b.breakdown.availability.score - a.breakdown.availability.score || b.expectedPoints - a.expectedPoints || compareCaptainCandidates(a, b))
@@ -160,7 +165,7 @@ export function buildCaptainRadar({ season, round: roundNumber, players, fixture
   const sourceFixtures = fixtures ?? getFixtures()
   const selectedSeason = text(season) || text(sourcePlayers[0]?.season)
   const selectedRound = normalizeRoundNumber(roundNumber)
-  const key = `${selectedSeason}|${selectedRound}|${syncVersion || getSyncStatus()?.lastSync || 'local'}`
+  const key = `${selectedSeason}|${selectedRound}|${syncVersion || getSyncStatus()?.lastSync || 'local'}|${availabilityVersion()}`
   if (!players && !fixtures && cache.has(key)) return cache.get(key)
   const seasonFixtures = sourceFixtures.filter((fixture) => (!selectedSeason || text(fixture.season) === selectedSeason) && finite(fixture.round) === selectedRound)
   const candidates = sourcePlayers.filter((player) => !selectedSeason || text(player.season) === selectedSeason).map((player) => {
@@ -174,6 +179,7 @@ export function buildCaptainRadar({ season, round: roundNumber, players, fixture
     const reliability = reliabilityScore({ minutes: projectedRound.expectedMinutes, fixtureCount: projectedRound.fixtureCount, appearanceProbability: projectedRound.appearanceProbability, player, form })
     const upside = clamp(finite(player.bonusScore, player.captainScore) * .6 + finite(player.captainScore, 50) * .4)
     const scoreResult = calculateCaptainRadarScore({ fixtureCount: projectedRound.fixtureCount, expectedPoints: projectedRound.expectedPoints, expectedMinutes: projectedRound.expectedMinutes, fixtureScore, formScore: form?.score, captainScore: player.captainScore, upsideScore: upside, reliabilityScore: reliability })
+    scoreResult.score *= availabilityPolicy(player).factor
     return { ...player, id: text(player.id), season: text(player.season), currentPrice: finite(player.endPrice, finite(player.startPrice)), selectedPct: clamp(player.selectedPct), round: selectedRound, roundType: projectedRound.type, fixtureCount: finite(projectedRound.fixtureCount), fixtures: projectedRound.fixtures ?? [], expectedPoints: finite(projectedRound.expectedPoints), expectedMinutes: finite(projectedRound.expectedMinutes), appearanceProbability: finite(projectedRound.appearanceProbability), fixtureScore, formScore: finite(form?.score, 5), form, captainScore: clamp(player.captainScore), upsideScore: upside, reliabilityScore: reliability, radarScore: round(scoreResult.score, 1), breakdown: scoreResult.breakdown }
   }).sort(compareCaptainCandidates)
   const leaders = { maxXp: Math.max(0, ...candidates.map((item) => item.expectedPoints)) }

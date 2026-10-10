@@ -3,6 +3,7 @@ import { buildPlayerIntelligence, canonicalClubKey, canonicalClubName, clamp, cr
 import { buildStructuralFixtureIntelligence } from './structuralFixtureIntelligence.js'
 import { buildCompositeStories, selectEditorialStories } from './editorialIntelligence.js'
 import { normalizePosition } from './positionNormalization.js'
+import { availabilityPolicy, availabilityVersion } from './availability.js'
 
 export const ANALYSIS_CONFIG = Object.freeze({
   talkingPointWeights: Object.freeze({ signal: .30, relevance: .25, surprise: .20, confidence: .15, recency: .10 }),
@@ -108,6 +109,8 @@ export function determinePurchaseHorizon({ season, startRound, fixtures = [] } =
 }
 
 function buildPurchaseReason(player) {
+  const a = availabilityPolicy(player)
+  if(a.reason)return `${a.buyEligible?'Beschikbaarheid meegewogen:':'Geen koopadvies:'} ${a.reason}`
   const dgwRounds = player.purchaseDgwRounds ?? []
   if (dgwRounds.length && player.purchaseHorizonQuality >= 65) return `Sterke ${player.purchaseHorizon}-speelrondenprojectie; in SR${dgwRounds.join(' en SR')} tellen beide werkelijke fixtureprojecties mee.`
   if (dgwRounds.length) return `DGW in SR${dgwRounds.join(' en SR')} telt mee via de werkelijke fixtureprojecties.`
@@ -121,6 +124,8 @@ function buildPurchaseReason(player) {
 }
 
 export function classifyPrimaryAction(player) {
+  const a=availabilityPolicy(player)
+  if(!a.buyEligible||a.pct<=50) return a.returnDays!==null && a.returnDays>=0 && a.returnDays<=7 ? 'hold' : 'sell'
   if (!player.fixtureCount || player.availability < 45 || player.cautionScore >= 72) return 'sell'
   if (player.buyScore >= PURCHASE_ACTION_THRESHOLDS.buyScore && player.availability >= PURCHASE_ACTION_THRESHOLDS.buyAvailability && player.reliability >= PURCHASE_ACTION_THRESHOLDS.buyReliability) return 'buy'
   if (player.buyScore >= PURCHASE_ACTION_THRESHOLDS.considerScore && player.availability >= PURCHASE_ACTION_THRESHOLDS.considerAvailability) return 'consider'
@@ -299,7 +304,7 @@ export function selectActionCenter(stories) {
 }
 
 export function buildAnalysis(options = {}) {
-  const context = createIntelligenceContext(options), key = `${context.season}|${context.startRound}|${context.horizon}|${context.syncVersion}`
+  const context = createIntelligenceContext(options), key = `${context.season}|${context.startRound}|${context.horizon}|${context.syncVersion}|${availabilityVersion()}`
   if (!options.players && cache.has(key)) return cache.get(key)
   const purchaseHorizon = determinePurchaseHorizon(context)
   const rawPlayers = context.players.map((player) => {
@@ -314,6 +319,7 @@ export function buildAnalysis(options = {}) {
   })
   const players = rawPlayers.map((player) => {
     const scores = calculateMarketScores(player, rawPlayers)
+    scores.buyScore = round(scores.buyScore * availabilityPolicy(player).factor)
     const composite = scores.qualityPercentile * .38 + scores.valuePercentile * .12 + player.fixtureScore * .15 + player.formScore * .12 + player.availability * .18 + player.reliability * .05
     const trajectoryScore = round(clamp(22 + composite * .72))
     const enriched = { ...player, ...scores, purchaseReason: '', trajectoryScore, trajectory: trajectoryScore >= 76 ? 'rising' : trajectoryScore < 52 ? 'falling' : 'stable' }
