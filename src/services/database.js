@@ -1813,6 +1813,8 @@ export function getDatabaseSummary() {
 }
 
 export async function synchronizeDatabase() {
+  const previousDatabase = database
+  const previousSyncStatus = syncStatus
   syncStatus = {
     ...syncStatus,
     message: 'Synchroniseren…',
@@ -1886,8 +1888,7 @@ for (const sheetName of ['ELITE_PLAYER_STATS', 'ELITE_TRANSFERS', 'ELITE_SYNC_CO
   try {
     optionalEliteRows[sheetName] = await loadSheet(sheetName)
   } catch (error) {
-    console.warn(`${sheetName} is niet beschikbaar; bestaande Fantasy Studio-data blijft bruikbaar.`, error)
-    optionalEliteRows[sheetName] = []
+    throw new Error(`Tabblad ${sheetName} kon niet laden; geen gedeeltelijke snapshot gepubliceerd: ${error.message}`)
   }
 }
 
@@ -1895,7 +1896,7 @@ let europeanRows = null
 try {
   europeanRows = hasPublishedSheet('EUROPE_2026_27') ? await loadSheet('EUROPE_2026_27') : []
 } catch (error) {
-  console.warn('EUROPE_2026_27 is niet beschikbaar; bestaande Europese context blijft actief.', error)
+  throw new Error(`Tabblad EUROPE_2026_27 kon niet laden; geen gedeeltelijke snapshot gepubliceerd: ${error.message}`)
 }
 
     const players = playerRows
@@ -2049,37 +2050,26 @@ database.players =
     }
 
     const { publishReferenceData } = await import('../platform/referenceData.js')
-    await saveCache()
-    try { await publishReferenceData(database) }
-    catch {
-      syncStatus = { ...syncStatus, state: 'warning', message: 'Voetbaldata geladen. Publiceren naar Studio Cloud is niet gelukt; probeer Synchroniseren opnieuw.' }
-    }
+    const publication = await publishReferenceData(database)
+    syncStatus = { ...syncStatus, source: 'Studio Cloud', lastSync: publication.created_at }
+    // Only cache a verified cloud snapshot. Cache failure cannot undo a committed publication.
+    try { await saveCache() } catch { console.warn('Cloudsnapshot gepubliceerd; lokale cache kon niet worden bijgewerkt.') }
 
     window.dispatchEvent(
       new CustomEvent('fantasy-database-updated'),
     )
 
     return {
+  publication,
   ...getDatabaseSummary(),
   ratings: teamRatings.length,
   metadata: playerMetadata.length,
   matchStats: playerMatchStats.length,
 }
   } catch (error) {
-    if (transferSnapshot?.transferDeadline?.length) {
-      database = {
-        ...database,
-        transferDeadline: transferSnapshot.transferDeadline,
-        transferClubOverview: transferSnapshot.transferClubOverview,
-      }
-      try {
-        await saveCache()
-      } catch (cacheError) {
-        console.warn('Transferdata kon niet gedeeltelijk in de lokale cache worden opgeslagen.', cacheError)
-      }
-    }
+    database = previousDatabase
     syncStatus = {
-      ...syncStatus,
+      ...previousSyncStatus,
       message: error.message || 'Synchronisatie mislukt.',
       state: 'error',
     }

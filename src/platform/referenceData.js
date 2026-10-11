@@ -1,6 +1,5 @@
 import { supabase } from './client.js'
-import { profile } from './repository.js'
-import { access, hasPermission } from './access.js'
+import { refreshAccess, hasPermission } from './access.js'
 
 const tables = {
   players: 'players', historicalPlayers: 'historical_players', fixtures: 'fixtures', europeanFixtures: 'european_fixtures',
@@ -29,8 +28,16 @@ export async function loadReferenceData() {
 }
 
 export async function publishReferenceData(database) {
-  if (!supabase || !hasPermission(access, 'data.correct')) return false
-  const { error } = await supabase.rpc('publish_reference_data', { datasets: Object.fromEntries(Object.entries(tables).map(([key, table]) => [table, database[key] ?? []])) })
-  if (error) throw error
-  return true
+  if (!supabase) throw new Error('Studio Cloud is niet geconfigureerd; er is niets gepubliceerd.')
+  const access = await refreshAccess()
+  if (!hasPermission(access, 'data.correct') || !hasPermission(access, 'sync.run')) throw new Error('Publicatie geweigerd: data.correct en sync.run zijn vereist.')
+  const datasets = Object.fromEntries(Object.entries(tables).map(([key, table]) => [table, database[key] ?? []]))
+  const { data: id, error } = await supabase.rpc('publish_reference_data', { datasets })
+  if (error) throw new Error(`Studio Cloud-publicatie mislukt [${error.code || 'RPC'}]: ${error.message}`)
+  if (!id) throw new Error('Studio Cloud gaf geen import-ID terug; publicatie is niet bevestigd.')
+  const result = await supabase.from('reference_imports').select('id,source,created_at,counts').eq('id', id).eq('source','Google Sheets').single()
+  if (result.error) throw new Error(`Publicatiecontrole mislukt [${result.error.code || 'RPC'}]: ${result.error.message}`)
+  const snapshot = result.data
+  if (!snapshot?.created_at || Object.entries(datasets).some(([table, rows]) => snapshot.counts?.[table] !== rows.length)) throw new Error('Publicatiecontrole mislukt: de cloudsnapshot komt niet overeen met de import.')
+  return snapshot
 }
