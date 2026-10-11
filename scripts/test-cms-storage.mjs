@@ -21,4 +21,22 @@ await db.query(`insert into news_articles(title,slug,image_url) values('Referenc
 assert.equal((await db.query(`delete from storage.objects where name=$1 returning id`,[path])).rows.length,0);checks++
 await as(ids.publisher);assert.equal((await db.query(`delete from storage.objects where name=$1 returning id`,[path])).rows.length,0);checks++
 await as(ids.editor);await db.query(`update news_articles set image_url='' where slug='referenced-image'`);assert.equal((await db.query(`delete from storage.objects where name=$1 returning id`,[path])).rows.length,1);checks++
+// Versioned blocks retain content RLS and protect inline/carousel Storage references.
+const blocks={version:1,blocks:[{id:'text',type:'paragraph',text:'Een volledig artikel voor de gerichte beveiligingstest.'},{id:'image',type:'image',size:'medium',align:'center',url:'https://rzunbquzffdivlpuomjc.supabase.co/storage/v1/object/public/news-images/'+path,alt:'Testbeeld'}]}
+await as(ids.editor);await db.query("insert into storage.objects(bucket_id,name) values('news-images',$1)",[path]);
+await db.query("update news_articles set content_blocks=$1,body='Bestaande tekst blijft veilig bewaard.',intro='Een korte introductie.' where slug='referenced-image'",[JSON.stringify(blocks)]);
+assert.equal((await db.query('delete from storage.objects where name=$1 returning id',[path])).rows.length,0);checks++;
+for(const who of [null,ids.member]){await as(who);assert.equal((await db.query("select * from news_articles where slug='referenced-image'")).rows.length,0);checks++}
+await as(ids.member);assert.equal((await db.query("update news_articles set content_blocks=null where slug='referenced-image' returning id")).rows.length,0);checks++;
+await as(ids.editor);await denied("update news_articles set status='published',published_at=now() where slug='referenced-image'");
+await assert.rejects(db.query("update news_articles set content_blocks=$1 where slug='referenced-image'",[JSON.stringify({version:1,blocks:[blocks.blocks[0],blocks.blocks[0]]})]));checks++;
+await as(ids.publisher);const noAlt=structuredClone(blocks);noAlt.blocks[1].alt='';await assert.rejects(db.query("update news_articles set status='published',published_at=now(),content_blocks=$1 where slug='referenced-image'",[JSON.stringify(noAlt)]));checks++;
+await db.query("update news_articles set status='published',published_at=now() where slug='referenced-image'");checks++;
+await as(null);assert.equal((await db.query("select content_blocks from news_articles where slug='referenced-image'")).rows[0].content_blocks.version,1);checks++;
+await as(ids.publisher);await db.query("update news_articles set status='draft' where slug='referenced-image'");const carousel={version:1,blocks:[blocks.blocks[0],{id:'carousel',type:'imageCarousel',size:'full',images:[blocks.blocks[1],blocks.blocks[1],blocks.blocks[1],blocks.blocks[1]]}]};await db.query("update news_articles set content_blocks=$1 where slug='referenced-image'",[JSON.stringify(carousel)]);
+await as(ids.editor);assert.equal((await db.query('delete from storage.objects where name=$1 returning id',[path])).rows.length,0);checks++;
+await db.query("update news_articles set content_blocks=null where slug='referenced-image'");assert.equal((await db.query('delete from storage.objects where name=$1 returning id',[path])).rows.length,1);checks++;
+assert.equal((await db.query("select body from news_articles where slug='referenced-image'")).rows[0].body,'Bestaande tekst blijft veilig bewaard.');checks++;
+await as(ids.publisher);await db.query("update news_articles set body='Kort',content_blocks=$1,status='published',published_at=now() where slug='referenced-image'",[JSON.stringify(blocks)]);assert.equal((await db.query("select body from news_articles where slug='referenced-image'")).rows[0].body,'Kort');checks++;
+const emptyBlocks={version:1,blocks:[]};await assert.rejects(db.query("update news_articles set content_blocks=$1 where slug='referenced-image'",[JSON.stringify(emptyBlocks)]));checks++;
 await db.close();console.log(`${checks} new-bucket Storage RLS checks passed. Existing RBAC/content policies unchanged; hosted MIME/size enforcement is also tested live.`)

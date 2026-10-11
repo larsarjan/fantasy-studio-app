@@ -12,14 +12,14 @@ export async function uploadNewsImage(client, userId, file) {
   let bitmap
   try { bitmap = await createImageBitmap(file) } catch { throw Error('Dit bestand is geen geldige afbeelding. Kies een ander bestand.') }
   if (bitmap.width > 10000 || bitmap.height > 10000 || bitmap.width * bitmap.height > 40000000) { bitmap.close(); throw Error('Deze afbeelding is te groot. Gebruik maximaal 10.000 pixels per zijde en 40 megapixels.') }
-  const canvas = document.createElement('canvas'); canvas.width = bitmap.width; canvas.height = bitmap.height
-  canvas.getContext('2d').drawImage(bitmap,0,0); bitmap.close()
+  const canvas = document.createElement('canvas'); const scale = Math.min(1,2560 / Math.max(bitmap.width,bitmap.height)); canvas.width = Math.max(1,Math.round(bitmap.width*scale)); canvas.height = Math.max(1,Math.round(bitmap.height*scale))
+  canvas.getContext('2d').drawImage(bitmap,0,0,canvas.width,canvas.height); bitmap.close()
   const blob = await new Promise(resolve=>canvas.toBlob(resolve,file.type,.9))
   if (!blob || blob.size > MAX_NEWS_IMAGE_BYTES) throw Error('De afbeelding kon niet binnen 5 MB worden verwerkt.')
   const path = `${userId}/${crypto.randomUUID()}.${extension}`
   const {error} = await client.storage.from(NEWS_IMAGE_BUCKET).upload(path,blob,{contentType:file.type,upsert:false,cacheControl:'3600'})
   if (error) throw error
-  return {path,url:client.storage.from(NEWS_IMAGE_BUCKET).getPublicUrl(path).data.publicUrl}
+  return {path,width:canvas.width,height:canvas.height,url:client.storage.from(NEWS_IMAGE_BUCKET).getPublicUrl(path).data.publicUrl}
 }
 export function ownNewsImagePath(client,userId,url) {
   const prefix = client.storage.from(NEWS_IMAGE_BUCKET).getPublicUrl('').data.publicUrl

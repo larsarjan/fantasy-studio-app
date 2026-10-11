@@ -1,0 +1,25 @@
+import {test} from 'node:test'
+import assert from 'node:assert/strict'
+import {JSDOM} from 'jsdom'
+const dom=new JSDOM('<main></main>',{url:'https://fvt.test'});globalThis.window=dom.window;globalThis.document=dom.window.document
+const {renderArticleContent,bindArticleContent,validateArticleBlocks,newArticleBlock,blocksText,inlineText}=await import('./articleBlocks.js')
+const image={url:'https://fvt.test/photo.png',alt:'Ruimte achter de verdediging',caption:'Voorbeeld',width:800,height:400}
+const article={content_blocks:{version:1,blocks:[{...newArticleBlock('paragraph'),text:'Dit is **vet** en *cursief* met [bron](https://example.com).'},...['heading','quote','list'].map(type=>({...newArticleBlock(type),text:'Voorbeeld',source:'FVT',items:['Een','Twee']})),{...newArticleBlock('image'),...image},{...newArticleBlock('imageCarousel'),images:Array.from({length:4},(_,i)=>({...image,caption:'Beeld '+(i+1)}))}]}}
+test('Legacy fallback and unknown blocks safely render',()=>{assert.match(renderArticleContent({body:'Oude tekst'}),/<p>Oude tekst<\/p>/);assert.equal(renderArticleContent({content_blocks:{version:1,blocks:[{type:'future'}]}}),'<div class="article-content"></div>')})
+test('All block types, semantic formatting, captions and image dimensions',()=>{const html=renderArticleContent(article);for(const re of [/<strong>vet/,/<em>cursief/,/<h2>/,/<blockquote>/,/<cite>FVT/,/<ul><li>Een/,/width="800" height="400"/,/loading="lazy"/,/figcaption>Beeld 4/])assert.match(html,re);validateArticleBlocks(article.content_blocks,{publish:true});assert(blocksText(article.content_blocks).length>20)})
+test('H3 and ordered lists plus every size/alignment',()=>{for(const size of ['small','medium','large','full'])for(const align of ['left','center','right']){const html=renderArticleContent({content_blocks:{version:1,blocks:[{...newArticleBlock('image'),...image,size,align},{...newArticleBlock('heading'),level:3,text:'H3'},{...newArticleBlock('list'),ordered:true,items:['Een']}]}});assert(html.includes('article-size-'+size));assert(html.includes('article-align-'+align));assert.match(html,/<h3>H3/);assert.match(html,/<ol><li>/)}})
+test('Carousel next, previous, dots, keyboard and swipe without autoplay',()=>{
+ const root=document.querySelector('main');root.innerHTML=renderArticleContent(article);bindArticleContent(root);const c=root.querySelector('[data-article-carousel]'),active=()=>[...c.querySelectorAll('[data-slide]')].findIndex(s=>!s.hidden)
+ c.querySelector('[data-next]').click();assert.equal(active(),1);c.querySelector('[data-previous]').click();assert.equal(active(),0);c.querySelector('[data-dot="3"]').click();assert.equal(active(),3)
+ for(const [key,expected] of [['ArrowRight',0],['End',3],['Home',0],['ArrowLeft',3]]){c.dispatchEvent(new dom.window.KeyboardEvent('keydown',{key,bubbles:true}));assert.equal(active(),expected)}
+ const touch=(type,key,point)=>{const e=new dom.window.Event(type);Object.defineProperty(e,key,{value:[point]});c.dispatchEvent(e)};touch('touchstart','touches',{clientX:200,clientY:100});touch('touchend','changedTouches',{clientX:80,clientY:105});assert.equal(active(),0);assert.equal(c.querySelector('[data-dot="0"]').getAttribute('aria-pressed'),'true');assert.equal(c.querySelector('.article-slide-status').textContent,'Afbeelding 1 van 4')
+})
+test('Drafts permit unfinished images; publishing requires alt or explicit decorative',()=>{
+ const c=structuredClone(article.content_blocks),i=c.blocks.find(b=>b.type==='image');i.alt='';validateArticleBlocks(c);assert.throws(()=>validateArticleBlocks(c,{publish:true}),/alt/);i.decorative=true;validateArticleBlocks(c,{publish:true});c.blocks.find(b=>b.type==='imageCarousel').images=[image];assert.throws(()=>validateArticleBlocks(c,{publish:true}),/minimaal twee/)
+})
+test('XSS in all text contexts and unsafe images/links cannot execute',()=>{
+ const attack='<img src=x onerror=alert(1)><script>alert(1)</script>',c=structuredClone(article.content_blocks);for(const b of c.blocks){b.text=attack;b.caption=attack;b.alt=attack;b.source=attack;b.items=[attack];if(b.type==='image')b.url='javascript:alert(1)'}
+ const html=renderArticleContent({content_blocks:c});const el=document.createElement('div');el.innerHTML=html;assert.equal(el.querySelectorAll('script,[onerror],img[src^="javascript:"]').length,0);assert(!inlineText('[test](javascript:alert)').includes('href'));assert.throws(()=>validateArticleBlocks(c),/afbeelding/)
+})
+test('Duplicate IDs and oversized structures rejected',()=>{const c=structuredClone(article.content_blocks);c.blocks[1].id=c.blocks[0].id;assert.throws(()=>validateArticleBlocks(c),/dubbel/);assert.throws(()=>validateArticleBlocks({version:1,blocks:Array.from({length:81},()=>newArticleBlock('paragraph'))}),/groot/)} )
+test('Broken images become readable fallback',()=>{const root=document.querySelector('main');root.innerHTML=renderArticleContent(article);bindArticleContent(root);root.querySelector('img').dispatchEvent(new dom.window.Event('error'));assert.match(root.querySelector('.article-image-missing').textContent,/Ruimte achter/)} )
