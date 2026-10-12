@@ -1,3 +1,4 @@
+import { renderClubLogo } from '../services/clubLogos.js'
 import { safeHtml } from '../platform/html.js'
 import { renderPersonalContext } from './personalContext.js'
 import { getChipUsage, getDatabaseSummary, getElitePlayerStats, getEnrichedPlayers, getFixtures } from '../services/database.js'
@@ -13,9 +14,8 @@ const labels = { expectedPoints: 'xP', availability: 'Speelzekerheid', fixture: 
 const esc = (v) => String(v ?? '').replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;')
 const number = (v, digits = 1) => Number.isFinite(Number(v)) ? Number(v).toLocaleString('nl-NL', { minimumFractionDigits: digits, maximumFractionDigits: digits }) : '—'
 const positionLabel = (v) => ({ keeper: 'Doelman', verdediger: 'Verdediger', middenvelder: 'Middenvelder', aanvaller: 'Spits' }[String(v ?? '').toLowerCase()] ?? v ?? 'Speler')
-const logoSlug = (club) => ({ 'ado den haag': 'ado-den-haag', cambuur: 'cambuur-leeuwarden', 'cambuur leeuwarden': 'cambuur-leeuwarden', 'fc groningen': 'fc-groningen', 'fc twente': 'fc-twente', 'fc utrecht': 'fc-utrecht', 'fortuna sittard': 'fortuna-sittard', 'go ahead eagles': 'go-ahead-eagles', 'n.e.c.': 'nec', nec: 'nec', 'pec zwolle': 'pec-zwolle', 'sc heerenveen': 'sc-heerenveen', heerenveen: 'sc-heerenveen', 'sparta rotterdam': 'sparta-rotterdam', 'willem ii': 'willem-ii' }[String(club ?? '').toLowerCase()] ?? String(club ?? '').toLowerCase().replace(/[^a-z0-9]+/g, '-'))
 const photo = (p, className) => renderPlayerAvatar(p, { className, size: className.includes('hero') ? 80 : 36 })
-const logo = (club) => `<img class="radar-club-logo" src="./club-logos/${logoSlug(club)}.png" alt="${esc(club)}" onerror="this.hidden=true">`
+const logo = club => renderClubLogo(club, 'radar-club-logo')
 
 function ensureState() {
   const summary = getDatabaseSummary()

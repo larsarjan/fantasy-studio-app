@@ -1,12 +1,12 @@
 import { renderPlayerAvatar } from '../services/playerPhotos.js'
 import { availabilityPolicy } from '../services/availability.js'
 export { logoSlug } from '../services/clubIdentity.js'
-import { logoSlug } from '../services/clubIdentity.js'
+import { renderClubLogo } from '../services/clubLogos.js'
 
 export const esc = (value) => String(value ?? '').replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#039;')
 export const fmt = (value, digits = 1) => value === null || value === undefined || value === '' || !Number.isFinite(Number(value)) ? '—' : Number(value).toLocaleString('nl-NL', { minimumFractionDigits: digits, maximumFractionDigits: digits })
 export const positionLabel = (value) => ({ keeper: 'Doelman', verdediger: 'Verdediger', middenvelder: 'Middenvelder', aanvaller: 'Aanvaller' }[String(value ?? '').toLowerCase()] ?? value ?? 'Speler')
-export const clubLogo = (club) => `<img class="intel-club-logo" src="./club-logos/${logoSlug(club)}.png" alt="${esc(club)}" onerror="this.hidden=true">`
+export const clubLogo = club => renderClubLogo(club, 'intel-club-logo')
 export function playerPhoto(player, className = 'intel-player-photo') { return renderPlayerAvatar(player, { className, size: className.includes('mini') ? 32 : 64 }) }
 export function scoreBar(value, label = '') { return `<div class="intel-scorebar" title="${esc(label)} ${fmt(value, 0)}/100"><i style="--score:${Math.max(0, Math.min(100, Number(value) || 0))}%"></i></div>` }
 export function playerLine(player, scoreKey = 'trajectoryScore') { return `<button class="intel-player-line" data-intel-player="${esc(player.id)}"><span>${playerPhoto(player, 'intel-mini-photo')}<span><strong>${esc(player.name)}</strong><small>${esc(player.club)} · ${esc(positionLabel(player.position))}</small>${availabilityPolicy(player).reason?`<small>${esc(availabilityPolicy(player).reason)}</small>`:''}</span></span><b>${fmt(player[scoreKey], 0)}</b></button>` }

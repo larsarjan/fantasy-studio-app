@@ -1,3 +1,4 @@
+import { renderClubLogo as renderPlayerFixtureClubLogo } from '../services/clubLogos.js'
 import { safeHtml } from '../platform/html.js'
 import {
   getEnrichedPlayers,
@@ -1054,44 +1055,6 @@ function renderPlayerDetailPlaceholder({
 |
 */
 
-const playerFixtureClubLogoMap = {
-  ajax: 'ajax.png',
-  'ado den haag': 'ado-den-haag.png',
-  az: 'az.png',
-  'cambuur leeuwarden':
-    'cambuur-leeuwarden.png',
-  cambuur:
-    'cambuur-leeuwarden.png',
-  excelsior: 'excelsior.png',
-  'fc groningen':
-    'fc-groningen.png',
-  'fc twente':
-    'fc-twente.png',
-  'fc utrecht':
-    'fc-utrecht.png',
-  feyenoord:
-    'feyenoord.png',
-  'fortuna sittard':
-    'fortuna-sittard.png',
-  'go ahead eagles':
-    'go-ahead-eagles.png',
-  nec: 'nec.png',
-  'n.e.c.': 'nec.png',
-  'pec zwolle':
-    'pec-zwolle.png',
-  psv: 'psv.png',
-  'sc heerenveen':
-    'sc-heerenveen.png',
-  heerenveen:
-    'sc-heerenveen.png',
-  'sparta rotterdam':
-    'sparta-rotterdam.png',
-  telstar:
-    'telstar.png',
-  'willem ii':
-    'willem-ii.png',
-}
-
 function normalizePlayerFixtureClub(
   club,
 ) {
@@ -1106,99 +1069,6 @@ function normalizePlayerFixtureClub(
       /\s+/g,
       ' ',
     )
-}
-
-function getPlayerFixtureLogoUrl(
-  club,
-) {
-  const filename =
-    playerFixtureClubLogoMap[
-      normalizePlayerFixtureClub(
-        club,
-      )
-    ]
-
-  return filename
-    ? `./club-logos/${filename}`
-    : ''
-}
-
-function getPlayerFixtureLogoSlug(
-  club,
-) {
-  const filename =
-    playerFixtureClubLogoMap[
-      normalizePlayerFixtureClub(
-        club,
-      )
-    ]
-
-  return filename
-    ? filename.replace(
-        /\.png$/i,
-        '',
-      )
-    : 'onbekend'
-}
-
-function renderPlayerFixtureClubLogo(
-  club,
-  className = 'club-logo',
-) {
-  const url =
-    getPlayerFixtureLogoUrl(
-      club,
-    )
-
-  const initial =
-    String(
-      club || '?',
-    )
-      .trim()
-      .charAt(0)
-      .toUpperCase()
-
-  if (!url) {
-    return `
-      <span
-        class="
-          ${className}
-          club-logo-fallback
-        "
-        aria-hidden="true"
-      >
-        ${initial}
-      </span>
-    `
-  }
-
-  return `
-    <img
-      class="
-        ${className}
-        club-logo--${getPlayerFixtureLogoSlug(
-          club,
-        )}
-      "
-      src="${url}"
-      alt="${club}"
-      loading="lazy"
-      onerror="
-        this.replaceWith(
-          Object.assign(
-            document.createElement('span'),
-            {
-              className:
-                '${className} club-logo-fallback',
-
-              textContent:
-                '${initial}'
-            },
-          ),
-        )
-      "
-    />
-  `
 }
 
 function formatPlayerFixtureDate(

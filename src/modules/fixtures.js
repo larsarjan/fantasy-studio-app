@@ -1,3 +1,4 @@
+import { renderClubLogo } from '../services/clubLogos.js'
 import { renderPersonalContext } from './personalContext.js'
 import { buildCaptainRadar } from '../services/captainRadarEngine.js'
 import { safeHtml } from '../platform/html.js'
@@ -64,72 +65,6 @@ const difficultyMeta = {
   3: { label: 'Gemiddeld', className: 'difficulty-3' },
   4: { label: 'Moeilijk', className: 'difficulty-4' },
   5: { label: 'Zeer moeilijk', className: 'difficulty-5' },
-}
-
-const clubLogoMap = {
-  ajax: 'ajax.png',
-  'ado den haag': 'ado-den-haag.png',
-  az: 'az.png',
-  'cambuur leeuwarden': 'cambuur-leeuwarden.png',
-  cambuur: 'cambuur-leeuwarden.png',
-  excelsior: 'excelsior.png',
-  'fc groningen': 'fc-groningen.png',
-  'fc twente': 'fc-twente.png',
-  'fc utrecht': 'fc-utrecht.png',
-  feyenoord: 'feyenoord.png',
-  'fortuna sittard': 'fortuna-sittard.png',
-  'go ahead eagles': 'go-ahead-eagles.png',
-  nec: 'nec.png',
-  'n.e.c.': 'nec.png',
-  'pec zwolle': 'pec-zwolle.png',
-  psv: 'psv.png',
-  'sc heerenveen': 'sc-heerenveen.png',
-  heerenveen: 'sc-heerenveen.png',
-  'sparta rotterdam': 'sparta-rotterdam.png',
-  telstar: 'telstar.png',
-  'willem ii': 'willem-ii.png',
-}
-
-function normalizeClubName(club) {
-  return String(club || '')
-    .trim()
-    .toLocaleLowerCase('nl-NL')
-    .replace(/\s+/g, ' ')
-}
-
-function clubLogoSlug(club) {
-  const filename = clubLogoMap[normalizeClubName(club)]
-  return filename ? filename.replace(/\.png$/i, '') : 'onbekend'
-}
-
-function clubLogoUrl(club) {
-  const filename = clubLogoMap[normalizeClubName(club)]
-  return filename ? `./club-logos/${filename}` : ''
-}
-
-function renderClubLogo(club, className = 'club-logo') {
-  const url = clubLogoUrl(club)
-
-  if (!url) {
-    return `
-      <span class="${className} club-logo-fallback" aria-hidden="true">
-        ${String(club || '?').charAt(0)}
-      </span>
-    `
-  }
-
-  return `
-    <img
-      class="${className} club-logo--${clubLogoSlug(club)}"
-      src="${url}"
-      alt="${club}"
-      loading="lazy"
-      onerror="this.replaceWith(Object.assign(document.createElement('span'), {
-        className: '${className} club-logo-fallback',
-        textContent: '${String(club || '?').charAt(0)}'
-      }))"
-    />
-  `
 }
 
 function formatDate(fixture) {

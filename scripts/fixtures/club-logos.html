@@ -1,0 +1,4 @@
+<!doctype html><html lang="nl"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="/src/style.css"><link rel="stylesheet" href="/src/fixtures.css"><link rel="stylesheet" href="/src/platform/platform.css"><body><main style="padding:12px;max-width:1600px;margin:auto" id="page-content"></main><script type="module">
+import {createFixturesScreen,mountFixturesScreen} from '/src/modules/fixtures.js';import {safeHtml} from '/src/platform/html.js';import {renderClubLogo} from '/src/services/clubLogos.js';
+document.querySelector('#page-content').innerHTML=safeHtml(createFixturesScreen());mountFixturesScreen();window.renderClubLogo=renderClubLogo;window.ready=true;
+</script></body></html>
