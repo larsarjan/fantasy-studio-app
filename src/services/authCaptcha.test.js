@@ -23,7 +23,7 @@ test('auth forms require fresh CAPTCHA tokens and preserve email redirects', asy
     let source = readFileSync(new URL('../platform/auth.js', import.meta.url), 'utf8')
       .replace(/^import .*\r?\n/gm, '')
       .replaceAll('import.meta.env', JSON.stringify({ VITE_AUTH_CAPTCHA_ENABLED: 'true', VITE_AUTH_CAPTCHA_LOGIN: 'false', VITE_TURNSTILE_SITE_KEY: 'test-public-key', BASE_URL: '/' }))
-    source = 'const {renderPublic,icon,loginDestination,supabase,appUrl,friendlyError,mountTurnstile}=globalThis.__authCaptchaTest;\n' + source
+    source = 'const registrationOpen=true; const {renderPublic,icon,loginDestination,supabase,appUrl,friendlyError,mountTurnstile}=globalThis.__authCaptchaTest;\n' + source
     const { renderAuth } = await import('data:text/javascript;base64,' + Buffer.from(source).toString('base64'))
     for (const mode of ['signup', 'forgot']) {
       renderAuth(mode)

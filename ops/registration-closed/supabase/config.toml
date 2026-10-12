@@ -1,0 +1,4 @@
+# Scoped production operation: only public signup changes; other Auth settings stay intact.
+project_id = "rzunbquzffdivlpuomjc"
+[auth]
+enable_signup = false

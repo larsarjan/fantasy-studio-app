@@ -3,6 +3,7 @@ import { loginDestination } from './routes.js'
 import { supabase, appUrl, friendlyError } from './client.js'
 import './platform.css'
 import { mountTurnstile } from '../services/turnstile.js'
+import { registrationOpen } from './registration.js'
 
 const captchaEnabled = import.meta.env.VITE_AUTH_CAPTCHA_ENABLED === 'true'
 const captchaLogin = import.meta.env.VITE_AUTH_CAPTCHA_LOGIN === 'true'
@@ -15,6 +16,7 @@ const requestedPath = loginDestination(location.pathname, import.meta.env.BASE_U
 function message(text) { const el = document.querySelector('#auth-message'); if (el) el.textContent = text }
 
 export function renderAuth(mode = 'login', notice = '') {
+  if (mode === 'signup' && !registrationOpen) mode = 'login'
   captcha?.destroy(); captcha = null
   authMode = mode
   const protectedForm = captchaEnabled && (['signup','forgot'].includes(mode) || mode === 'login' && captchaLogin)
@@ -23,13 +25,14 @@ export function renderAuth(mode = 'login', notice = '') {
   const buttons = { login: 'Inloggen', signup: 'Account aanmaken', forgot: 'Verstuur herstelmail', reset: 'Wachtwoord opslaan' }
   renderPublic(`<span class="fvt-eyebrow">FANTASY STUDIO</span><h2>${titles[mode]}</h2>
       <p>${mode === 'signup' ? 'Maak je persoonlijke account aan en bevestig je e-mailadres.' : mode === 'forgot' ? 'We sturen je een link om je wachtwoord opnieuw in te stellen.' : mode === 'reset' ? 'Gebruik een uniek wachtwoord van minimaal 12 tekens.' : 'Log in om verder te gaan in Fantasy Studio.'}</p>
+      ${mode === 'login' && !registrationOpen ? '<section class="auth-registration-notice" aria-labelledby="registration-title"><span class="fvt-badge">Registratie tijdelijk gesloten</span><h3 id="registration-title">Fantasy Studio is in ontwikkeling</h3><p>We werken momenteel aan de volgende versie van Fantasy Voetbal Studio. Nieuwe accounts kunnen tijdelijk nog niet worden aangemaakt. Heb je al een account? Dan kun je gewoon inloggen.</p></section>' : ''}
       <form id="auth-form">
         ${mode !== 'reset' ? '<label for="auth-email">E-mailadres</label><input id="auth-email" name="email" type="email" autocomplete="email" required maxlength="254" placeholder="jouw@email.nl">' : ''}
         ${mode !== 'forgot' ? `<label for="auth-password">Wachtwoord</label><div class="fvt-password"><input id="auth-password" name="password" type="password" autocomplete="${mode === 'login' ? 'current-password' : 'new-password'}" minlength="${mode === 'login' ? 1 : 12}" maxlength="128" placeholder="Je wachtwoord" required><button class="fvt-password-toggle" type="button" aria-controls="auth-password" aria-pressed="false" aria-label="Wachtwoord tonen">Toon</button></div>` : ''}
         ${mode === 'reset' || mode === 'signup' ? '<label for="auth-confirmation">Herhaal wachtwoord</label><input id="auth-confirmation" name="confirmation" type="password" autocomplete="new-password" minlength="12" maxlength="128" required>' : ''}
         ${protectedForm ? '<div id="auth-captcha"></div><p id="captcha-message" role="status" aria-live="polite"></p><button id="captcha-retry" type="button">Verificatie opnieuw laden</button>' : ''}
         <p id="auth-message" role="status" aria-live="polite"></p><button class="platform-primary" type="submit" ${protectedForm?'disabled':''}>${buttons[mode]} ${icon('arrow')}</button>
-      </form><div class="auth-links">${mode === 'login' ? '<button data-auth="forgot" type="button">Wachtwoord vergeten?</button><button data-auth="signup" type="button">Nog geen account? Account aanmaken</button>' : '<button data-auth="login" type="button">Terug naar inloggen</button>'}</div>
+      </form><div class="auth-links">${mode === 'login' ? '<button data-auth="forgot" type="button">Wachtwoord vergeten?</button>'+ (registrationOpen ? '<button data-auth="signup" type="button">Nog geen account? Account aanmaken</button>' : '') : '<button data-auth="login" type="button">Terug naar inloggen</button>'}</div>
       <p class="fvt-account-note">${icon('lock')} Je selectie, instellingen en analyses blijven veilig bewaard.</p>`)
   const toggle = document.querySelector('.fvt-password-toggle')
   if (toggle) toggle.onclick = () => {
@@ -64,7 +67,7 @@ export function renderAuth(mode = 'login', notice = '') {
       if (!supabase) throw new Error('configuration')
       let result
       if (mode === 'login') result = await supabase.auth.signInWithPassword({ email: values.email, password: values.password, options: { captchaToken } })
-      if (mode === 'signup') result = await supabase.auth.signUp({ email: values.email, password: values.password, options: { emailRedirectTo: appUrl('auth/callback'), captchaToken } })
+      if (mode === 'signup' && registrationOpen) result = await supabase.auth.signUp({ email: values.email, password: values.password, options: { emailRedirectTo: appUrl('auth/callback'), captchaToken } })
       if (mode === 'forgot') result = await supabase.auth.resetPasswordForEmail(values.email, { redirectTo: appUrl('auth/callback?flow=recovery'), captchaToken })
       if (mode === 'reset') result = await supabase.auth.updateUser({ password: values.password })
       if (result.error) throw result.error

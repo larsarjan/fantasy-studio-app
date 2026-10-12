@@ -1,0 +1,9 @@
+# Tijdelijke registratiestop
+
+Publieke registratie is gesloten; bestaande gebruikers kunnen blijven inloggen en hun wachtwoord herstellen. Accounts, rollen, profielen en selecties worden niet gewijzigd.
+
+- Frontend: `src/platform/registration.js` heeft `registrationOpen = false`. De loginpagina toont een ontwikkelmelding, geen registratieknop. Een directe `renderAuth('signup')` wordt de loginpagina. Login, herstel, callbacks, sessies en logout behouden hun bestaande werking.
+- Backend: op bestaand Supabase-project `rzunbquzffdivlpuomjc` staat Auth → Sign In / Providers → **Allow new users to sign up** uit (`auth.enable_signup = false`, hosted `disable_signup = true`). Ook directe publieke `signUp()`-aanroepen worden geweigerd. Dit is geen uitschakeling van de emailprovider.
+- Gerichte operationele configuratie: `ops/registration-closed/supabase/config.toml`. Met Supabase CLI 2.119.0 of hoger eerst `supabase config diff --workdir ops/registration-closed --project-ref rzunbquzffdivlpuomjc`, dan `config push` met dezelfde parameters. Alleen de gedeclareerde signup-instelling wordt aangepast; overige remote instellingen blijven intact. Push hiervoor niet de bredere basisconfiguratie.
+- Heropening: zet de centrale frontendconstante en `auth.enable_signup` in zowel de scoped configuratie als de basisconfiguratie terug op `true`. Controleer de scoped diff (uitsluitend signup), push die configuratie en deploy de frontend. Verifieer dan registratie, bevestigingsmail en CAPTCHA. Bestaande CAPTCHA- en mailinstellingen hoeven voor de tijdelijke stop niet aangepast te worden.
+- Tests: `node --test src/services/registrationClosed.test.js src/services/authCaptcha.test.js`. De CAPTCHA-regressie test bewust ook de heropenbare registratiebranch. Een echte succesvolle login of herstelmail vereist een bestaand account van de eigenaar; er worden geen wachtwoorden gewijzigd om die test mogelijk te maken.
