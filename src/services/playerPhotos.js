@@ -3,7 +3,10 @@ import { photoKey, photoSeason } from './playerPhotoIdentity.js'
 
 const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]))
 let records = new Map()
-export function setPlayerPhotoRecords(rows = []) { records = new Map(rows.map(row => [row.player_key, row])) }
+export function setPlayerPhotoRecords(rows = [], {merge = false} = {}) {
+  if (!merge) records = new Map()
+  for (const row of rows) records.set(row.player_key, row)
+}
 
 export function safePhotoUrl(value) {
   if (typeof value !== 'string' || value.length > 2048) return null

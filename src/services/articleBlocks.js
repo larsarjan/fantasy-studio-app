@@ -1,10 +1,11 @@
 import {articleBodyHtml, safeLink} from './articleContent.js'
+import {validPlayerLinks,validateEntityContent,entityId,entitySeason} from './articleEntities.js'
 
-export const BLOCK_TYPES={paragraph:'Tekst',heading:'Tussenkop',image:'Afbeelding',imageCarousel:'Afbeeldingscarrousel',quote:'Quote',list:'Lijst'}
+export const BLOCK_TYPES={paragraph:'Tekst',heading:'Tussenkop',image:'Afbeelding',imageCarousel:'Afbeeldingscarrousel',quote:'Quote',list:'Lijst',match:'Wedstrijdscores'}
 export const escapeBlock=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))
 export const isBlockContent=value=>value?.version===1&&Array.isArray(value.blocks)
 export function newsImageUrl(value){try{const u=new URL(value);return u.protocol==='https:'&&!u.username&&!u.password?u.href:null}catch{return null}}
-export function newArticleBlock(type){return {id:crypto.randomUUID(),type,...(type==='imageCarousel'?{images:[],size:'large'}:type==='image'?{url:'',alt:'',caption:'',size:'large',align:'center'}:type==='list'?{items:[],ordered:false}:type==='heading'?{text:'',level:2}:{text:''})}}
+export function newArticleBlock(type){return {id:crypto.randomUUID(),type,...(type==='match'?{fixtureId:'',season:'',collapsedByDefault:true,showTopScorer:true,showLegend:true,showSubstitutes:true,playerLinks:true}:type==='imageCarousel'?{images:[],size:'large'}:type==='image'?{url:'',alt:'',caption:'',size:'large',align:'center'}:type==='list'?{items:[],ordered:false}:type==='heading'?{text:'',level:2}:{text:''})}}
 // A deliberately small inline syntax; raw HTML is always escaped.
 export function inlineText(text){
  const plain=value=>escapeBlock(value).replace(/\*\*([^*\n]+)\*\*/g,'<strong>$1</strong>').replace(/\*([^*\n]+)\*/g,'<em>$1</em>').replace(/\n/g,'<br>')
@@ -15,6 +16,17 @@ export function inlineText(text){
  return html+plain(source.slice(offset))
 }
 export function blocksText(content){return isBlockContent(content)?content.blocks.map(b=>b.type==='list'?(b.items||[]).join('\n'):['paragraph','heading','quote'].includes(b.type)?b.text||'':'').join('\n\n'):''}
+export function linkedText(block,text,format=escapeBlock,offset=0){
+ const links=validPlayerLinks(block).filter(e=>e.start>=offset&&e.end<=offset+text.length)
+ if(!links.length)return format(text)
+ let prefix='\uE000';while(text.includes(prefix))prefix+='\uE000'
+ let source=text;const replacements=[]
+ for(const [i,e] of [...links].reverse().entries()){
+  const token=prefix+i+'\uE001';source=source.slice(0,e.start-offset)+token+source.slice(e.end-offset)
+  replacements.push([token,`<button type="button" class="article-player-link" data-article-player="${escapeBlock(e.playerId)}" data-season="${escapeBlock(e.season)}" aria-label="Spelerinformatie: ${escapeBlock(e.text)}">${escapeBlock(e.text)}</button>`])
+ }
+ let html=format(source);for(const [token,button] of replacements)html=html.replace(token,button);return html
+}
 export function validateArticleBlocks(content,{publish=false}={}){
  if(!isBlockContent(content)||content.blocks.length>80||JSON.stringify(content).length>200000)throw Error('Ongeldige blokinhoud of artikel te groot (maximaal 80 blokken).')
  const ids=new Set()
@@ -31,6 +43,7 @@ export function validateArticleBlocks(content,{publish=false}={}){
    for(const i of images){if(i.url&&!newsImageUrl(i.url)||publish&&!i.url)throw Error('Kies een geldige afbeelding.');if(publish&&!i.decorative&&!String(i.alt||'').trim())throw Error('Vul alt-tekst in of markeer de afbeelding expliciet als decoratief.')}
   }
  }
+ validateEntityContent(content)
  if(publish&&blocksText(content).trim().length<20)throw Error('Vul minimaal 20 tekens artikeltekst in.')
  return content
 }
@@ -41,10 +54,11 @@ export function renderArticleContent(article){
   if(!b)return ''
   const size=['small','medium','large','full'].includes(b.size)?b.size:'large',align=['left','center','right'].includes(b.align)?b.align:'center'
   switch(b.type){
-   case 'paragraph':return `<p>${inlineText(b.text)}</p>`
-   case 'heading':return `<h${b.level===3?3:2}>${escapeBlock(b.text)}</h${b.level===3?3:2}>`
-   case 'quote':return `<blockquote><p>${escapeBlock(b.text)}</p>${b.source?`<cite>${escapeBlock(b.source)}</cite>`:''}</blockquote>`
-   case 'list':{const tag=b.ordered?'ol':'ul';return `<${tag}>${(Array.isArray(b.items)?b.items:[]).map(i=>`<li>${escapeBlock(i)}</li>`).join('')}</${tag}>`}
+   case 'paragraph':return `<p>${linkedText(b,b.text,inlineText)}</p>`
+   case 'heading':return `<h${b.level===3?3:2}>${linkedText(b,b.text)}</h${b.level===3?3:2}>`
+   case 'quote':return `<blockquote><p>${linkedText(b,b.text)}</p>${b.source?`<cite>${escapeBlock(b.source)}</cite>`:''}</blockquote>`
+   case 'list':{const tag=b.ordered?'ol':'ul';let offset=0;return `<${tag}>${(Array.isArray(b.items)?b.items:[]).map(i=>{const html=linkedText(b,i,escapeBlock,offset);offset+=i.length+1;return `<li>${html}</li>`}).join('')}</${tag}>`}
+   case 'match':return entityId(b.fixtureId)&&entitySeason(b.season)?`<section class="article-match" data-article-match="${escapeBlock(b.fixtureId)}" data-season="${escapeBlock(b.season)}" data-options="${escapeBlock(JSON.stringify(Object.fromEntries(['collapsedByDefault','showTopScorer','showLegend','showSubstitutes','playerLinks'].map(k=>[k,b[k]!==false]))))}"><button type="button" class="article-match-toggle" aria-expanded="false"><span data-match-heading>Wedstrijdscores · ${escapeBlock(b.season)}</span><span data-match-action>Bekijk Fantasy-scores</span></button><div data-match-content hidden></div><noscript>Schakel JavaScript in om de wedstrijdscores te bekijken.</noscript></section>`:'<p>Er is nog geen wedstrijd gekozen.</p>'
    case 'image':return `<div class="article-visual article-size-${size} article-align-${align}">${figure(b)}</div>`
    case 'imageCarousel':{const items=(Array.isArray(b.images)?b.images:[]).slice(0,12);if(!items.length)return '';return `<section class="article-visual article-size-${size} article-align-center article-carousel" data-article-carousel tabindex="0" role="region" aria-roledescription="carrousel" aria-label="Afbeeldingen bij het artikel"><div class="article-slides">${items.map((i,n)=>`<div data-slide ${n?'hidden':''} role="group" aria-roledescription="dia" aria-label="${n+1} van ${items.length}">${figure(i)}</div>`).join('')}</div>${items.length>1?`<div class="article-carousel-controls"><button type="button" data-previous aria-label="Vorige afbeelding">←</button><div class="article-dots">${items.map((_,n)=>`<button type="button" data-dot="${n}" aria-label="Afbeelding ${n+1}" aria-pressed="${n===0}">●</button>`).join('')}</div><button type="button" data-next aria-label="Volgende afbeelding">→</button></div><p class="article-slide-status" aria-live="polite" aria-atomic="true">Afbeelding 1 van ${items.length}</p>`:''}</section>`}
    default:return ''
@@ -52,6 +66,7 @@ export function renderArticleContent(article){
  }).join('')}</div>`
 }
 export function bindArticleContent(root){
+ if(root.querySelector('[data-article-player],[data-article-match]'))import('../public/articleEntities.js').then(({bindArticleEntities})=>bindArticleEntities(root)).catch(()=>{root.querySelectorAll('[data-match-action]').forEach(el=>el.textContent='Scores laden mislukt. Herlaad de pagina.')})
  root.querySelectorAll('[data-article-carousel]').forEach(el=>{
   if(el.dataset.bound)return;el.dataset.bound='true'
   const slides=[...el.querySelectorAll('[data-slide]')],dots=[...el.querySelectorAll('[data-dot]')];let index=0,start=null

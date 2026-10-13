@@ -1,0 +1,16 @@
+<!doctype html><html lang="nl"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Local article acceptance</title><body><main style="max-width:1000px;margin:auto"><button id="render">Voorbeeld</button><button id="plain">Normaal artikel</button><div id="public"></div><div id="editor"><div class="cms-editor"></div></div></main><script type="module">
+import {mountBlockEditor} from '/src/admin/articleBlockEditor.js';
+import {renderArticleContent,bindArticleContent,newArticleBlock} from '/src/services/articleBlocks.js';
+import {addPlayerLink} from '/src/services/articleEntities.js';
+import {safeHtml} from '/src/platform/html.js';
+const catalog=await fetch('/api/article-entities?kind=catalog').then(r=>r.json());
+const chosen=catalog.players.filter(p=>p.season==='2026/2027').slice(0,3),fixture=catalog.fixtures.find(f=>f.statCount>=22&&f.hasResult);
+const b=newArticleBlock('paragraph');b.text=chosen.map(p=>p.name).join(', ')+'. Dit is een lokaal testartikel met echte voetbaldata. '+chosen[0].name+' wordt nogmaals genoemd.';
+let offset=0;for(const p of chosen){const start=b.text.indexOf(p.name,offset);addPlayerLink(b,start,start+p.name.length,p);offset=start+p.name.length}
+const content={version:1,blocks:[b,{...newArticleBlock('match'),fixtureId:fixture.id,season:fixture.season},Object.assign(newArticleBlock('paragraph'),{text:'Jansen is een twijfelgeval. Kies altijd zelf de juiste speler.'})]};
+const editor=await mountBlockEditor(document.querySelector('#editor'),{body:'',content_blocks:content},{client:{auth:{getSession:async()=>({data:{session:{access_token:'local-test-only'}}})}}});
+window.articleTest={editor,catalog,initial:structuredClone(content)};
+document.querySelector('#render').onclick=()=>{const root=document.querySelector('#public');root.innerHTML=safeHtml(renderArticleContent({content_blocks:editor.blocks()}));bindArticleContent(root)};
+document.querySelector('#plain').onclick=()=>{const root=document.querySelector('#public');root.innerHTML=safeHtml(renderArticleContent({content_blocks:{version:1,blocks:[{id:'plain',type:'paragraph',text:'Dit is een normaal artikel zonder koppelingen.'}]}}));bindArticleContent(root)};
+document.querySelector('#render').click();
+</script></body></html>
