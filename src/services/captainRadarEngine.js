@@ -1,3 +1,4 @@
+import { registerReferenceCache } from './referenceRuntimeCache.js'
 import { getEnrichedPlayers, getFixtures, getResults, getSyncStatus, getTeamRatings } from './database.js'
 import { calculatePlayerExpectedPointsRange } from './expectedPoints/expectedPointsEngine.js'
 import { calculatePlayerFixtureOutlook } from './fixtureIntelligenceEngine.js'
@@ -15,7 +16,7 @@ export const CAPTAIN_RADAR_CONFIG = Object.freeze({
   expectedPointsExcellent: 9,
 })
 
-const cache = new Map()
+const cache = registerReferenceCache(new Map())
 const finite = (value, fallback = 0) => Number.isFinite(Number(value)) ? Number(value) : fallback
 const clamp = (value, min = 0, max = 100) => Math.max(min, Math.min(max, finite(value)))
 const round = (value, digits = 2) => Math.round((finite(value) + Number.EPSILON) * 10 ** digits) / 10 ** digits

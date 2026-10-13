@@ -1,3 +1,4 @@
+import { registerReferenceCache } from '../referenceRuntimeCache.js'
 /*
 |--------------------------------------------------------------------------
 | Expected Points - Fixture Adapter
@@ -643,8 +644,7 @@ function buildExpectedPointsFixtureProfile({
 |--------------------------------------------------------------------------
 */
 
-const FIXTURE_CACHE =
-  new Map()
+const FIXTURE_CACHE = registerReferenceCache(new Map())
 
 function getFixtureIdentity(
   fixture,

@@ -118,10 +118,6 @@ export async function fetchSheet(
           },
         )
 
-      clearTimeout(
-        timeoutId,
-      )
-
       if (!response.ok) {
         throw new Error(
           `Tabblad ${sheetName} kon niet worden geladen (${response.status}).`,
@@ -130,6 +126,9 @@ export async function fetchSheet(
 
       const csv =
         await response.text()
+
+      clearTimeout(timeoutId)
+      if (/^\s*(?:<!doctype\s+html|<html)/i.test(csv)) throw new Error(`Tabblad ${sheetName} gaf HTML terug in plaats van CSV.`)
 
       if (!csv.trim()) {
         throw new Error(

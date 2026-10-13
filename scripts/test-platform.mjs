@@ -7,10 +7,12 @@ const dom = new JSDOM('<!doctype html><div id="app"></div>', { url: 'https://stu
 globalThis.window = dom.window
 globalThis.document = dom.window.document
 const { safeHtml } = await import('../src/platform/html.js')
+const { articleBodyHtml, RICH_TEXT_PREFIX } = await import('../src/services/articleContent.js')
 let checks = 0
 for (const input of ['<img src=x onerror="alert(1)">', '<script>alert(1)</script>', '<a href="javascript:alert(1)">link</a>', '<svg onload="alert(1)"></svg>', '<iframe srcdoc="<script>alert(1)</script>"></iframe>']) {
   const output = safeHtml(input)
   assert.doesNotMatch(output, /onerror|onload|javascript:|<script|<iframe/i)
+  assert.doesNotMatch(articleBodyHtml(RICH_TEXT_PREFIX + input), /onerror|onload|javascript:|<script|<iframe/i)
   checks++
 }
 assert.match(safeHtml('<button data-screen="players" aria-label="Spelers">Spelers</button>'), /data-screen="players"/); checks++
@@ -25,7 +27,10 @@ for (const file of files) {
     let expression
     if (node.type==='AssignmentExpression' && node.left?.property?.name==='innerHTML') expression=node.right
     if (node.type==='CallExpression' && node.callee?.property?.name==='insertAdjacentHTML') expression=node.arguments[1]
-    if (expression) { assert.equal(expression.callee?.name,'safeHtml',`${file}: unsafe HTML sink`); checks++ }
+    if (expression) {
+      const articleSanitizer = expression.callee?.name === 'articleBodyHtml' && ast.body.some(n => n.type === 'ImportDeclaration' && n.source.value === '../services/articleContent.js' && n.specifiers.some(i => i.imported?.name === 'articleBodyHtml' && i.local.name === 'articleBodyHtml'))
+      assert.ok(expression.callee?.name === 'safeHtml' || articleSanitizer, `${file}: unsafe HTML sink`); checks++
+    }
     Object.values(node).forEach(value => { if(Array.isArray(value)) value.forEach(walk); else if(value && typeof value==='object') walk(value) })
   }
   walk(ast)

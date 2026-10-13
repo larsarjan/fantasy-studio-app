@@ -1,3 +1,4 @@
+import { registerReferenceCache } from './referenceRuntimeCache.js'
 import {
   getFixtures,
   getResults,
@@ -530,8 +531,7 @@ function resolveManualDifficulty(
   )
 }
 
-const fixtureDifficultyCache =
-  new Map()
+const fixtureDifficultyCache = registerReferenceCache(new Map())
 
 function getFixtureDifficultyCacheKey(
   fixture,

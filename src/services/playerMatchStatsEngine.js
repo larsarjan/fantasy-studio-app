@@ -1,3 +1,4 @@
+import { registerReferenceCache } from './referenceRuntimeCache.js'
 import {
   getFixtures,
   getPlayerMatchStats,
@@ -263,20 +264,34 @@ function hasNotPlayed(
 |--------------------------------------------------------------------------
 */
 
-function findFixture(
-  fixtureId,
-  fixtures,
-) {
-  return (
-    fixtures.find(
-      (fixture) =>
-        sameValue(
-          fixture.id,
-          fixtureId,
-        ),
-    ) ??
-    null
-  )
+const fixtureIndexes = registerReferenceCache(new Map())
+const playerMatchIndexes = registerReferenceCache(new Map())
+function findFixture(fixtureId, fixtures) {
+  let index = fixtureIndexes.get(fixtures)
+  if (!index) {
+    index = new Map()
+    for (const fixture of fixtures) {
+      const key = normalizeText(fixture.id)
+      if (!index.has(key)) index.set(key, fixture)
+    }
+    fixtureIndexes.clear()
+    fixtureIndexes.set(fixtures, index)
+  }
+  return index.get(normalizeText(fixtureId)) ?? null
+}
+function matchRowsForPlayer(rows, playerId) {
+  let index = playerMatchIndexes.get(rows)
+  if (!index) {
+    index = new Map()
+    for (const row of rows) {
+      const key = String(row?.playerId ?? '').trim()
+      if (!index.has(key)) index.set(key, [])
+      index.get(key).push(row)
+    }
+    playerMatchIndexes.clear()
+    playerMatchIndexes.set(rows, index)
+  }
+  return index.get(playerId) ?? []
 }
 
 function resolveOpponent({
@@ -1128,7 +1143,7 @@ export function getPlayerMatchHistory(
       '',
     ).trim()
 
-  return playerMatchStats
+  return matchRowsForPlayer(playerMatchStats, playerId)
     .filter(
       (matchStat) => {
         const samePlayer =

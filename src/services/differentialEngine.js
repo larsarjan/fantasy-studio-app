@@ -1,3 +1,4 @@
+import { registerReferenceCache } from './referenceRuntimeCache.js'
 import { buildPlayerIntelligence, clamp, createIntelligenceContext, finite, mean, percentile, rankDeterministic, round, text } from './intelligenceHelpers.js'
 
 export const DIFFERENTIAL_CONFIG = Object.freeze({
@@ -7,7 +8,7 @@ export const DIFFERENTIAL_CONFIG = Object.freeze({
   heroFloor: 60,
 })
 
-const cache = new Map()
+const cache = registerReferenceCache(new Map())
 const ownershipAdvantage = (pct, threshold) => clamp((1 - Math.sqrt(clamp(pct, 0, threshold) / Math.max(1, threshold))) * 100)
 
 export function calculateDifferentialScore(input, config = DIFFERENTIAL_CONFIG) {

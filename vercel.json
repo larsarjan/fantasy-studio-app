@@ -43,5 +43,10 @@
         }
       ]
     }
-  ]
+  ],
+  "functions": {
+    "api/reference-sync.js": {
+      "maxDuration": 240
+    }
+  }
 }

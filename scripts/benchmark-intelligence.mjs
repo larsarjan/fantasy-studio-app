@@ -1,0 +1,7 @@
+﻿import {registerHooks} from 'node:module';import {readFileSync,writeFileSync} from 'node:fs';
+registerHooks({load(url,context,next){const result=next(url,context);if(url.endsWith('/services/database.js'))return {...result,source:String(result.source)+'\nexport function loadBenchmarkSnapshot(value){database=value}\n'};return result}})
+const db=await import('../src/services/database.js');db.loadBenchmarkSnapshot(JSON.parse(readFileSync('test-results/performance/parity-server.json','utf8')))
+const timings={};const measure=(name,fn)=>{const start=performance.now(),result=fn();timings[name]=performance.now()-start;return result}
+const players=measure('profiles',()=>db.getPlayerProfiles()),options={season:db.getDatabaseSummary().activeSeason,players,fixtures:db.getFixtures(),results:db.getResults(),teamRatings:db.getTeamRatings(),startRound:8,horizon:3,round:8}
+const {buildAnalysis}=await import('../src/services/analysisEngine.js'),{buildCaptainRadar}=await import('../src/services/captainRadarEngine.js'),{buildDifferentialAnalysis}=await import('../src/services/differentialEngine.js')
+measure('analysis',()=>buildAnalysis(options));measure('captain',()=>buildCaptainRadar(options));measure('differentials',()=>buildDifferentialAnalysis(options));console.log(JSON.stringify(timings));writeFileSync(`test-results/performance/intelligence-${process.env.PERFORMANCE_LABEL || 'after'}.json`,JSON.stringify(timings,null,2))

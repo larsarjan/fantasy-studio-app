@@ -49,7 +49,7 @@ try {
     } else {
     document.querySelector('#app').innerHTML = safeHtml('<div class="platform-loading" role="status"><h1>Je Studio openen</h1><p>Je account en de nieuwste voetbaldata worden geladen.</p><small>Bij het eerste bezoek berekenen we ook de spelersscores. Dit kan even duren.</small></div>')
     const user = await initializeUser(session)
-    const { restoreManagerState } = await import('../modules/optimizer.js')
+    const { restoreManagerState } = await import('../services/managerState.js')
     if (user.team) restoreManagerState(user.team.state, user.team.settings)
     const { setProfileAccount } = await import('../modules/profile.js')
     setProfileAccount(session.user)

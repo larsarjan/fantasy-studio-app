@@ -40,7 +40,11 @@ for (const [user, other] of [[a,b],[b,a]]) {
 }
 await db.exec(`reset role; insert into user_roles(user_id,role_key) values('${a}','admin')`)
 await asUser(a)
-await db.query(`select publish_reference_data('{"players":[{"name":"Test"}],"fixtures":[{"round":1}]}')`)
+await denied(`select publish_reference_data('{"players":[{"name":"Test"}],"fixtures":[{"round":1}]}')`)
+await db.exec('reset role; set role service_role')
+const datasets = Object.fromEntries(['players','historical_players','fixtures','european_fixtures','team_ratings','results','player_metadata','player_match_stats','elite_player_stats','elite_transfers','elite_sync_control','chip_usage','elite_formations','elite_club_exposure','transfer_deadline','transfer_club_overview'].map(key => [key, ['players','fixtures','team_ratings','results'].includes(key) ? [{name:'Test'}] : []]))
+const claim = (await db.query(`select reference_sync_claim('scheduled') run`)).rows[0].run
+await db.query(`select reference_sync_finish($1,'success',$2,$3)`, [claim.id, datasets, 'a'.repeat(64)])
 checks++
 await asUser(b)
 await equal(`select payload->>'name' name from players`,[{name:'Test'}])

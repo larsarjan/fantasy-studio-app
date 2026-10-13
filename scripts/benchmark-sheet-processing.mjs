@@ -1,0 +1,15 @@
+// Baseline-only: execute the unchanged normalizers/engines, intercept publication
+// and cache in the module loader. No database writes or browser storage.
+import {execFileSync} from 'node:child_process'
+import {registerHooks} from 'node:module'
+import {mkdirSync,writeFileSync} from 'node:fs'
+const timings=[],started=performance.now(),nativeFetch=globalThis.fetch
+globalThis.fetch=async(...args)=>{const start=performance.now(),r=await nativeFetch(...args),read=r.text.bind(r);r.text=async()=>{const text=await read();timings.push({url:String(args[0]),bytes:Buffer.byteLength(text),fetchMs:performance.now()-start});return text};return r}
+globalThis.window={dispatchEvent(){}}
+globalThis.__baseline={}
+registerHooks({load(url,context,next){const result=next(url,context);if(url.endsWith('/src/services/database.js')){let source=execFileSync('git',['show','e0713bdf5036eabfaf1bdc89d8f0a4c4ee388594:src/services/database.js'],{encoding:'utf8'}).replaceAll("\r\n","\n");source=source.replace("const { publishReferenceData } = await import('../platform/referenceData.js')","const publishReferenceData = async value => { globalThis.__baseline.database=value; return {id:'dry-run-only',created_at:new Date().toISOString()} }");source=source.replace('try { await saveCache() } catch','try { /* dry-run: no browser cache */ } catch');source=source.replace('    const players = playerRows','    globalThis.__baseline.fetchedAt=performance.now();\n    const players = playerRows');source=source.replace('const profiles =\n  getPlayerProfiles()','globalThis.__baseline.normalizedAt=performance.now();\nconst profiles =\n  getPlayerProfiles()');source=source.replace('database.players =\n  await precomputeFantasyScores','globalThis.__baseline.profiledAt=performance.now();\ndatabase.players =\n  await precomputeFantasyScores');source=source.replace("    syncStatus = {\n      source: 'Google Sheets',","    globalThis.__baseline.precomputedAt=performance.now();\n    syncStatus = {\n      source: 'Google Sheets',");return {...result,source}}return result}})
+// The publication interception must match before allowing source reads.
+const {synchronizeDatabase}=await import('../src/services/database.js');await synchronizeDatabase()
+const b=globalThis.__baseline,result={at:new Date().toISOString(),dryRun:true,durationMs:performance.now()-started,fetchWallMs:b.fetchedAt-started,normalizationMs:b.normalizedAt-b.fetchedAt,profilesMs:b.profiledAt-b.normalizedAt,precomputeMs:b.precomputedAt-b.profiledAt,bytes:timings.reduce((n,r)=>n+r.bytes,0),requests:timings.length,datasets:Object.entries(b.database).map(([name,rows])=>({name,records:rows.length,bytes:Buffer.byteLength(JSON.stringify(rows))})),timings}
+mkdirSync('test-results/performance',{recursive:true});writeFileSync('test-results/performance/baseline-sheets.json',JSON.stringify(result,null,2));writeFileSync('test-results/performance/processed-sheets.json',JSON.stringify(b.database));console.log(JSON.stringify({...result,timings:undefined},null,2))
+

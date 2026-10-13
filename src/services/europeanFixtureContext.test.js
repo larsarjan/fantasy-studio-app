@@ -251,6 +251,8 @@ for(const name of ['ucl','uel','uecl']){
   assert.equal(existsSync(new URL(`../assets/competitions/${name}.png`,import.meta.url)),true)
   assert.equal(existsSync(new URL(`../assets/competitions/${name}-emblem.png`,import.meta.url)),true)
 }
-assert.match(databaseModule,/if \(!getEuropeanFixtures\(\)\.length && hasPublishedSheet\('EUROPE_2026_27'\)\)/)
+assert.match(databaseModule,/europeanRows = hasPublishedSheet\('EUROPE_2026_27'\)/)
+const startup = databaseModule.slice(databaseModule.indexOf('export async function initializeDatabase'), databaseModule.indexOf('export function getPlayers'))
+assert.doesNotMatch(startup,/fetchSheet|synchronizeDatabase\(/)
 
 console.log('Europese fixture-contexttests geslaagd.')

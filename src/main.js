@@ -1,5 +1,4 @@
 import { initializePlayerPhotos } from './services/playerPhotoRuntime.js'
-import { createAvailabilityScreen, mountAvailabilityScreen } from './modules/availabilityPage.js'
 import { ensureAvailability } from './platform/availabilityRepository.js'
 import { availabilityReady } from './services/availability.js'
 import { bindAvailabilityDetails } from './modules/availabilityUI.js'
@@ -19,9 +18,8 @@ import './intelligence.css'
 import './intelligenceQuality.css'
 import './dashboard.css'
 import './personal.css'
-import { createSelectionScreen, mountSelectionScreen } from './modules/selection.js'
 import { createProfileScreen, mountProfileScreen } from './modules/profile.js'
-import { getManagerTeamState } from './modules/optimizer.js'
+import { getManagerTeamState } from './services/managerState.js'
 import { changeSelection } from './platform/selectionStorage.js'
 import { renderPersonalContext } from './modules/personalContext.js'
 import { createSettingsScreen, mountSettingsScreen } from './platform/settings.js'
@@ -37,49 +35,25 @@ import {
   synchronizeDatabase,
 } from './services/database.js'
 
-import {
-  createFixturesScreen,
-  mountFixturesScreen,
-} from './modules/fixtures.js'
+let optimizerModule = null
+const screenModules = {}
+const screenLoaders = {
+  input: () => import('./modules/input.js'),
+  selection: () => import('./modules/selection.js'),
+  beschikbaarheid: () => import('./modules/availabilityPage.js'),
+  players: () => import('./modules/players.js'),
+  compare: () => import('./modules/compare.js'),
+  fixtures: () => import('./modules/fixtures.js'),
+  history: () => import('./modules/history.js'),
+  analysis: () => import('./modules/analysis.js'),
+  captain: () => import('./modules/captainRadar.js'),
+  differentials: () => import('./modules/differentials.js'),
+  dreamteam: () => import('./modules/dreamteam.js'),
+}
+async function loadScreenModule(name) {
+  if (screenLoaders[name] && !screenModules[name]) screenModules[name] = await screenLoaders[name]()
+}
 
-import {
-  createPlayersScreen,
-  mountPlayersScreen,
-  setPlayersScreenSelection,
-} from './modules/players.js'
-
-import {
-  createCompareScreen,
-  mountCompareScreen,
-} from './modules/compare.js'
-
-import {
-  createHistoryScreen,
-  mountHistoryScreen,
-} from './modules/history.js'
-
-import {
-  createInputScreen,
-  mountInputScreen,
-} from './modules/input.js'
-
-import {
-  createOptimizerScreen,
-  mountOptimizerScreen,
-} from './modules/optimizer.js'
-
-import {
-createDreamTeamScreen,
-mountDreamTeamScreen,
-} from './modules/dreamteam.js'
-
-import {
-  createCaptainRadarScreen,
-  mountCaptainRadarScreen,
-} from './modules/captainRadar.js'
-
-import { createAnalysisScreen, mountAnalysisScreen } from './modules/analysis.js'
-import { createDifferentialsScreen, mountDifferentialsScreen } from './modules/differentials.js'
 import { createDashboardScreen, mountDashboardScreen } from './modules/dashboard.js'
 
 initializePlayerPhotos(photoClient)
@@ -114,8 +88,8 @@ function createComingSoon(title, description) {
 function getScreens() {
   return {
     ...(pricePredictionModule ? {prices: {title: 'Prijsvoorspelling',get content(){return pricePredictionModule.createPricePredictionScreen()},mount:pricePredictionModule.mountPricePredictionScreen}} : {}),
-    selection: { title: 'Mijn selectie', get content() { return createSelectionScreen() }, mount: mountSelectionScreen },
-    beschikbaarheid: { title: 'Beschikbaarheid', get content() { return createAvailabilityScreen() }, mount: mountAvailabilityScreen },
+    selection: { title: 'Mijn selectie', get content() { return screenModules.selection.createSelectionScreen() }, mount: (...args) => screenModules.selection.mountSelectionScreen(...args) },
+    beschikbaarheid: { title: 'Beschikbaarheid', get content() { return screenModules.beschikbaarheid.createAvailabilityScreen() }, mount: (...args) => screenModules.beschikbaarheid.mountAvailabilityScreen(...args) },
     profile: { title: 'Mijn profiel', get content() { return createProfileScreen() }, mount: mountProfileScreen },
     dashboard: {
       title: 'Dashboard',
@@ -127,62 +101,62 @@ function getScreens() {
 
     players: {
       title: 'Spelers',
-      get content() { return createPlayersScreen() },
-      mount: mountPlayersScreen,
+      get content() { return screenModules.players.createPlayersScreen() },
+      mount: (...args) => screenModules.players.mountPlayersScreen(...args),
     },
 
     compare: {
       title: 'Vergelijken',
-      get content() { return createCompareScreen() },
-      mount: mountCompareScreen,
+      get content() { return screenModules.compare.createCompareScreen() },
+      mount: (...args) => screenModules.compare.mountCompareScreen(...args),
     },
 
     fixtures: {
       title: 'Speelschema',
-      get content() { return createFixturesScreen() },
-      mount: mountFixturesScreen,
+      get content() { return screenModules.fixtures.createFixturesScreen() },
+      mount: (...args) => screenModules.fixtures.mountFixturesScreen(...args),
     },
 
     history: {
   title: 'Historische Data',
-  get content() { return createHistoryScreen() },
-  mount: mountHistoryScreen,
+  get content() { return screenModules.history.createHistoryScreen() },
+  mount: (...args) => screenModules.history.mountHistoryScreen(...args),
 },
 
     analysis: {
       title: 'Analyse',
       get content() {
-        return createAnalysisScreen()
+        return screenModules.analysis.createAnalysisScreen()
       },
-      mount: mountAnalysisScreen,
+      mount: (...args) => screenModules.analysis.mountAnalysisScreen(...args),
     },
 
     captain: {
       title: 'Captain Radar',
       get content() {
-        return createCaptainRadarScreen()
+        return screenModules.captain.createCaptainRadarScreen()
       },
-      mount: mountCaptainRadarScreen,
+      mount: (...args) => screenModules.captain.mountCaptainRadarScreen(...args),
     },
 
     differentials: {
       title: 'Differentials',
       get content() {
-        return createDifferentialsScreen()
+        return screenModules.differentials.createDifferentialsScreen()
       },
-      mount: mountDifferentialsScreen,
+      mount: (...args) => screenModules.differentials.mountDifferentialsScreen(...args),
     },
 
     optimizer: {
   title: 'FVT Manager',
-  get content() { return createOptimizerScreen() },
-  mount: mountOptimizerScreen,
+  get content() { return optimizerModule.createOptimizerScreen() },
+  mount: (...args) => optimizerModule.mountOptimizerScreen(...args),
 },
 
     dreamteam: {
   title: 'Dream Team',
-  get content() { return createDreamTeamScreen() },
-  mount: mountDreamTeamScreen,
+  get content() { return screenModules.dreamteam.createDreamTeamScreen() },
+  mount: (...args) => screenModules.dreamteam.mountDreamTeamScreen(...args),
 },
 
     ...(TRANSFER_DEADLINE_ENABLED && transferDeadlineModule ? {
@@ -195,8 +169,8 @@ function getScreens() {
 
     input: {
   title: 'Invoer',
-  get content() { return createInputScreen() },
-  mount: mountInputScreen,
+  get content() { return screenModules.input.createInputScreen() },
+  mount: (...args) => screenModules.input.mountInputScreen(...args),
 },
 
     settings: {
@@ -315,19 +289,26 @@ function showNotice(message, type = 'success') {
   }, 6000)
 }
 
+let screenRequest = 0
 async function showScreen(screenName) {
+  const request = ++screenRequest
   try { await ensureAvailability() } catch { /* Keep Studio usable; advice remains gated. */ }
   if (screenName === 'input') { location.assign(basePath + 'admin/input'); return }
-  if (!await featureAllowed(FEATURE_ROUTES[screenName])) {
+  const permitted = await featureAllowed(FEATURE_ROUTES[screenName])
+  if (request !== screenRequest) return
+  if (!permitted) {
     pageTitle.textContent = 'Geen toegang'
     pageContent.innerHTML = safeHtml('<section class="panel"><h2>403 · Dit onderdeel is niet beschikbaar</h2><p>Kies een toegankelijk onderdeel in het menu.</p></section>')
     return
   }
+  await loadScreenModule(screenName)
+  if (screenName === 'optimizer' && !optimizerModule) optimizerModule = await import('./modules/optimizer.js')
   if (screenName === 'prices' && !pricePredictionModule) {
     await import('./pricePrediction.css')
     pricePredictionModule = await import('./modules/pricePrediction.js')
   }
   if (screenName === 'transfersLive') await loadTransferDeadlineModule()
+  if (request !== screenRequest) return
   const screen = getScreens()[screenName]
 
   if (!screen) {
@@ -428,7 +409,10 @@ if (hasPermission(access, 'admin.access')) {
 }
 for (const button of menuButtons) if (FEATURE_ROUTES[button.dataset.screen] && !await featureAllowed(FEATURE_ROUTES[button.dataset.screen])) button.hidden = true
 const linkedPlayer = new URLSearchParams(location.search).get('player')
-if (linkedPlayer && studioScreen(location.pathname, basePath)==='players') setPlayersScreenSelection({playerId:linkedPlayer})
+if (linkedPlayer && studioScreen(location.pathname, basePath)==='players') {
+  await loadScreenModule('players')
+  screenModules.players.setPlayersScreenSelection({playerId:linkedPlayer})
+}
 await showScreen(studioScreen(location.pathname, basePath))
 window.addEventListener('popstate', () => {
   showScreen(studioScreen(location.pathname, basePath)).catch(() => showNotice('De pagina kon niet worden geopend.', 'error'))

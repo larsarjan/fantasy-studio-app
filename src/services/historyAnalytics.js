@@ -25,13 +25,21 @@ const CLUB_ALIASES = {
   'almere city': 'almere city',
 }
 
+const clubNameCache = new Map()
 export function normalizeClubName(value) {
-  const normalized = String(value || '')
+  const key = String(value || '')
+  if (clubNameCache.has(key)) return clubNameCache.get(key)
+  const normalized = key
     .trim()
     .toLocaleLowerCase('nl-NL')
     .replace(/\s+/g, ' ')
 
-  return CLUB_ALIASES[normalized] || normalized
+  const result = CLUB_ALIASES[normalized] || normalized
+  if (key.length <= 200) {
+    if (clubNameCache.size >= 512) clubNameCache.clear()
+    clubNameCache.set(key, result)
+  }
+  return result
 }
 
 export function normalizeSeason(value) {

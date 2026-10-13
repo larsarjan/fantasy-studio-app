@@ -58,157 +58,38 @@ function openStorageDatabase() {
   )
 }
 
-async function writeValue(
-  key,
-  value,
-) {
-  const db =
-    await openStorageDatabase()
-
-  return new Promise(
-    (resolve, reject) => {
-      const transaction =
-        db.transaction(
-          STORE_NAME,
-          'readwrite',
-        )
-
-      const store =
-        transaction.objectStore(
-          STORE_NAME,
-        )
-
-      store.put(
-        value,
-        key,
-      )
-
-      transaction.oncomplete =
-        () => {
-          db.close()
-          resolve()
-        }
-
-      transaction.onerror =
-        () => {
-          const error =
-            transaction.error
-
-          db.close()
-
-          reject(
-            error ??
-            new Error(
-              `Opslaan van ${key} is mislukt.`,
-            ),
-          )
-        }
-
-      transaction.onabort =
-        () => {
-          const error =
-            transaction.error
-
-          db.close()
-
-          reject(
-            error ??
-            new Error(
-              `Opslaan van ${key} is afgebroken.`,
-            ),
-          )
-        }
-    },
-  )
+// Read/write both keys in one transaction: data and snapshot ID must never diverge.
+async function cacheTransaction(mode, values) {
+  const db = await openStorageDatabase()
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(STORE_NAME, mode)
+    const store = transaction.objectStore(STORE_NAME)
+    let database, syncStatus
+    transaction.oncomplete = () => {
+      db.close()
+      resolve(mode === 'readonly' ? { database: database.result ?? null, syncStatus: syncStatus.result ?? null } : undefined)
+    }
+    const fail = () => { db.close(); reject(transaction.error ?? new Error('Databasecache-transactie mislukt.')) }
+    transaction.onerror = fail
+    transaction.onabort = fail
+    try {
+      if (mode === 'readwrite') {
+        store.put(values.database, DATABASE_KEY)
+        store.put(values.syncStatus, STATUS_KEY)
+      } else {
+        database = store.get(DATABASE_KEY)
+        syncStatus = store.get(STATUS_KEY)
+      }
+    } catch (error) {
+      transaction.abort()
+      db.close()
+      reject(error)
+    }
+  })
 }
 
-async function readValue(
-  key,
-) {
-  const db =
-    await openStorageDatabase()
-
-  return new Promise(
-    (resolve, reject) => {
-      const transaction =
-        db.transaction(
-          STORE_NAME,
-          'readonly',
-        )
-
-      const store =
-        transaction.objectStore(
-          STORE_NAME,
-        )
-
-      const request =
-        store.get(
-          key,
-        )
-
-      request.onsuccess =
-        () => {
-          resolve(
-            request.result ??
-            null,
-          )
-        }
-
-      request.onerror =
-        () => {
-          reject(
-            request.error ??
-            new Error(
-              `Lezen van ${key} is mislukt.`,
-            ),
-          )
-        }
-
-      transaction.oncomplete =
-        () => {
-          db.close()
-        }
-    },
-  )
-}
-
-export async function saveDatabaseCache({
-  database,
-  syncStatus,
-}) {
-  await Promise.all([
-    writeValue(
-      DATABASE_KEY,
-      database,
-    ),
-
-    writeValue(
-      STATUS_KEY,
-      syncStatus,
-    ),
-  ])
-}
-
-export async function loadDatabaseCache() {
-  const [
-    database,
-    syncStatus,
-  ] =
-    await Promise.all([
-      readValue(
-        DATABASE_KEY,
-      ),
-
-      readValue(
-        STATUS_KEY,
-      ),
-    ])
-
-  return {
-    database,
-    syncStatus,
-  }
-}
+export function saveDatabaseCache(values) { return cacheTransaction('readwrite', values) }
+export function loadDatabaseCache() { return cacheTransaction('readonly') }
 
 export async function clearDatabaseCache() {
   const db =

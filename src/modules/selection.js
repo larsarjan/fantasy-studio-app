@@ -3,14 +3,15 @@ import { availabilityBadge } from './availabilityUI.js'
 import { availabilityPolicy } from '../services/availability.js'
 import { safeHtml } from '../platform/html.js'
 import { getPlayers, getDatabaseSummary } from '../services/database.js'
-import { getManagerTeamState, getManagerSettings } from './optimizer.js'
+import { getManagerTeamState, getManagerSettings } from '../services/managerState.js'
 import { getCaptainRadarDefaultRound } from '../services/captainRadarEngine.js'
 import { changeSelection } from '../platform/selectionStorage.js'
 import { canAddPlayer, playerId, playerPrice, selectionPlayers, selectionLineup, updateSelection, validateSelection } from '../services/personalSelection.js'
 import { normalizeFantasyPosition } from '../services/fantasyGameRulesEngine.js'
 import { getPlayerDetailProfile, renderPlayerDetailProfile } from './players.js'
 
-export const esc = value => String(value ?? '').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#39;')
+import { esc } from '../services/htmlEscape.js'
+export { esc } from '../services/htmlEscape.js'
 const money = value => value == null ? 'Onbekend' : `€ ${Number(value).toLocaleString('nl-NL',{minimumFractionDigits:1,maximumFractionDigits:1})}`
 const positions = { goalkeeper:'Doelmannen', defender:'Verdedigers', midfielder:'Middenvelders', forward:'Spitsen' }
 let query = '', position = '', message = '', detailId = ''

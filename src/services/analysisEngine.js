@@ -1,3 +1,4 @@
+import { registerReferenceCache } from './referenceRuntimeCache.js'
 import { getPlayerMatchHistory } from './playerMatchStatsEngine.js'
 import { buildPlayerIntelligence, canonicalClubKey, canonicalClubName, clamp, createIntelligenceContext, finite, getPlayerHorizonProjection, mean, percentile, rankDeterministic, round, text } from './intelligenceHelpers.js'
 import { buildStructuralFixtureIntelligence } from './structuralFixtureIntelligence.js'
@@ -19,7 +20,7 @@ export const PURCHASE_ACTION_THRESHOLDS = Object.freeze({
   considerAvailability: 60,
 })
 
-const cache = new Map()
+const cache = registerReferenceCache(new Map())
 const confidence = ({ sample = 0, availability = 0, horizon = 3, missing = 0 }) => {
   const score = clamp(sample * 8 + availability * .55 + (horizon === 1 ? 15 : horizon === 3 ? 8 : 0) - missing * 15)
   return { score: round(score), level: score >= 72 ? 'hoog' : score >= 45 ? 'middel' : 'laag' }

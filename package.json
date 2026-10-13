@@ -29,7 +29,8 @@
     "test:prominents": "node --test src/services/prominentModel.test.js src/services/prominentCollector.test.js && node scripts/test-prominent-database.mjs",
     "backfill:prominents": "node scripts/prominent-backfill.mjs",
     "test:prominents-live": "node scripts/test-prominent-live.mjs",
-    "test:article-views": "node --test server/articleViews.test.js src/services/articleViewModel.test.js && node scripts/test-article-views-database.mjs"
+    "test:article-views": "node --test server/articleViews.test.js src/services/articleViewModel.test.js && node scripts/test-article-views-database.mjs",
+    "test:reference-sync": "node --test server/referenceSync.test.js src/services/referenceCache.test.js scripts/test-reference-publication.mjs && node scripts/test-reference-sync-database.mjs"
   },
   "build": {
     "appId": "nl.fantasyvoetbaltalk.fantasystudio",

@@ -1,3 +1,4 @@
+import { invalidateReferenceCaches } from './referenceRuntimeCache.js'
 import {
   players as fallbackPlayers,
 } from '../data/players.js'
@@ -33,9 +34,6 @@ import {
   calculateDataConfidence,
 } from './dataConfidenceEngine.js'
 
-import {
-  precomputeFantasyScores,
-} from './fantasyScorePrecompute.js'
 
 import {
   calculatePlayerMatchProfile,
@@ -1498,44 +1496,28 @@ async function loadCache() {
 }
 
 export async function initializeDatabase() {
+  await loadCache()
   // Authentication completes before main.js initializes the reference layer.
   // Dynamic import keeps pure domain tests independent from browser configuration.
   if (typeof window !== 'undefined') {
     try {
       const { loadReferenceData } = await import('../platform/referenceData.js')
-      const cloud = await loadReferenceData()
+      const cloud = await loadReferenceData({ database, syncStatus })
       if (cloud?.database?.players?.length) {
+        if (!cloud.cacheHit) invalidateReferenceCaches()
         database = { ...database, ...cloud.database }
         syncStatus = cloud.syncStatus
-        await saveCache()
+        if (!cloud.cacheHit) {
+          try { await saveCache() } catch { /* Cloud data remains usable without local storage. */ }
+        }
         return
       }
     } catch {
       // Shared reference cache is an offline fallback, never a private user store.
     }
   }
-  await loadCache()
-
   if (!database.players.length || !database.fixtures.length) {
-    try { await synchronizeDatabase(); return } catch {
-      syncStatus = { source: 'Geen data', lastSync: null, state: 'error', message: 'Voetbaldata kon niet laden. Probeer Synchroniseren opnieuw.' }
-    }
-  }
-
-  // Oudere IndexedDB-caches bevatten dit later toegevoegde, optionele tabblad
-  // nog niet. Laad alleen die lichte presentatiedataset zodat Europa-context
-  // direct na een update zichtbaar is zonder een volledige handmatige sync.
-  if (!getEuropeanFixtures().length && hasPublishedSheet('EUROPE_2026_27')) {
-    try {
-      const europeanRows = await fetchSheet('EUROPE_2026_27')
-      database = {
-        ...database,
-        europeanFixtures: europeanRows.map(normalizeEuropeanFixture).filter(Boolean),
-      }
-      await saveCache()
-    } catch (error) {
-      console.warn('Europese programma-context kon bij het starten niet worden aangevuld.', error)
-    }
+    syncStatus = { source: 'Geen data', lastSync: null, state: 'error', message: 'Voetbaldata kon niet laden. Herlaad de pagina of probeer het later opnieuw.' }
   }
 }
 
@@ -1812,9 +1794,23 @@ export function getDatabaseSummary() {
   }
 }
 
-export async function synchronizeDatabase() {
+export async function synchronizeDatabase(options = {}) {
+  if (typeof window !== 'undefined' && !options.prepareOnly) {
+    try {
+      const { runReferenceSync } = await import('../platform/referenceSync.js')
+      const result = await runReferenceSync()
+      await initializeDatabase()
+      window.dispatchEvent(new CustomEvent('fantasy-database-updated'))
+      const counts = result.publication.counts
+      return { ...result, players: counts.players, fixtures: counts.fixtures, matchStats: counts.player_match_stats }
+    } catch (error) {
+      syncStatus = { ...syncStatus, state: 'error', message: error.message }
+      throw error
+    }
+  }
   const previousDatabase = database
   const previousSyncStatus = syncStatus
+  if (options.retainedData) database = { ...database, ...options.retainedData }
   syncStatus = {
     ...syncStatus,
     message: 'Synchroniseren…',
@@ -1826,7 +1822,7 @@ export async function synchronizeDatabase() {
   // Start independent published-sheet requests together. Each settles before
   // consumption so optional failures cannot become unhandled rejections.
   const names = ['SPELERS','SPELERS_HISTORIE','WEDSTRIJDEN','TEAM_RATINGS','RESULTS','PLAYER_METADATA','PLAYER_MATCH_STATS','ELITE_PLAYER_STATS','ELITE_TRANSFERS','ELITE_SYNC_CONTROLE','CHIP_GEBRUIK','ELITE_FORMATIONS','ELITE_CLUB_EXPOSURE','EUROPE_2026_27', ...(TRANSFER_DEADLINE_ENABLED ? ['TRANSFERS_2026_27','TRANSFER_CLUB_OVERVIEW'] : [])]
-  const requests = new Map(names.filter(hasPublishedSheet).map(name => [name, fetchSheet(name).then(value => ({ value }), error => ({ error }))]))
+  const requests = new Map(names.filter(hasPublishedSheet).map(name => [name, (options.sheets ? Promise.resolve(options.sheets[name]) : fetchSheet(name)).then(value => { if (!Array.isArray(value)) throw new Error(`Tabblad ${name} ontbreekt.`); return { value } }).catch(error => ({ error }))]))
   const loadSheet = async name => { const result = await requests.get(name); if (result?.error) throw result.error; return result?.value ?? [] }
 
   try {
@@ -1992,6 +1988,7 @@ if (!results.length) {
   )
 }
 
+    invalidateReferenceCaches()
     database = {
   players,
   historicalPlayers,
@@ -2014,6 +2011,7 @@ if (!results.length) {
 const profiles =
   getPlayerProfiles()
 
+const { precomputeFantasyScores } = await import('./fantasyScorePrecompute.js')
 database.players =
   await precomputeFantasyScores({
     profiles,
@@ -2049,9 +2047,16 @@ database.players =
       state: 'success',
     }
 
+    if (options.prepareOnly) {
+      const prepared = database
+      invalidateReferenceCaches()
+      database = previousDatabase
+      syncStatus = previousSyncStatus
+      return prepared
+    }
     const { publishReferenceData } = await import('../platform/referenceData.js')
     const publication = await publishReferenceData(database)
-    syncStatus = { ...syncStatus, source: 'Studio Cloud', lastSync: publication.created_at }
+    syncStatus = { ...syncStatus, source: 'Studio Cloud', snapshotId: publication.id, lastSync: publication.created_at }
     // Only cache a verified cloud snapshot. Cache failure cannot undo a committed publication.
     try { await saveCache() } catch { console.warn('Cloudsnapshot gepubliceerd; lokale cache kon niet worden bijgewerkt.') }
 

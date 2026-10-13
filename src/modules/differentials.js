@@ -1,6 +1,6 @@
 import { renderPersonalContext } from './personalContext.js'
 import { buildCaptainRadar } from '../services/captainRadarEngine.js'
-import { getManagerTeamState } from './optimizer.js'
+import { getManagerTeamState } from '../services/managerState.js'
 import { selectionPlayers, playerId } from '../services/personalSelection.js'
 import { getPlayers } from '../services/database.js'
 import { safeHtml } from '../platform/html.js'

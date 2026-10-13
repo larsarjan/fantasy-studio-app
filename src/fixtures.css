@@ -4470,3 +4470,9 @@
     transform: translate(-50%, -50%);
   }
 }
+
+/* Hidden tooltips must not enlarge the mobile scrollable area. */
+@media (max-width: 760px) {
+  .fixture-score-info:not(:hover):not(:focus-within) .fixture-score-tooltip { display: none; }
+  .fixture-score-info:is(:hover, :focus-within) .fixture-score-tooltip { position: fixed; left: 16px; right: 16px; bottom: 16px; width: auto; max-height: 70vh; overflow-y: auto; }
+}

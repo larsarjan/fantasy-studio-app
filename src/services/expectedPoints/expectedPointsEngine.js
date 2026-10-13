@@ -1,3 +1,4 @@
+import { registerReferenceCache } from '../referenceRuntimeCache.js'
 /*
 |--------------------------------------------------------------------------
 | Expected Points Engine
@@ -1609,8 +1610,7 @@ function divide(
 |
 */
 
-const EXPECTED_POINTS_RANGE_CACHE =
-  new Map()
+const EXPECTED_POINTS_RANGE_CACHE = registerReferenceCache(new Map())
 
 function canUseRangeCache(
   options = {},

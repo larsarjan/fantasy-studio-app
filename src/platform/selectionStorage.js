@@ -1,4 +1,4 @@
-import { getManagerSettings, getManagerTeamState, restoreManagerState } from '../modules/optimizer.js'
+import { getManagerSettings, getManagerTeamState, restoreManagerState } from '../services/managerState.js'
 import { saveTeam } from './repository.js'
 
 let baseline = '', saving = null, failed = false, timer = null

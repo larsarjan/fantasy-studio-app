@@ -1,14 +1,15 @@
 import { getPlayers, getDatabaseSummary } from '../services/database.js'
 import { buildCaptainRadar, getCaptainRadarDefaultRound } from '../services/captainRadarEngine.js'
-import { getManagerTeamState } from './optimizer.js'
-import { personalAdvice, playerId, playerPrice, selectionLineup } from '../services/personalSelection.js'
-import { esc } from './selection.js'
+import { getManagerTeamState } from '../services/managerState.js'
+import { personalAdvice, playerId, playerPrice, selectionLineup, selectionPlayers } from '../services/personalSelection.js'
+import { esc } from '../services/htmlEscape.js'
 import { getPlayerRoundProjection } from '../services/optimizer/optimizerLineup.js'
 import { availabilityPolicy } from '../services/availability.js'
 import { availabilityBadge } from './availabilityUI.js'
 
 export function renderPersonalContext(screen, radar = null) {
   const state = getManagerTeamState(), players=getPlayers(), season=getDatabaseSummary().activeSeason || players[0]?.season
+  if(!selectionPlayers(state, players).length) return `<section class="panel personal-context"><span class="eyebrow">Persoonlijke Studio</span><h3>Maak je advies persoonlijk</h3><p>Voeg je spelers toe om je eigen captain, risico’s en transfers te beoordelen.</p><a href="/studio/selection">Mijn selectie samenstellen →</a></section>`
   const data = radar ?? buildCaptainRadar({season,round:getCaptainRadarDefaultRound(season)})
   const projections = data.candidates.map(p => ({ p, rounds:Array.from({length:Math.min(3,35-data.round)},(_,i)=>getPlayerRoundProjection(p,data.round+i)) }))
   const horizonCount = Math.min(3,35-data.round)
@@ -16,7 +17,7 @@ export function renderPersonalContext(screen, radar = null) {
   const ownedIds = new Set((state.importResult?.players??[]).map(r=>playerId(r.player)))
   const completeHorizon = [...ownedIds].every(id=>future.some(p=>playerId(p)===id)) && future.length > 0
   const advice=personalAdvice({state,players,candidates:data.candidates,horizonCandidates:completeHorizon?future:data.candidates})
-  if(!advice.owned.length) return `<section class="panel personal-context"><span class="eyebrow">Persoonlijke Studio</span><h3>Maak je advies persoonlijk</h3><p>Voeg je spelers toe om je eigen captain, risico’s en transfers te beoordelen.</p><a href="/studio/selection">Mijn selectie samenstellen →</a></section>`
+
   const lineup=selectionLineup(state,advice.owned),byId=new Map(players.map(p=>[playerId(p),p])), best=advice.captains[0], transfer=advice.transfers[0]
   const candidate = p => p?`<strong>${esc(p.name)}</strong>${availabilityBadge(p)}<span>${Number(p.radarScore).toFixed(1)} / 100 · ${Number(p.expectedPoints).toFixed(1)} xP · ${Math.round(p.expectedMinutes)} verwachte minuten</span><small>${p.fixtures.map(f=>`${esc(f.opponent)} (${f.isHome?'thuis':'uit'})`).join(' · ')||'Geen wedstrijd'}</small><p>${esc(p.reasons?.[0]||'Gebaseerd op de rondeprojectie en verwachte speeltijd.')}</p>${p.expectedMinutes/Math.max(1,p.fixtureCount)<60?'<small>Let op: beperkte minutenverwachting.</small>':''}`:'<p>Geen geschikte captain met voldoende minutenprojectie in deze ronde.</p>'
   const captain=`<article class="personal-advice-card"><span class="eyebrow">Jouw beste captain</span>${candidate(best)}${best&&!lineup.starters.includes(playerId(best))?'<p>Zet deze speler eerst in je basis voordat je hem captain maakt.</p>':''}${advice.captains.length>1?`<details><summary>Alternatieven uit jouw selectie</summary>${advice.captains.slice(1,4).map(p=>`<div>${candidate(p)}</div>`).join('')}</details>`:''}</article>`

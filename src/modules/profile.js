@@ -3,7 +3,7 @@ import { profile, saveProfile } from '../platform/repository.js'
 import { friendlyError } from '../platform/client.js'
 import { getFixtures } from '../services/database.js'
 import { canonicalClubs, canonicalFavorite } from '../services/canonicalClubs.js'
-import { esc } from './selection.js'
+import { esc } from '../services/htmlEscape.js'
 
 let account = null
 export function setProfileAccount(user) { account = user }
