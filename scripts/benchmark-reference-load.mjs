@@ -13,4 +13,4 @@ const data=Object.fromEntries(await Promise.all(Object.keys(snapshot.counts).map
 const result={snapshot:snapshot.id,at:new Date().toISOString(),durationMs:performance.now()-start,bytes:measurements.reduce((n,r)=>n+r.bytes,0),requests:measurements.length,datasets:Object.entries(data).map(([name,rows])=>({name,records:rows.length,bytes:Buffer.byteLength(JSON.stringify(rows))})),measurements}
 mkdirSync('test-results/performance',{recursive:true});writeFileSync('test-results/performance/baseline-reference.json',JSON.stringify(result,null,2));writeFileSync('test-results/performance/reference.json',JSON.stringify(data));console.log(JSON.stringify({...result,measurements:undefined},null,2))
 
-await auth.auth.signOut()
+await auth.auth.signOut({scope:'local'})
