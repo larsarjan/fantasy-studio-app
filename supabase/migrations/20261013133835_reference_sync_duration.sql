@@ -22,4 +22,3 @@ begin
 end $$;
 revoke all on function public.reference_sync_finish(uuid,text,jsonb,text,text,integer) from public,anon,authenticated;
 grant execute on function public.reference_sync_finish(uuid,text,jsonb,text,text,integer) to service_role;
-
