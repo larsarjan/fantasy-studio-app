@@ -1,3 +1,5 @@
+import '../fixtureWindows.css'
+import {roundWindows,clubWindowFixtures,kickoffTime} from '../services/fixtureWindows.js'
 import { renderClubLogo } from '../services/clubLogos.js'
 import { renderPersonalContext } from './personalContext.js'
 import { buildCaptainRadar } from '../services/captainRadarEngine.js'
@@ -875,156 +877,27 @@ function renderSchemaValueInfo(
   `
 }
 
-function renderClub(state) {
-  const list =
-    getClubFixtures(
-      state.club,
-      state.startRound,
-      state.count,
-    )
-
-  const schemaSummary =
-    calculateClubSchemaSummary(
-      list,
-      state.club,
-    )
-  const overlayPlacements=state.showEurope?buildEuropeanOverlayPlacements(list,currentFixtures(),getEuropeanFixtures(),state.club):[]
-  const overlaysByAnchor=new Map()
-  overlayPlacements.forEach(placement=>{
-    const key=String(placement.anchorFixtureId)
-    overlaysByAnchor.set(key,[...(overlaysByAnchor.get(key)??[]),placement])
-  })
-
-  return `
-    <section class="fixture-summary">
-      <div class="fixture-summary-club">
-        ${renderClubLogo(
-          state.club,
-          'summary-club-logo',
-        )}
-
-        <div>
-          <span class="eyebrow">
-            Clubschema
-          </span>
-
-          <h2>
-            ${state.club}
-          </h2>
-
-          <p>
-            Vanaf speelronde
-            ${state.startRound},
-            volgende ${state.count}
-            wedstrijd${
-              state.count === 1
-                ? ''
-                : 'en'
-            }.
-          </p>
-        </div>
-      </div>
-
-      <div class="average-score">
-        <div class="average-score-heading">
-          <span>
-            Schemawaarde
-          </span>
-
-          ${renderSchemaValueInfo(
-            schemaSummary,
-            state.club,
-          )}
-        </div>
-
-        <strong>
-          ${schemaSummary.value}
-        </strong>
-      </div>
-    </section>
-
-    <div class="fixture-strip">
-      ${list
-        .map((fixture) => {
-          const view =
-            viewForClub(
-              fixture,
-              state.club,
-            )
-
-          return `
-            <div class="fixture-card-shell">
-              <button
-                class="fixture-card"
-                style="
-                  --difficulty-color:
-                    ${view.color};
-
-                  border-color:
-                    ${view.color};
-                "
-                data-fixture-id="${fixture.id}"
-                type="button"
-              >
-              <div class="fixture-card-top">
-                <span>
-                  SR ${fixture.round}
-                </span>
-
-                <span class="venue-pill">
-                  ${view.venue}
-                </span>
-              </div>
-
-              <div class="fixture-opponent">
-                ${renderClubLogo(
-                  view.opponent,
-                )}
-
-                <strong>
-                  ${view.opponent}
-                </strong>
-              </div>
-
-              <small>
-                ${formatDate(
-                  fixture,
-                )}
-              </small>
-
-              <div
-                class="difficulty-label"
-                style="
-                  background:
-                    ${view.color};
-                "
-              >
-                <span class="difficulty-label-text">
-                  ${Number(
-                    view.difficulty,
-                  ).toFixed(1)}/5 ·
-                  ${view.label}
-                </span>
-
-                ${renderFixtureDifficultyInfo(
-                  fixture,
-                  view,
-                )}
-              </div>
-              </button>
-              ${(overlaysByAnchor.get(String(fixture.id))??[]).map(renderEuropeanPlacementOverlay).join('')}
-            </div>
-          `
-        })
-        .join('')}
-    </div>
-
-    ${renderExpectedMatchCenter(
-      currentFixtures().find(
-        (fixture) => fixture.id === state.selectedFixtureId,
-      ),
-    )}
-  `
+function windowItems(state,club,round){
+ const window=(state.windows||roundWindows(currentFixtures())).find(w=>w.round===round)
+ return window?clubWindowFixtures({league:currentFixtures(),other:state.showEurope||state.mode==='compare'?getEuropeanFixtures():[],club,window,startMode:state.startMode,now:state.now}):[]
+}
+function renderTimelineFixture({fixture:f,kickoff},club){
+ const league=f.competition==='ERE',view=league?viewForClub(f,club):null
+ const opponent=league?view.opponent:f.opponent,venue=league?view.venue:f.homeAway==='T'?'Thuis':f.homeAway==='U'?'Uit':'Onbekend'
+ const color=view?.color||'#405a79'
+ return `<button type="button" class="fixture-timeline-item" style="--difficulty-color:${color};border-color:${color}" ${league?`data-fixture-id="${escapeHtml(f.id)}"`:`data-europe-context-id="${escapeHtml(f.europeMatchId)}" data-europe-club="${escapeHtml(club)}"`}>
+ <span class="fixture-timeline-meta"><b>${escapeHtml(f.competition||'KNVB')}</b><span>${escapeHtml(venue)}</span></span>
+ <span class="fixture-timeline-opponent">${renderClubLogo(opponent)}<strong>${escapeHtml(opponent)}</strong></span>
+ <small>${escapeHtml(f.date||'Datum onbekend')} &middot; ${escapeHtml(f.time||'Tijd onbekend')}</small>
+ ${view?`<span class="fixture-timeline-difficulty">${Number(view.difficulty).toFixed(1)}/5 &middot; ${escapeHtml(view.label)}</span>`:'<span class="fixture-timeline-difficulty">Wedstrijdbelasting</span>'}</button>`
+}
+function renderClub(state){
+ const list=getClubFixtures(state.club,state.startRound,state.count),schema=calculateClubSchemaSummary(list,state.club)
+ const lastRound=Math.max(state.startRound,...list.map(f=>Number(f.round)))
+ const windows=(state.windows||roundWindows(currentFixtures())).filter(w=>w.round>=state.startRound&&w.round<=lastRound)
+ return `<section class="fixture-summary"><div class="fixture-summary-club">${renderClubLogo(state.club,'summary-club-logo')}<div><span class="eyebrow">Clubschema</span><h2>${escapeHtml(state.club)}</h2><p>${state.startMode==='now'?'Vanaf nu':'Vanaf speelronde '+state.startRound} &middot; horizon: ${state.count} Eredivisiewedstrijden</p></div></div><div class="average-score"><div class="average-score-heading"><span>Schemawaarde</span>${renderSchemaValueInfo(schema,state.club)}</div><strong>${schema.value}</strong></div></section>
+ <div class="fixture-strip fixture-window-strip">${windows.map(w=>`<section class="fixture-window"><h3>Speelronde ${w.round}</h3>${windowItems(state,state.club,w.round).map(item=>renderTimelineFixture(item,state.club)).join('')||'<p>Geen geplande wedstrijden in dit venster.</p>'}${w.uncertain?'<small>Venster deels onzeker: een aftraptijd ontbreekt.</small>':''}</section>`).join('')}</div>
+ ${renderExpectedMatchCenter(currentFixtures().find(f=>f.id===state.selectedFixtureId))}`
 }
 
 export function renderEuropeanContextOverlay(fixture,club,europeanFixtures,showEurope=true) {
@@ -1087,26 +960,9 @@ function positionEuropeanContextOverlays() {
 }
 
 function renderRound(state) {
-  const list = currentFixtures()
-    .filter(
-      (fixture) =>
-        Number(fixture.round) ===
-        Number(state.startRound),
-    )
-    .sort((left, right) => {
-      const dateDifference =
-        String(left.date || '').localeCompare(
-          String(right.date || ''),
-        )
-
-      if (dateDifference !== 0) {
-        return dateDifference
-      }
-
-      return String(left.time || '').localeCompare(
-        String(right.time || ''),
-      )
-    })
+  const keyed=new Map()
+  for(const club of currentClubs())for(const item of windowItems(state,club,state.startRound)){const f=item.fixture;keyed.set(f.competition+':'+(f.europeMatchId||f.id),item)}
+  const list=[...keyed.values()].sort((a,b)=>(a.kickoff??Infinity)-(b.kickoff??Infinity)||String(a.fixture.id||a.fixture.europeMatchId).localeCompare(String(b.fixture.id||b.fixture.europeMatchId))).map(x=>x.fixture)
 
   const matchCount = list.length
 
@@ -1138,6 +994,7 @@ function renderRound(state) {
           <div class="round-grid">
             ${list
               .map((fixture) => {
+                if(fixture.competition!=='ERE')return '<div class="round-timeline-context"><h3>'+escapeHtml(fixture.club)+'</h3>'+renderTimelineFixture({fixture,kickoff:kickoffTime(fixture)},fixture.club)+'</div>'
                 const homeView =
                   viewForClub(
                     fixture,
@@ -1156,7 +1013,7 @@ function renderRound(state) {
                     data-fixture-id="${fixture.id}"
                     type="button"
                   >
-                    <span class="round-date">
+                    <span class="round-date">ERE &middot;
                       ${formatDate(fixture)}
                     </span>
 
@@ -1251,8 +1108,6 @@ function renderRound(state) {
                         </div>
                       </div>
                     </div>
-                    ${renderEuropeanContextBadges(findEuropeanFixtureContext(fixture,fixture.home,state.showEurope?getEuropeanFixtures():[]))}
-                    ${renderEuropeanContextBadges(findEuropeanFixtureContext(fixture,fixture.away,state.showEurope?getEuropeanFixtures():[]))}
                   </button>
                 `
               })
@@ -1297,23 +1152,6 @@ function renderCompare(state) {
     (_, index) =>
       state.startRound + index,
   ).filter((round) => round <= 34)
-
-  const visibleFixturesByClub = new Map(selected.map((club) => [
-    club,
-    currentFixtures().filter((fixture) => rounds.includes(Number(fixture.round)) && (fixture.home === club || fixture.away === club)),
-  ]))
-  const europePlacementsByClub = new Map(selected.map((club) => [
-    club,
-    buildEuropeanOverlayPlacements(visibleFixturesByClub.get(club),currentFixtures(),getEuropeanFixtures(),club),
-  ]))
-
-  function renderCompareEuropeanContext(fixtures,club) {
-    const fixtureIds=new Set(fixtures.map((fixture)=>String(fixture.id)))
-    return (europePlacementsByClub.get(club)??[])
-      .filter((placement)=>fixtureIds.has(String(placement.anchorFixtureId)))
-      .map((placement)=>renderEuropeanCompareBadge(placement,club))
-      .join('')
-  }
 
   function fixturesForClubAndRound(
     club,
@@ -1572,7 +1410,7 @@ function renderCompare(state) {
                       round,
                     )
 
-                  if (!fixtures.length) {
+                  if (!fixtures.length && !windowItems(state,club,round).length) {
                     return `
                       <div
                         class="
@@ -1616,16 +1454,8 @@ function renderCompare(state) {
                           : ''
                       }
 
-                      ${fixtures
-                        .map(
-                          (fixture) =>
-                            renderCompareFixture(
-                              fixture,
-                              club,
-                            ),
-                        )
-                        .join('')}
-                      ${renderCompareEuropeanContext(fixtures,club)}
+                      ${windowItems(state,club,round).map(item=>renderTimelineFixture(item,club)).join('')}
+
                     </div>
                   `
                 })
@@ -3763,6 +3593,7 @@ export function createFixturesScreen() {
   const clubs = currentClubs()
 
   return `
+    <div id="fixture-personal-context"></div>
     <section class="panel fixtures-module">
       <div class="panel-heading fixtures-heading">
   <div class="fixtures-heading-title">
@@ -3947,6 +3778,7 @@ export function createFixturesScreen() {
           </select>
         </label>
 
+        <label><span>Startpunt</span><select id="fixture-start-mode"><option value="round">Vanaf speelronde</option><option value="now">Vanaf nu</option></select></label>
         <div
           class="compare-club-selectors hidden"
           id="compare-club-selectors"
@@ -4200,6 +4032,7 @@ export function mountFixturesScreen() {
     mode: 'club',
     club: 'FC Utrecht',
     startRound: getAutomaticStartRound(),
+    startMode: 'round',
     count: 5,
     compareClubGroup: 'manual',
     compareClubs: ['', '', '', ''],
@@ -4265,10 +4098,15 @@ const compareWrap =
     select.value = state.compareClubs[index]
   })
 
+  const personalHost=document.querySelector('#fixture-personal-context')
+  personalHost.innerHTML=safeHtml(renderPersonalContext('fixtures',buildCaptainRadar({season:currentFixtures()[0]?.season,round:state.startRound})))
+  document.querySelector('#fixture-start-mode').addEventListener('change',event=>{state.startMode=event.target.value;state.selectedFixtureId=null;state.selectedEuropeFixtureId=null;render()})
   function render() {
-    document.querySelector('[data-personal-context="fixtures"]')?.remove()
-    const roundData=buildCaptainRadar({season:currentFixtures()[0]?.season,round:state.startRound})
-    document.querySelector('#page-content').insertAdjacentHTML('afterbegin',safeHtml(renderPersonalContext('fixtures',roundData)))
+    const now=Date.now(),windows=roundWindows(currentFixtures());
+    const effectiveRound=state.startMode==='now'?(windows.find(w=>w.end>=now)?.round??35):state.startRound
+    const displayState={...state,startRound:effectiveRound,now,windows}
+    roundSelect.disabled=state.startMode==='now'
+
   const isClubMode =
     state.mode === 'club'
 
@@ -4316,10 +4154,10 @@ const compareWrap =
 
   content.innerHTML =
     safeHtml(isClubMode
-      ? renderClub(state)
+      ? renderClub(displayState)
       : isRoundMode
-        ? renderRound(state)
-        : renderCompare(state))
+        ? renderRound(displayState)
+        : renderCompare(displayState))
 
   detail.innerHTML = safeHtml(state.selectedEuropeFixtureId
     ? renderEuropeanFixtureDetailPanel(getEuropeanFixtures().find((fixture)=>fixture.europeMatchId===state.selectedEuropeFixtureId),{club:state.selectedEuropeClub||state.club,eredivisieFixtures:currentFixtures()})
