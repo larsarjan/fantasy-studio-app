@@ -1,4 +1,4 @@
-﻿.fixture-window-strip{align-items:start}
+.fixture-strip.fixture-window-strip{align-items:start;grid-auto-rows:auto;row-gap:24px;padding-bottom:24px}
 .fixture-window{min-width:0;display:grid;gap:10px;align-content:start}
 .fixture-window h3{font-size:14px;margin:0 0 4px}
 .fixture-context-compact{box-sizing:border-box;display:grid;gap:5px;width:100%;min-width:0;min-height:108px;padding:10px 12px;border:1px solid #34485e;border-radius:10px;background:#101d2b;color:#dce7f2;text-align:left;cursor:pointer}
@@ -28,3 +28,47 @@
  .compare-round-number strong::before{content:'Speelronde ';font-size:14px}
 }
 @media(max-width:600px){.fixture-window-strip{display:grid;grid-template-columns:minmax(0,1fr)}.fixture-window{width:100%;min-width:0}}
+/* Final polish, scoped to the fixture module. Data and scoring stay unchanged. */
+.fixtures-module>.fixtures-heading{display:block;margin-bottom:20px;min-height:0}
+.fixture-toolbar-sentinel{height:1px;margin-bottom:-1px}
+.fixtures-module>.fixture-toolbar{position:sticky;top:12px;z-index:40;display:flex;align-items:center;justify-content:space-between;gap:16px;min-width:0;margin:0 0 24px}
+.fixture-toolbar .fixture-mode-switch{flex:0 0 auto;margin:0}
+.fixture-toolbar>.fixture-sticky-legend{position:static;opacity:1;pointer-events:auto;transform:none;transition:none;margin:0 0 0 auto;width:460px;min-height:56px;padding:6px 10px;box-sizing:border-box}
+.fixture-toolbar.is-floating .fixture-mode-switch{visibility:hidden;pointer-events:none}
+.fixture-toolbar.is-floating{pointer-events:none}
+.fixture-toolbar.is-floating>.fixture-sticky-legend{position:absolute;right:0;top:0;pointer-events:auto}
+.fixture-toolbar .sticky-schema-scale{min-width:100px;width:min(180px,100%)}
+.fixture-toolbar .sticky-schema-legend{flex:1 1 160px}
+.fixture-toolbar .sticky-europe-legend>strong{display:none}
+.fixtures-module>.fixture-controls{margin-top:0;margin-bottom:24px}
+.fixture-context-zone{height:calc(var(--context-slots,1)*118px + 18px);display:flex;flex-direction:column;gap:10px;justify-content:flex-end;min-width:0}
+.fixture-context-link{display:flex;align-items:center;gap:6px;font-size:10px;color:#92a7ba;line-height:18px;min-height:18px;padding-left:12px}
+.fixture-context-link::before{content:'';display:block;width:1px;height:18px;background:#4f6579}
+.fixture-context-compact{--context-accent:#9aaebe;border-left:2px solid var(--context-accent)}
+.fixture-context-compact[data-competition="UCL"]{--context-accent:#5286f7}
+.fixture-context-compact[data-competition="UEL"]{--context-accent:#ee984e}
+.fixture-context-compact[data-competition="UECL"]{--context-accent:#54bd83}
+.fixture-context-meta b{display:flex;align-items:center;gap:4px;color:var(--context-accent);background:color-mix(in srgb,var(--context-accent) 10%,transparent)}
+.fixture-context-meta .competition-logo{width:16px;height:16px;min-width:16px;flex-basis:16px;padding:0;border:0}
+.fixture-context-meta .competition-logo img{width:100%;height:100%;object-fit:contain}
+.fixtures-module:has(.fixture-mode[data-mode="compare"].active) #fixture-content,.fixtures-module:has(.fixture-mode[data-mode="compare"].active) .compare-round-table{max-height:none!important;height:auto;overflow:visible!important}
+.compare-round-cell>.fixture-card-shell,.compare-round-cell>.fixture-card-shell>.fixture-card{height:180px;min-height:180px}
+.compare-round-cell .fixture-card{padding:10px 12px}
+.compare-round-cell .fixture-card-top{margin-bottom:0;font-size:11px}
+.compare-round-cell .venue-pill{padding:3px 6px;min-width:24px}
+.compare-round-cell .fixture-opponent{min-height:76px;gap:3px;margin:0}
+.compare-round-cell .fixture-opponent .club-logo{width:48px;height:48px}
+.compare-round-cell .fixture-opponent strong{font-size:14px;min-height:0;line-height:1.15;display:block;overflow:visible;overflow-wrap:anywhere}
+.compare-round-cell .fixture-card small{font-size:10px;min-height:14px;margin:0}
+.compare-round-cell .fixture-card .difficulty-label{min-height:30px;margin-top:4px;padding:4px 6px;box-sizing:border-box}
+.compare-round-cell>.fixture-context-compact{height:64px;min-height:64px;padding:6px 8px;gap:2px;grid-template-columns:minmax(0,1fr) auto;align-content:center}
+.compare-round-cell .fixture-context-meta{grid-column:1/-1;font-size:10px}
+.compare-round-cell .fixture-context-opponent{grid-column:1/-1;gap:4px}
+.compare-round-cell .fixture-context-opponent .club-logo{width:16px;height:16px}
+.compare-round-cell .fixture-context-opponent strong{font-size:11px;line-height:12px}
+.compare-round-cell .fixture-context-compact>small{grid-column:1/-1;font-size:9px;line-height:11px}
+.compare-round-cell .fixture-context-label{display:none}
+@media(max-width:1100px){.fixtures-module>.fixture-toolbar{flex-wrap:wrap;gap:12px}.fixture-toolbar>.fixture-sticky-legend{width:min(460px,100%)}}
+@media(max-width:600px){.fixture-context-zone{height:auto;min-height:0}.fixture-context-zone:empty{display:none}.fixtures-module>.fixture-toolbar{gap:8px;margin-bottom:20px}.fixture-toolbar>.fixture-sticky-legend{width:100%;min-height:52px}.fixture-toolbar .fixture-mode-switch{width:100%;justify-content:space-between}.fixture-toolbar .fixture-mode{padding:9px 10px;font-size:11px}.fixture-toolbar .sticky-europe-legend{gap:4px}.fixture-toolbar .sticky-schema-legend{flex-basis:110px}}
+.fixtures-module:has(.fixture-mode[data-mode="club"].active) .fixture-workspace:has(#fixture-detail>.empty){grid-template-columns:minmax(0,1fr)}
+.fixtures-module:has(.fixture-mode[data-mode="club"].active) #fixture-detail:has(>.empty){display:none}

@@ -2,6 +2,8 @@
 import assert from 'node:assert/strict'
 const run=(...a)=>execFileSync('node_modules/agent-browser/bin/agent-browser-win32-x64.exe',['--session','fixture-windows',...a],{encoding:'utf8',timeout:60000,stdio:a[0]==='open'?['ignore','ignore','ignore']:['ignore','pipe','pipe']})
 const ev=c=>{const r=JSON.parse(run('eval',`JSON.stringify(${c})`));return typeof r==='string'?JSON.parse(r):r}
+const switchMode=mode=>{run('eval','document.querySelector(".fixture-toolbar-sentinel").scrollIntoView({block:"center"})');run('wait','--fn','getComputedStyle(document.querySelector(".fixture-mode")).visibility!=="hidden"');run('click',`.fixture-mode[data-mode="${mode}"]`);assert.equal(ev('document.querySelector(".fixture-mode.active").dataset.mode'),mode)}
+
 run('open','http://127.0.0.1:5198/__fixtures');run('wait','--fn','!!window.ready');run('set','viewport','1920','1000')
 const count=()=>ev('document.querySelectorAll("#fixture-personal-context .personal-context").length')
 assert.equal(count(),1)
@@ -19,11 +21,11 @@ for(const club of ['Feyenoord','Ajax']){run('select','#fixture-club',club);asser
 const requests=()=>ev('performance.getEntriesByType("resource").filter(x=>x.initiatorType==="fetch"||x.initiatorType==="xmlhttprequest").length')
 const before=requests()
 for(let i=0;i<10;i++)for(const mode of ['round','compare','club']){
- run('eval',`document.querySelector('.fixture-mode[data-mode="${mode}"]').scrollIntoView({block:"center"})`);run('click',`.fixture-mode[data-mode="${mode}"]`);assert.equal(ev('document.querySelector(".fixture-mode.active").dataset.mode'),mode);assert.equal(count(),1)
+ switchMode(mode);assert.equal(count(),1)
  assert.equal(ev('window.originalAdvice===document.querySelector("#fixture-personal-context .personal-context")'),true)
 }
 assert.equal(requests(),before,'tab changes must not refetch data')
-run('click','.fixture-mode[data-mode="compare"]');run('select','#compare-club-group','top3');assert.ok(text().includes('RB Leipzig'))
-for(const width of [1920,1366,820,390]){run('set','viewport',String(width),'1000');for(const mode of ['club','round','compare']){run('eval',`document.querySelector('.fixture-mode[data-mode="${mode}"]').scrollIntoView({block:"center"})`);run('click',`.fixture-mode[data-mode="${mode}"]`);assert.equal(ev('document.querySelector(".fixture-mode.active").dataset.mode'),mode);assert.ok(ev('document.documentElement.scrollWidth<=innerWidth'),`${width} ${mode} overflow`)}}
+switchMode('compare');run('select','#compare-club-group','top3');assert.ok(text().includes('RB Leipzig'))
+for(const width of [1920,1366,820,390]){run('set','viewport',String(width),'1000');for(const mode of ['club','round','compare']){switchMode(mode);assert.ok(ev('document.documentElement.scrollWidth<=innerWidth'),`${width} ${mode} overflow`)}}
 assert.equal(run('errors').trim(),'')
 console.log('PASS: chronology, start modes, round/schema, Ajax/Feyenoord, top3, 30 switches/same node/no refetch, 4 widths x 3 modes, no errors')

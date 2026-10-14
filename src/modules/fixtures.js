@@ -947,18 +947,26 @@ function renderPremiumLeagueFixture(fixture,club) {
 function renderTimelineFixture({fixture:f},club){
  if(f.competition==='ERE')return renderPremiumLeagueFixture(f,club)
  const venue=f.homeAway==='T'?'Thuis':f.homeAway==='U'?'Uit':'Onbekend'
- return `<button type="button" class="fixture-context-compact" data-europe-context-id="${escapeHtml(f.europeMatchId||f.id)}" data-europe-club="${escapeHtml(club)}">
- <span class="fixture-context-meta"><b>${escapeHtml(f.competition||'KNVB')}</b><span>${escapeHtml(venue)}</span></span>
+ return `<button type="button" class="fixture-context-compact" data-competition="${escapeHtml(f.competition||'KNVB')}" data-europe-context-id="${escapeHtml(f.europeMatchId||f.id)}" data-europe-club="${escapeHtml(club)}">
+ <span class="fixture-context-meta"><b>${EUROPEAN_COMPETITIONS[f.competition]?renderEuropeanCompetitionLogo(f.competition,{variant:'legend'}):''}${escapeHtml(f.competition||'KNVB')}</b><span>${escapeHtml(venue)}</span></span>
  <span class="fixture-context-opponent">${renderClubLogo(f.opponent)}<strong>${escapeHtml(f.opponent)}</strong></span>
- <small>${escapeHtml(f.date||'Datum onbekend')} &middot; ${escapeHtml(f.time||'Tijd onbekend')}</small>
+ <small>${escapeHtml(formatDate(f))}</small>
  <small class="fixture-context-label">${f.competition==='KNVB'?'Bekerbelasting':'Europese belasting'}</small></button>`
+}
+function renderClubWindow(window,items,club){
+ const firstLeague=items.findIndex(item=>item.fixture.competition==='ERE')
+ const leading=firstLeague<0?items:items.slice(0,firstLeague)
+ const remaining=firstLeague<0?[]:items.slice(firstLeague)
+ return `<section class="fixture-window"><h3>Speelronde ${window.round}</h3><div class="fixture-context-zone" aria-label="Context voor speelronde ${window.round}">${leading.map(item=>renderTimelineFixture(item,club)).join('')}${leading.length&&remaining.length?'<span class="fixture-context-link">Voor SR '+window.round+'</span>':''}</div>${remaining.map(item=>renderTimelineFixture(item,club)).join('')}${!items.length?'<p>Geen geplande wedstrijden in dit venster.</p>':''}${window.uncertain?'<small>Venster deels onzeker: een aftraptijd ontbreekt.</small>':''}</section>`
 }
 function renderClub(state){
  const list=getClubFixtures(state.club,state.startRound,state.count),schema=calculateClubSchemaSummary(list,state.club)
  const lastRound=Math.max(state.startRound,...list.map(f=>Number(f.round)))
  const windows=(state.windows||roundWindows(currentFixtures())).filter(w=>w.round>=state.startRound&&w.round<=lastRound)
+ const columns=windows.map(window=>({window,items:windowItems(state,state.club,window.round)}))
+ const slots=Math.max(1,...columns.map(({items})=>{const index=items.findIndex(item=>item.fixture.competition==='ERE');return index<0?items.length:index}))
  return `<section class="fixture-summary"><div class="fixture-summary-club">${renderClubLogo(state.club,'summary-club-logo')}<div><span class="eyebrow">Clubschema</span><h2>${escapeHtml(state.club)}</h2><p>${state.startMode==='now'?'Vanaf nu':'Vanaf speelronde '+state.startRound} &middot; horizon: ${state.count} Eredivisiewedstrijden</p></div></div><div class="average-score"><div class="average-score-heading"><span>Schemawaarde</span>${renderSchemaValueInfo(schema,state.club)}</div><strong>${schema.value}</strong></div></section>
- <div class="fixture-strip fixture-window-strip">${windows.map(w=>`<section class="fixture-window"><h3>Speelronde ${w.round}</h3>${windowItems(state,state.club,w.round).map(item=>renderTimelineFixture(item,state.club)).join('')||'<p>Geen geplande wedstrijden in dit venster.</p>'}${w.uncertain?'<small>Venster deels onzeker: een aftraptijd ontbreekt.</small>':''}</section>`).join('')}</div>
+ <div class="fixture-strip fixture-window-strip" style="--context-slots:${slots}">${columns.map(({window,items})=>renderClubWindow(window,items,state.club)).join('')}</div>
  ${renderExpectedMatchCenter(currentFixtures().find(f=>f.id===state.selectedFixtureId))}`
 }
 
@@ -3659,60 +3667,9 @@ export function createFixturesScreen() {
   return `
     <div id="fixture-personal-context"></div>
     <section class="panel fixtures-module">
-      <div class="panel-heading fixtures-heading">
-  <div class="fixtures-heading-title">
-    <span class="eyebrow">
-      Eredivisie 2026/27
-    </span>
-
-    <h2>
-      Speelschema & fixture difficulty
-    </h2>
-  </div>
-
-  <div
-    class="fixture-difficulty-legend"
-    aria-label="Legenda schemawaardes"
-  >
-    <span class="fixture-legend-title">
-      Schemawaardes
-    </span>
-
-    <div class="fixture-legend-labels">
-      <span>Uitstekend</span>
-      <span>Gunstig</span>
-      <span>In balans</span>
-      <span>Ongunstig</span>
-      <span>Zwaar</span>
-    </div>
-
-    <div class="fixture-legend-scale">
-      <div class="fixture-legend-gradient"></div>
-
-      <div
-        class="fixture-legend-marker hidden"
-        id="fixture-legend-marker"
-      >
-        <span id="fixture-legend-value">
-          2.8
-        </span>
-      </div>
-    </div>
-
-    <div class="fixture-legend-values">
-      <span>1.0</span>
-      <span>2.0</span>
-      <span>3.0</span>
-      <span>4.0</span>
-      <span>5.0</span>
-    </div>
-
-    <small>
-      Lager is gunstiger
-    </small>
-  </div>
-
-        <div class="fixture-mode-switch">
+      <div class="panel-heading fixtures-heading"><div class="fixtures-heading-title"><span class="eyebrow">Eredivisie 2026/27</span><h2>Speelschema & fixture difficulty</h2></div></div>
+      <div class="fixture-toolbar-sentinel" aria-hidden="true"></div>
+      <div class="fixture-toolbar"><div class="fixture-mode-switch">
           <button
             class="fixture-mode active"
             data-mode="club"
@@ -3736,10 +3693,7 @@ export function createFixturesScreen() {
           >
             Vergelijken
           </button>
-        </div>
-      </div>
-
-      <div class="fixture-sticky-legend" aria-label="Compacte legenda schemawaarde en Europese context">
+        </div><div class="fixture-sticky-legend" aria-label="Compacte legenda schemawaarde en Europese context">
         <div class="sticky-schema-legend">
           <strong>Schemawaarde</strong>
           <div class="sticky-schema-scale" aria-hidden="true">
@@ -3755,8 +3709,7 @@ export function createFixturesScreen() {
           <span>${renderEuropeanCompetitionLogo('UEL',{variant:'legend'})}UEL</span>
           <span>${renderEuropeanCompetitionLogo('UECL',{variant:'legend'})}UECL</span>
         </div>
-      </div>
-
+      </div></div>
       <div class="fixture-controls">
         <label class="fixture-club-control">
           <span>Club</span>
@@ -4108,7 +4061,7 @@ export function mountFixturesScreen() {
 
   const content = document.querySelector('#fixture-content')
   const detail = document.querySelector('#fixture-detail')
-  const mainLegend = document.querySelector('.fixture-difficulty-legend')
+  const mainLegend = document.querySelector('.fixture-toolbar-sentinel')
   const stickyLegend = document.querySelector('.fixture-sticky-legend')
   const clubSelect = document.querySelector('#fixture-club')
   const roundSelect =
@@ -4135,8 +4088,12 @@ const compareGroupControl = document.querySelector('#compare-club-group-control'
   if (window.__fantasyStudioFixtureLegendObserver) window.__fantasyStudioFixtureLegendObserver.disconnect()
   if (mainLegend && stickyLegend && 'IntersectionObserver' in window) {
     window.__fantasyStudioFixtureLegendObserver = new IntersectionObserver(([entry]) => {
-      stickyLegend.classList.toggle('is-visible', !entry.isIntersecting || entry.intersectionRatio < 1)
-    }, { threshold: [1] })
+      const toolbar=stickyLegend.closest('.fixture-toolbar')
+      const floating=entry.boundingClientRect.top < 12
+      if(floating&&!toolbar.classList.contains('is-floating'))toolbar.style.minHeight=toolbar.getBoundingClientRect().height+'px'
+      if(!floating)toolbar.style.minHeight=''
+      toolbar.classList.toggle('is-floating',floating)
+    }, { threshold: [0, 1], rootMargin: '-12px 0px 0px 0px' })
     window.__fantasyStudioFixtureLegendObserver.observe(mainLegend)
   } else if (stickyLegend) stickyLegend.classList.remove('is-visible')
 
