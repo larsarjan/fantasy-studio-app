@@ -25,6 +25,6 @@ for(const width of [1920,1366,820,390]){
  run('eval','document.querySelector(".compare-round-table").scrollIntoView()');run('screenshot',`${folder}/compare-${width}.png`);
  console.log('PASS polish',width,values.map(x=>x.zone));
 }
-mode('club');for(const club of ['PSV','Feyenoord','FC Utrecht']){run('select','#fixture-club',club);assert(ev('document.querySelectorAll(".fixture-card").length')>0);console.log('PASS club',club)}
+mode('club');for(const club of ['PSV','Feyenoord','FC Utrecht']){run('select','#fixture-club',club);assert(ev('document.querySelectorAll(".fixture-card").length')>0);if(club==='FC Utrecht'){assert.equal(ev('document.querySelectorAll(".fixture-context-compact").length'),0);assert(ev('[...document.querySelectorAll(".fixture-context-zone")].every(x=>x.getBoundingClientRect().height===0)'))}console.log('PASS club',club)}
 assert.equal(run('errors').trim(),'');console.log('PASS single sticky legend/return/no jump, Ajax alignment/empty zones, Dutch dates, no internal scroll, additional clubs');
 

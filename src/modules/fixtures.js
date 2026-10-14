@@ -964,9 +964,9 @@ function renderClub(state){
  const lastRound=Math.max(state.startRound,...list.map(f=>Number(f.round)))
  const windows=(state.windows||roundWindows(currentFixtures())).filter(w=>w.round>=state.startRound&&w.round<=lastRound)
  const columns=windows.map(window=>({window,items:windowItems(state,state.club,window.round)}))
- const slots=Math.max(1,...columns.map(({items})=>{const index=items.findIndex(item=>item.fixture.competition==='ERE');return index<0?items.length:index}))
+ const slots=Math.max(0,...columns.map(({items})=>{const index=items.findIndex(item=>item.fixture.competition==='ERE');return index<0?items.length:index}))
  return `<section class="fixture-summary"><div class="fixture-summary-club">${renderClubLogo(state.club,'summary-club-logo')}<div><span class="eyebrow">Clubschema</span><h2>${escapeHtml(state.club)}</h2><p>${state.startMode==='now'?'Vanaf nu':'Vanaf speelronde '+state.startRound} &middot; horizon: ${state.count} Eredivisiewedstrijden</p></div></div><div class="average-score"><div class="average-score-heading"><span>Schemawaarde</span>${renderSchemaValueInfo(schema,state.club)}</div><strong>${schema.value}</strong></div></section>
- <div class="fixture-strip fixture-window-strip" style="--context-slots:${slots}">${columns.map(({window,items})=>renderClubWindow(window,items,state.club)).join('')}</div>
+ <div class="fixture-strip fixture-window-strip${slots?'':' has-no-leading-context'}" style="--context-slots:${slots}">${columns.map(({window,items})=>renderClubWindow(window,items,state.club)).join('')}</div>
  ${renderExpectedMatchCenter(currentFixtures().find(f=>f.id===state.selectedFixtureId))}`
 }
 
@@ -1526,7 +1526,7 @@ function renderCompare(state) {
                           : ''
                       }
 
-                      ${windowItems(state,club,round).map(item=>renderTimelineFixture(item,club)).join('')}
+                      ${windowItems(state,club,round).map(item=>item.fixture.competition==='ERE'?renderCompareFixture(item.fixture,club):renderTimelineFixture(item,club)).join('')}
 
                     </div>
                   `

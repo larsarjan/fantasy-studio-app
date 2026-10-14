@@ -52,21 +52,24 @@
 .fixture-context-meta .competition-logo{width:16px;height:16px;min-width:16px;flex-basis:16px;padding:0;border:0}
 .fixture-context-meta .competition-logo img{width:100%;height:100%;object-fit:contain}
 .fixtures-module:has(.fixture-mode[data-mode="compare"].active) #fixture-content,.fixtures-module:has(.fixture-mode[data-mode="compare"].active) .compare-round-table{max-height:none!important;height:auto;overflow:visible!important}
-.compare-round-cell>.fixture-card-shell,.compare-round-cell>.fixture-card-shell>.fixture-card{height:180px;min-height:180px}
-.compare-round-cell .fixture-card{padding:10px 12px}
-.compare-round-cell .fixture-card-top{margin-bottom:0;font-size:11px}
-.compare-round-cell .venue-pill{padding:3px 6px;min-width:24px}
-.compare-round-cell .fixture-opponent{min-height:76px;gap:3px;margin:0}
-.compare-round-cell .fixture-opponent .club-logo{width:48px;height:48px}
-.compare-round-cell .fixture-opponent strong{font-size:14px;min-height:0;line-height:1.15;display:block;overflow:visible;overflow-wrap:anywhere}
-.compare-round-cell .fixture-card small{font-size:10px;min-height:14px;margin:0}
-.compare-round-cell .fixture-card .difficulty-label{min-height:30px;margin-top:4px;padding:4px 6px;box-sizing:border-box}
-.compare-round-cell>.fixture-context-compact{height:64px;min-height:64px;padding:6px 8px;gap:2px;grid-template-columns:minmax(0,1fr) auto;align-content:center}
-.compare-round-cell .fixture-context-meta{grid-column:1/-1;font-size:10px}
-.compare-round-cell .fixture-context-opponent{grid-column:1/-1;gap:4px}
-.compare-round-cell .fixture-context-opponent .club-logo{width:16px;height:16px}
-.compare-round-cell .fixture-context-opponent strong{font-size:11px;line-height:12px}
-.compare-round-cell .fixture-context-compact>small{grid-column:1/-1;font-size:9px;line-height:11px}
+.fixture-window-strip.has-no-leading-context .fixture-context-zone{display:none}
+.compare-round-table .compare-round-club-header{min-height:66px;padding:8px 10px;gap:8px}
+.compare-round-club-header .compare-club-logo{width:40px;height:40px}
+.compare-round-club-header .eyebrow{display:none}
+.compare-round-club-header .compare-schema-value{margin-top:3px;padding-top:3px}
+.compare-round-cell{align-content:start;gap:6px;min-height:72px}
+.compare-round-cell>.compare-fixture-row{min-height:56px;padding:8px;grid-template-columns:24px minmax(0,1fr) 30px;gap:7px}
+.compare-round-cell .compare-opponent-logo{width:30px;height:30px}
+.compare-round-cell .compare-opponent{gap:7px;min-width:0}
+.compare-round-cell .compare-opponent strong{font-size:12px;white-space:normal;overflow:visible;overflow-wrap:anywhere}
+.compare-round-cell>.fixture-context-compact{height:auto;min-height:40px;margin:0;padding:5px 7px;gap:2px 6px;grid-template-columns:auto minmax(0,1fr);align-content:center}
+.compare-round-cell .fixture-context-meta{display:contents;font-size:9px}
+.compare-round-cell .fixture-context-meta>b{grid-column:1;grid-row:1;padding:1px 3px;font-size:9px}
+.compare-round-cell .fixture-context-meta>span{grid-column:1;grid-row:2;font-size:9px;text-align:center}
+.compare-round-cell .fixture-context-opponent{grid-column:2;grid-row:1;gap:0}
+.compare-round-cell .fixture-context-opponent .club-logo{display:none}
+.compare-round-cell .fixture-context-opponent strong{font-size:10px;line-height:12px}
+.compare-round-cell .fixture-context-compact>small{grid-column:2;grid-row:2;font-size:9px;line-height:11px}
 .compare-round-cell .fixture-context-label{display:none}
 @media(max-width:1100px){.fixtures-module>.fixture-toolbar{flex-wrap:wrap;gap:12px}.fixture-toolbar>.fixture-sticky-legend{width:min(460px,100%)}}
 @media(max-width:600px){.fixture-context-zone{height:auto;min-height:0}.fixture-context-zone:empty{display:none}.fixtures-module>.fixture-toolbar{gap:8px;margin-bottom:20px}.fixture-toolbar>.fixture-sticky-legend{width:100%;min-height:52px}.fixture-toolbar .fixture-mode-switch{width:100%;justify-content:space-between}.fixture-toolbar .fixture-mode{padding:9px 10px;font-size:11px}.fixture-toolbar .sticky-europe-legend{gap:4px}.fixture-toolbar .sticky-schema-legend{flex-basis:110px}}
