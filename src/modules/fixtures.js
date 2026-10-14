@@ -881,15 +881,77 @@ function windowItems(state,club,round){
  const window=(state.windows||roundWindows(currentFixtures())).find(w=>w.round===round)
  return window?clubWindowFixtures({league:currentFixtures(),other:state.showEurope||state.mode==='compare'?getEuropeanFixtures():[],club,window,startMode:state.startMode,now:state.now}):[]
 }
-function renderTimelineFixture({fixture:f,kickoff},club){
- const league=f.competition==='ERE',view=league?viewForClub(f,club):null
- const opponent=league?view.opponent:f.opponent,venue=league?view.venue:f.homeAway==='T'?'Thuis':f.homeAway==='U'?'Uit':'Onbekend'
- const color=view?.color||'#405a79'
- return `<button type="button" class="fixture-timeline-item" style="--difficulty-color:${color};border-color:${color}" ${league?`data-fixture-id="${escapeHtml(f.id)}"`:`data-europe-context-id="${escapeHtml(f.europeMatchId)}" data-europe-club="${escapeHtml(club)}"`}>
- <span class="fixture-timeline-meta"><b>${escapeHtml(f.competition||'KNVB')}</b><span>${escapeHtml(venue)}</span></span>
- <span class="fixture-timeline-opponent">${renderClubLogo(opponent)}<strong>${escapeHtml(opponent)}</strong></span>
+function renderPremiumLeagueFixture(fixture,club) {
+ const view=viewForClub(fixture,club)
+ return `<div class="fixture-card-shell">
+              <button
+                class="fixture-card"
+                style="
+                  --difficulty-color:
+                    ${view.color};
+
+                  border-color:
+                    ${view.color};
+                "
+                data-fixture-id="${fixture.id}"
+                type="button"
+              >
+              <div class="fixture-card-top">
+                <span>
+                  SR ${fixture.round}
+                </span>
+
+                <span class="venue-pill">
+                  ${view.venue}
+                </span>
+              </div>
+
+              <div class="fixture-opponent">
+                ${renderClubLogo(
+                  view.opponent,
+                )}
+
+                <strong>
+                  ${view.opponent}
+                </strong>
+              </div>
+
+              <small>
+                ${formatDate(
+                  fixture,
+                )}
+              </small>
+
+              <div
+                class="difficulty-label"
+                style="
+                  background:
+                    ${view.color};
+                "
+              >
+                <span class="difficulty-label-text">
+                  ${Number(
+                    view.difficulty,
+                  ).toFixed(1)}/5 ·
+                  ${view.label}
+                </span>
+
+                ${renderFixtureDifficultyInfo(
+                  fixture,
+                  view,
+                )}
+              </div>
+              </button>
+</div>`
+}
+function renderTimelineFixture({fixture:f},club){
+ if(f.competition==='ERE')return renderPremiumLeagueFixture(f,club)
+ const venue=f.homeAway==='T'?'Thuis':f.homeAway==='U'?'Uit':'Onbekend'
+ return `<button type="button" class="fixture-context-compact" data-europe-context-id="${escapeHtml(f.europeMatchId||f.id)}" data-europe-club="${escapeHtml(club)}">
+ <span class="fixture-context-meta"><b>${escapeHtml(f.competition||'KNVB')}</b><span>${escapeHtml(venue)}</span></span>
+ <span class="fixture-context-opponent">${renderClubLogo(f.opponent)}<strong>${escapeHtml(f.opponent)}</strong></span>
  <small>${escapeHtml(f.date||'Datum onbekend')} &middot; ${escapeHtml(f.time||'Tijd onbekend')}</small>
- ${view?`<span class="fixture-timeline-difficulty">${Number(view.difficulty).toFixed(1)}/5 &middot; ${escapeHtml(view.label)}</span>`:'<span class="fixture-timeline-difficulty">Wedstrijdbelasting</span>'}</button>`
+ <small class="fixture-context-label">${f.competition==='KNVB'?'Bekerbelasting':'Europese belasting'}</small></button>`
 }
 function renderClub(state){
  const list=getClubFixtures(state.club,state.startRound,state.count),schema=calculateClubSchemaSummary(list,state.club)
@@ -1417,6 +1479,7 @@ function renderCompare(state) {
                           compare-round-cell
                           is-empty
                         "
+                        data-club="${escapeHtml(club)}"
                       >
                         <span>
                           Geen wedstrijd
@@ -1439,6 +1502,7 @@ function renderCompare(state) {
                             : ''
                         }
                       "
+                      data-club="${escapeHtml(club)}"
                     >
                       ${
                         fixtures.length > 1
