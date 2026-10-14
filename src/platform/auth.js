@@ -71,6 +71,7 @@ export function renderAuth(mode = 'login', notice = '') {
       if (mode === 'forgot') result = await supabase.auth.resetPasswordForEmail(values.email, { redirectTo: appUrl('auth/callback?flow=recovery'), captchaToken })
       if (mode === 'reset') result = await supabase.auth.updateUser({ password: values.password })
       if (result.error) throw result.error
+      if (mode === 'login') document.dispatchEvent(new document.defaultView.Event('fvt:login-success'))
       if (!form.isConnected) return
       if (mode === 'signup' || mode === 'forgot') message('Controleer je e-mail. Als je aanvraag kan worden verwerkt, ontvang je een link. Kijk ook in je spammap.')
       else if (mode === 'reset') { recovery = false; location.replace(appUrl('studio/dashboard')) }

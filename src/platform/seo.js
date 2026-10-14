@@ -1,0 +1,9 @@
+export function updateSeo({title=document.title,description='Fantasy Voetbal Talk: nieuws, video’s en Fantasy Studio voor de Eredivisie.',article=null}={}){
+ const path=location.pathname,publicPage=/^\/$|^\/(nieuws(?:\/[a-z0-9-]+)?|videos|ranglijsten|about|privacy|contact|studio)$/.test(path)&&!new URLSearchParams(location.search).has('preview')
+ const meta=(name,content,property=false)=>{let el=document.head.querySelector(`meta[${property?'property':'name'}="${name}"]`);if(!el){el=document.createElement('meta');el.setAttribute(property?'property':'name',name);document.head.append(el)}el.content=content}
+ let canonical=document.head.querySelector('link[rel=canonical]');if(!canonical){canonical=document.createElement('link');canonical.rel='canonical';document.head.append(canonical)}canonical.href='https://fantasyvoetbaltalk.nl'+path
+ meta('robots',publicPage?'index,follow':'noindex,follow');meta('description',description);meta('og:title',title,true);meta('og:description',description,true);meta('og:url',canonical.href,true);meta('og:type',article?'article':'website',true)
+ if(article?.image_url)meta('og:image',article.image_url,true)
+ let structured=document.querySelector('#fvt-structured');if(!structured){structured=document.createElement('script');structured.id='fvt-structured';structured.type='application/ld+json';document.head.append(structured)}
+ structured.textContent=JSON.stringify(article&&article.status==='published'?{'@context':'https://schema.org','@type':'NewsArticle',headline:article.title,datePublished:article.published_at,dateModified:article.updated_at,image:article.image_url?[article.image_url]:[],mainEntityOfPage:canonical.href,publisher:{'@type':'Organization',name:'Fantasy Voetbal Talk',url:'https://fantasyvoetbaltalk.nl'}}:{'@context':'https://schema.org','@type':'WebSite',name:'Fantasy Voetbal Talk',url:'https://fantasyvoetbaltalk.nl',publisher:{'@type':'Organization',name:'Fantasy Voetbal Talk'}})
+}

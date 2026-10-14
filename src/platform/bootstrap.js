@@ -1,3 +1,5 @@
+import {updateSeo} from './seo.js'
+import {analytics} from './analyticsConsent.js'
 import { safeHtml } from './html.js'
 import { requireSession, renderAuth } from './auth.js'
 import { initializeUser } from './repository.js'
@@ -59,6 +61,8 @@ try {
     }
   }
   }
+  if(!document.querySelector('#fvt-structured'))updateSeo()
+  analytics.navigate()
 } catch (error) {
   const root = document.querySelector('#app')
   root.innerHTML = safeHtml('<main class="platform-loading"><h1>Studio kon niet openen</h1><p id="startup-error"></p><button id="startup-retry">Opnieuw proberen</button></main>')
