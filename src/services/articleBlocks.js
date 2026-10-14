@@ -1,7 +1,10 @@
 import {articleBodyHtml, safeLink} from './articleContent.js'
 import {validPlayerLinks,validateEntityContent,entityId,entitySeason} from './articleEntities.js'
+import {MEDIA_LAYOUTS,mediaLayout,matchHeading,articleSections} from './articlePresentation.js'
+import {renderClubLogo} from './clubLogos.js'
+import {logoSlug} from './clubIdentity.js'
 
-export const BLOCK_TYPES={paragraph:'Tekst',heading:'Tussenkop',image:'Afbeelding',imageCarousel:'Afbeeldingscarrousel',quote:'Quote',list:'Lijst',match:'Wedstrijdscores'}
+export const BLOCK_TYPES={paragraph:'Tekst',heading:'Tussenkop',image:'Afbeelding',imageCarousel:'Afbeeldingscarrousel',quote:'Quote',list:'Lijst',match:'Wedstrijdscores',divider:'Scheiding'}
 export const escapeBlock=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))
 export const isBlockContent=value=>value?.version===1&&Array.isArray(value.blocks)
 export function newsImageUrl(value){try{const u=new URL(value);return u.protocol==='https:'&&!u.username&&!u.password?u.href:null}catch{return null}}
@@ -30,12 +33,14 @@ export function linkedText(block,text,format=escapeBlock,offset=0){
 export function validateArticleBlocks(content,{publish=false}={}){
  if(!isBlockContent(content)||content.blocks.length>80||JSON.stringify(content).length>200000)throw Error('Ongeldige blokinhoud of artikel te groot (maximaal 80 blokken).')
  const ids=new Set()
+ if(content.toc!==undefined&&typeof content.toc!=='boolean')throw Error('Ongeldige inhoudsopgave-instelling.')
  for(const b of content.blocks){
   if(!b||!BLOCK_TYPES[b.type]||typeof b.id!=='string'||ids.has(b.id))throw Error('Ongeldig of dubbel blok.');ids.add(b.id)
   if(['paragraph','heading','quote'].includes(b.type)&&typeof b.text!=='string')throw Error('Een tekstblok bevat ongeldige tekst.')
   if(b.type==='heading'&&![2,3].includes(b.level))throw Error('Gebruik H2 of H3.')
   if(b.type==='list'&&(!Array.isArray(b.items)||b.items.some(i=>typeof i!=='string')))throw Error('Ongeldige lijst.')
   if(['image','imageCarousel'].includes(b.type)){
+   if(b.layout!==undefined&&!MEDIA_LAYOUTS[b.layout])throw Error('Kies een geldige beeldlayout.')
    if(!['small','medium','large','full'].includes(b.size)||b.type==='imageCarousel'&&b.size==='small')throw Error('Kies een geldig beeldformaat.')
    const images=b.type==='image'?[b]:b.images
    if(!Array.isArray(images)||images.length>12)throw Error('Een carrousel bevat maximaal 12 beelden.')
@@ -50,22 +55,25 @@ export function validateArticleBlocks(content,{publish=false}={}){
 function figure(i){const url=newsImageUrl(i?.url);if(!url)return '<p class="article-image-missing">Nog geen afbeelding gekozen.</p>';const dimensions=Number.isInteger(i.width)&&Number.isInteger(i.height)&&i.width>0&&i.height>0?` width="${i.width}" height="${i.height}"`:'';return `<figure><img src="${escapeBlock(url)}" alt="${escapeBlock(i.decorative?'':i.alt)}" loading="lazy" decoding="async"${dimensions}>${i.caption?`<figcaption>${escapeBlock(i.caption)}</figcaption>`:''}</figure>`}
 export function renderArticleContent(article){
  if(!isBlockContent(article.content_blocks))return `<div class="article-content article-legacy">${articleBodyHtml(article.body)}</div>`
- return `<div class="article-content">${article.content_blocks.blocks.slice(0,80).map(b=>{
+ const sections=articleSections(article.content_blocks),toc=article.content_blocks.toc!==false&&sections.length>=4
+ return `<div class="article-content">${toc?`<nav class="article-toc" aria-label="In dit artikel"><details><summary>In dit artikel <span>${sections.length} onderdelen</span></summary><ol>${sections.map(s=>`<li><a href="#${s.id}">${escapeBlock(s.text)}</a></li>`).join('')}</ol></details></nav>`:''}${article.content_blocks.blocks.slice(0,80).map(b=>{
   if(!b)return ''
   const size=['small','medium','large','full'].includes(b.size)?b.size:'large',align=['left','center','right'].includes(b.align)?b.align:'center'
   switch(b.type){
    case 'paragraph':return `<p>${linkedText(b,b.text,inlineText)}</p>`
-   case 'heading':return `<h${b.level===3?3:2}>${linkedText(b,b.text)}</h${b.level===3?3:2}>`
+   case 'heading':{const section=sections.find(s=>s.blockId===b.id),match=matchHeading(b.text),tag=b.level===3?'h3':'h2';return `<${tag}${section?` id="${section.id}"`:''}${match?` class="article-match-section" data-match-section data-home="${logoSlug(match.home)}" data-away="${logoSlug(match.away)}" data-home-score="${match.homeScore}" data-away-score="${match.awayScore}"`:''}>${match?`${renderClubLogo(match.home)}<span>${linkedText(b,b.text)}<small data-section-round hidden></small></span>${renderClubLogo(match.away)}`:linkedText(b,b.text)}</${tag}>`}
    case 'quote':return `<blockquote><p>${linkedText(b,b.text)}</p>${b.source?`<cite>${escapeBlock(b.source)}</cite>`:''}</blockquote>`
    case 'list':{const tag=b.ordered?'ol':'ul';let offset=0;return `<${tag}>${(Array.isArray(b.items)?b.items:[]).map(i=>{const html=linkedText(b,i,escapeBlock,offset);offset+=i.length+1;return `<li>${html}</li>`}).join('')}</${tag}>`}
    case 'match':return entityId(b.fixtureId)&&entitySeason(b.season)?`<section class="article-match" data-article-match="${escapeBlock(b.fixtureId)}" data-season="${escapeBlock(b.season)}" data-options="${escapeBlock(JSON.stringify(Object.fromEntries(['collapsedByDefault','showTopScorer','showLegend','showSubstitutes','playerLinks'].map(k=>[k,b[k]!==false]))))}"><button type="button" class="article-match-toggle" aria-expanded="false"><span data-match-heading>Wedstrijdscores · ${escapeBlock(b.season)}</span><span data-match-action>Bekijk Fantasy-scores</span></button><div data-match-content hidden></div><noscript>Schakel JavaScript in om de wedstrijdscores te bekijken.</noscript></section>`:'<p>Er is nog geen wedstrijd gekozen.</p>'
-   case 'image':return `<div class="article-visual article-size-${size} article-align-${align}">${figure(b)}</div>`
+   case 'divider':return '<hr class="article-divider">'
+   case 'image':return `<div class="article-visual article-size-${size} article-align-${align} article-layout-${mediaLayout(b)}">${figure(b)}</div>`
    case 'imageCarousel':{const items=(Array.isArray(b.images)?b.images:[]).slice(0,12);if(!items.length)return '';return `<section class="article-visual article-size-${size} article-align-center article-carousel" data-article-carousel tabindex="0" role="region" aria-roledescription="carrousel" aria-label="Afbeeldingen bij het artikel"><div class="article-slides">${items.map((i,n)=>`<div data-slide ${n?'hidden':''} role="group" aria-roledescription="dia" aria-label="${n+1} van ${items.length}">${figure(i)}</div>`).join('')}</div>${items.length>1?`<div class="article-carousel-controls"><button type="button" data-previous aria-label="Vorige afbeelding">←</button><div class="article-dots">${items.map((_,n)=>`<button type="button" data-dot="${n}" aria-label="Afbeelding ${n+1}" aria-pressed="${n===0}">●</button>`).join('')}</div><button type="button" data-next aria-label="Volgende afbeelding">→</button></div><p class="article-slide-status" aria-live="polite" aria-atomic="true">Afbeelding 1 van ${items.length}</p>`:''}</section>`}
    default:return ''
   }
  }).join('')}</div>`
 }
 export function bindArticleContent(root){
+ if(root.querySelector('[data-match-section]'))import('../public/articlePresentation.js').then(({bindArticlePresentation})=>bindArticlePresentation(root))
  if(root.querySelector('[data-article-player],[data-article-match]'))import('../public/articleEntities.js').then(({bindArticleEntities})=>bindArticleEntities(root)).catch(()=>{root.querySelectorAll('[data-match-action]').forEach(el=>el.textContent='Scores laden mislukt. Herlaad de pagina.')})
  root.querySelectorAll('[data-article-carousel]').forEach(el=>{
   if(el.dataset.bound)return;el.dataset.bound='true'

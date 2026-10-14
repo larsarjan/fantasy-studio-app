@@ -1,4 +1,5 @@
-<!doctype html><html lang="nl"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Local article acceptance</title><body><main style="max-width:1000px;margin:auto"><button id="render">Voorbeeld</button><button id="plain">Normaal artikel</button><div id="public"></div><div id="editor"><div class="cms-editor"></div></div></main><script type="module">
+<!doctype html><html lang="nl"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Local article acceptance</title><body><div class="admin-shell"></div><main style="max-width:1000px;margin:auto"><button id="render">Voorbeeld</button><button id="modal-preview">CMS-voorbeeld</button><button id="plain">Normaal artikel</button><div id="public"></div><div id="editor"><div class="cms-editor"></div></div></main><script type="module">
+import '/src/articleLayout.css';
 import {mountBlockEditor} from '/src/admin/articleBlockEditor.js';
 import {renderArticleContent,bindArticleContent,newArticleBlock} from '/src/services/articleBlocks.js';
 import {addPlayerLink} from '/src/services/articleEntities.js';
@@ -12,5 +13,6 @@ const editor=await mountBlockEditor(document.querySelector('#editor'),{body:'',c
 window.articleTest={editor,catalog,initial:structuredClone(content)};
 document.querySelector('#render').onclick=()=>{const root=document.querySelector('#public');root.innerHTML=safeHtml(renderArticleContent({content_blocks:editor.blocks()}));bindArticleContent(root)};
 document.querySelector('#plain').onclick=()=>{const root=document.querySelector('#public');root.innerHTML=safeHtml(renderArticleContent({content_blocks:{version:1,blocks:[{id:'plain',type:'paragraph',text:'Dit is een normaal artikel zonder koppelingen.'}]}}));bindArticleContent(root)};
+document.querySelector('#modal-preview').onclick=async()=>{const {preview}=await import('/src/admin/cmsUI.js');preview({title:'Local preview',content_blocks:editor.blocks()})};
 document.querySelector('#render').click();
 </script></body></html>

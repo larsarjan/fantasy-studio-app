@@ -7,12 +7,13 @@ const coverage=data.fixtures.map(f=>({id:f.id,season:f.season,records:data.playe
 const catalog=presentArticleEntity('catalog',{snapshotId:'local-real-snapshot',...data,coverage})
 const server=await createServer({server:{host:'127.0.0.1',port:5197,strictPort:true},plugins:[{name:'article-test-harness',configureServer(server){server.middlewares.use(async(req,res,next)=>{
  const url=new URL(req.url,'http://local')
- if(url.pathname==='/__article-entities'){
-  const html=await server.transformIndexHtml(req.url,readFileSync('scripts/fixtures/article-entities.html','utf8'));res.setHeader('Content-Type','text/html');res.end(html);return
+ if(['/__article-entities','/__article-document'].includes(url.pathname)){
+  const html=await server.transformIndexHtml(req.url,readFileSync(url.pathname==='/__article-document'?'scripts/fixtures/article-document.html':'scripts/fixtures/article-entities.html','utf8'));res.setHeader('Content-Type','text/html');res.end(html);return
  }
  if(url.pathname!=='/api/article-entities')return next()
  res.setHeader('Content-Type','application/json')
  const kind=url.searchParams.get('kind'),id=url.searchParams.get('id'),season=url.searchParams.get('season')
+ if(kind==='fixtures'){res.end(JSON.stringify(presentArticleEntity('fixtures',data)));return}
  if(kind==='catalog'){res.end(JSON.stringify(catalog));return}
  const player=data.players.find(p=>p.id===id&&p.season===season),fixture=data.fixtures.find(f=>f.id===id&&f.season===season)
  if(kind==='player'&&!player||kind!=='player'&&!fixture){res.statusCode=404;res.end(JSON.stringify({error:'Deze speler of wedstrijd is niet beschikbaar.'}));return}

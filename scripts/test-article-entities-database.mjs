@@ -32,4 +32,16 @@ for(const bad of [{...content.blocks[0].players[0],end:900},{...content.blocks[0
 const overlap=structuredClone(content);overlap.blocks[0].players.push({...overlap.blocks[0].players[0]});await assert.rejects(()=>insert(overlap));checks++
 const match={id:'match',type:'match',fixtureId:'f1',season:player.season,collapsedByDefault:true,showTopScorer:true,showLegend:true,showSubstitutes:true,playerLinks:true};content.blocks.push(match);ok(!!(await insert(content))[0].id,'Optional match block accepted');match.playerLinks='true';await assert.rejects(()=>insert(content));checks++
 await as('authenticated',member);await assert.rejects(()=>insert({version:1,blocks:[]}));checks++
+// A fixture can contain more than 60 source rows, including unused squad members.
+// The public RPC must return the complete roster, independent of row ordering.
+await as('postgres');
+for(let n=2;n<=66;n++){
+ const payload={id:`s${n}`,season:player.season,fixtureId:'f1',playerId:`p${n}`,minutes:n>60?90:0,matchStatus:true,status:n>60?'Basis':''};
+ await db.query('insert into player_match_stats(id,import_id,payload) values($1,$2,$3)',[payload.id,snapshot,payload]);
+}
+await as('anon');
+const complete=await read('match','f1');
+ok(complete.stats.length===66,'Exact fixture returns all 66 rows without arbitrary truncation');
+ok(complete.stats.filter(s=>s.minutes>0).length===7,'Played rows beyond row 60 remain available to shared score engine');
+ok(complete.stats.every(s=>s.fixtureId==='f1'&&s.season===player.season),'Complete roster remains scoped to exact fixture and season');
 await db.close();console.log(`${checks} article entity database/security checks passed.`)

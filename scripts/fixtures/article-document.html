@@ -1,0 +1,20 @@
+<!doctype html><html lang="nl"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Document editor acceptance</title><body style="margin:0;background:#09121e;color:#e5edf5;font-family:system-ui"><div class="admin-shell"></div><main style="max-width:1150px;margin:auto;padding:16px;box-sizing:border-box"><button id="render">Publiek voorbeeld</button><button id="modal-preview">CMS-voorbeeld</button><div id="public" class="fvt-content"></div><div id="editor"><div class="cms-editor"></div></div></main><script type="module">
+import '/src/public/content.css';
+import '/src/articleLayout.css';
+import {mountBlockEditor} from '/src/admin/articleBlockEditor.js';
+import {renderArticleContent,bindArticleContent,newArticleBlock} from '/src/services/articleBlocks.js';
+import {addPlayerLink} from '/src/services/articleEntities.js';
+import {editorialEnd} from '/src/services/articleEditorialEnd.js';
+import {safeHtml} from '/src/platform/html.js';
+const catalog=await fetch('/api/article-entities?kind=catalog').then(r=>r.json()),player=catalog.players[0],fixture=catalog.fixtures.find(f=>f.statCount>=22&&f.hasResult);
+const paragraph=text=>({...newArticleBlock('paragraph'),text}),heading=text=>({...newArticleBlock('heading'),text});
+const image=(layout,club)=>({...newArticleBlock('image'),layout,size:['wide','data'].includes(layout)?'full':['left','right'].includes(layout)?'small':'large',align:['left','right'].includes(layout)?layout:'center',url:'https://fantasyvoetbaltalk.nl/club-logos/'+club+'.png',alt:'Clublogo voor technische layoutcontrole',caption:'Bron: bestaande FVT-clublogo’s. Technische acceptatie.'});
+const p=paragraph(player.name+' opent het spelersvenster. '+player.name+' blijft daarna gewone tekst.');addPlayerLink(p,0,player.name.length,player);
+const side=paragraph('Deze tekst hoort naast de afbeelding. Dit afzonderlijke testartikel controleert de leeslijn, rustige witruimte en het omschakelen naar een kolom op mobiel. '.repeat(6));
+const content={version:1,blocks:[heading('PSV - sc Heerenveen (2 - 0)'),p,image('wide','psv'),heading('Beeld en tekst'),image('left','fc-utrecht'),side,heading('Nog een perspectief'),image('right','ajax'),structuredClone({...side,id:crypto.randomUUID()}),{...newArticleBlock('imageCarousel'),size:'full',images:[image('normal','feyenoord'),image('normal','psv')]},heading('De wedstrijd in cijfers'),{...newArticleBlock('quote'),text:'Dit is een afzonderlijke technische test, geen redactioneel nieuws.',source:'FVT acceptatie'},{...newArticleBlock('match'),fixtureId:fixture.id,season:fixture.season},paragraph('Hier schrijven we de laatste alinea.') ]};
+const editor=await mountBlockEditor(document.querySelector('#editor'),{body:'',content_blocks:content},{client:{auth:{getSession:async()=>({data:{session:{access_token:'local-test-only'}}})}}});
+const article=()=>({title:'Een rustige leeslijn voor de nieuwe speelronde',intro:'Een afzonderlijke technische referentie voor de publieke artikelpresentatie.',content_blocks:editor.blocks()});
+document.querySelector('#render').onclick=()=>{const root=document.querySelector('#public');root.innerHTML=safeHtml(`<article class="fvt-article"><header class="fvt-article-hero"><h1>${article().title}</h1><p class="fvt-lead">${article().intro}</p></header><div class="fvt-prose">${renderArticleContent(article())}</div>${editorialEnd()}</article>`);bindArticleContent(root)};
+document.querySelector('#modal-preview').onclick=async()=>{const {preview}=await import('/src/admin/cmsUI.js');preview(article())};
+document.querySelector('#render').click();window.documentTest={editor,initial:structuredClone(content),article};
+</script></body></html>

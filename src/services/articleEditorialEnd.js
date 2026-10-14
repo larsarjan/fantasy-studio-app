@@ -1,0 +1,1 @@
+export const editorialEnd=()=>`<footer class="article-editorial-end"><span>Verder met FVT</span><h2>De volgende speelronde begint hier.</h2><p>Meer perspectief op je fantasykeuzes, van de redactie en aan tafel.</p><nav aria-label="Verder lezen en kijken"><a href="/nieuws">Meer analyses →</a><a href="/videos">De nieuwste video's →</a></nav></footer>`

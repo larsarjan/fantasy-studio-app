@@ -278,8 +278,8 @@ function renderMatchPlayerRow({
         ? `<button type="button" class="history-match-player-name history-match-player-link" ${options.article ? `data-article-player="${esc(playerProfileId)}" data-season="${esc(player.season)}"` : `data-history-player="${esc(playerProfileId)}"`}>${esc(player.name)}</button>`
         : `<strong class="history-match-player-name">${esc(player.name)}</strong>`}
 
-      <span class="history-match-player-position">
-        ${esc(position)}
+      <span class="history-match-player-position" title="${esc(position)}" aria-label="${esc(position)}">
+        ${esc(options.article ? ({Doelman:'D',Verdediger:'V',Middenvelder:'M',Spits:'S'}[position] || position) : position)}
       </span>
 
       <span class="history-match-player-minutes">
