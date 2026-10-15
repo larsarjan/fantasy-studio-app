@@ -1,0 +1,13 @@
+import test from 'node:test'
+import assert from 'node:assert/strict'
+import {prepareFiveAhead,fiveAheadClubs} from './fiveAhead.js'
+import {clubSchemaSummary} from './clubSchedule.js'
+import {validateFiveAhead,renderFiveAhead,bindFiveAhead} from './fiveAheadPresentation.js'
+import {JSDOM} from 'jsdom'
+const season='2026/2027',clubs=['PSV','Feyenoord','Ajax'],fixtures=Array.from({length:6},(_,i)=>clubs.map((club,j)=>({id:`${i}-${j}`,season,round:i+8,date:`2026-10-${String(1+i*3).padStart(2,'0')}`,time:'15:00',home:club,away:'FC Utrecht',difficultyHome:2,difficultyAway:4}))).flat()
+const other=[{id:'eu1',season,club:'PSV',opponent:'Porto',competition:'UCL',date:'2026-10-03',time:'21:00'}]
+const data={fixtures,other,season,startRound:9},snapshot=prepareFiveAhead(data),block={id:'five',type:'fiveAhead',season,startRound:9,category:'top3',snapshot,analyses:{PSV:'Eigen redactionele tekst'}}
+test('three preset clubs, five league fixtures, same central schema value, context window',()=>{const rows=fiveAheadClubs(snapshot,'top3');assert.deepEqual(rows.map(c=>c.club),clubs);for(const c of rows){assert.equal(c.matches.length,5);assert.deepEqual(c.matches.map(f=>f.round),[9,10,11,12,13]);assert.equal(c.schemaValue,clubSchemaSummary(fixtures.filter(f=>f.home===c.club&&f.round>=9),c.club).value)}assert.equal(rows[0].context.length,1);assert.equal(prepareFiveAhead({...data,other:[]}).clubs.PSV.schemaValue,rows[0].schemaValue)})
+test('snapshot roundtrip and rendering preserve editorial text and original data',()=>{const json=JSON.stringify(block);validateFiveAhead(block,{publish:true});const restored=JSON.parse(json);assert.equal(renderFiveAhead(block),renderFiveAhead(restored));assert.equal(JSON.stringify(block),json);assert.match(renderFiveAhead(block),/Eigen redactionele tekst/)})
+test('incomplete and stale prepared data cannot publish',()=>{assert.throws(()=>validateFiveAhead({...block,startRound:10},{publish:true}));const bad=structuredClone(block);bad.snapshot.clubs.PSV.matches.pop();assert.throws(()=>validateFiveAhead(bad,{publish:true}))})
+test('category binding is idempotent and markup escapes author input',()=>{const bad=structuredClone(block);bad.analyses.PSV='<img src=x onerror=alert(1)>';const dom=new JSDOM(renderFiveAhead(bad));bindFiveAhead(dom.window.document);bindFiveAhead(dom.window.document);assert.equal(dom.window.document.querySelectorAll('[onerror]').length,0);assert.equal(dom.window.document.querySelectorAll('.five-grid:not([hidden]) .five-club').length,3)})

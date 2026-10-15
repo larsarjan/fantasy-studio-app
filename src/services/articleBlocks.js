@@ -1,14 +1,15 @@
+import {renderFiveAhead,bindFiveAhead,validateFiveAhead} from './fiveAheadPresentation.js'
 import {articleBodyHtml, safeLink} from './articleContent.js'
 import {validPlayerLinks,validateEntityContent,entityId,entitySeason} from './articleEntities.js'
 import {MEDIA_LAYOUTS,mediaLayout,matchHeading,articleSections} from './articlePresentation.js'
 import {renderClubLogo} from './clubLogos.js'
 import {logoSlug} from './clubIdentity.js'
 
-export const BLOCK_TYPES={paragraph:'Tekst',heading:'Tussenkop',image:'Afbeelding',imageCarousel:'Afbeeldingscarrousel',quote:'Quote',list:'Lijst',match:'Wedstrijdscores',divider:'Scheiding'}
+export const BLOCK_TYPES={fiveAhead:'5 Vooruit clubschema�s',paragraph:'Tekst',heading:'Tussenkop',image:'Afbeelding',imageCarousel:'Afbeeldingscarrousel',quote:'Quote',list:'Lijst',match:'Wedstrijdscores',divider:'Scheiding'}
 export const escapeBlock=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))
 export const isBlockContent=value=>value?.version===1&&Array.isArray(value.blocks)
 export function newsImageUrl(value){try{const u=new URL(value);return u.protocol==='https:'&&!u.username&&!u.password?u.href:null}catch{return null}}
-export function newArticleBlock(type){return {id:crypto.randomUUID(),type,...(type==='match'?{fixtureId:'',season:'',collapsedByDefault:true,showTopScorer:true,showLegend:true,showSubstitutes:true,playerLinks:true}:type==='imageCarousel'?{images:[],size:'large'}:type==='image'?{url:'',alt:'',caption:'',size:'large',align:'center'}:type==='list'?{items:[],ordered:false}:type==='heading'?{text:'',level:2}:{text:''})}}
+export function newArticleBlock(type){return {id:crypto.randomUUID(),type,...(type==='fiveAhead'?{season:'2026/2027',startRound:9,category:'top3',snapshot:null,analyses:{}}:type==='match'?{fixtureId:'',season:'',collapsedByDefault:true,showTopScorer:true,showLegend:true,showSubstitutes:true,playerLinks:true}:type==='imageCarousel'?{images:[],size:'large'}:type==='image'?{url:'',alt:'',caption:'',size:'large',align:'center'}:type==='list'?{items:[],ordered:false}:type==='heading'?{text:'',level:2}:{text:''})}}
 // A deliberately small inline syntax; raw HTML is always escaped.
 export function inlineText(text){
  const plain=value=>escapeBlock(value).replace(/\*\*([^*\n]+)\*\*/g,'<strong>$1</strong>').replace(/\*([^*\n]+)\*/g,'<em>$1</em>').replace(/\n/g,'<br>')
@@ -37,6 +38,7 @@ export function validateArticleBlocks(content,{publish=false}={}){
  for(const b of content.blocks){
   if(!b||!BLOCK_TYPES[b.type]||typeof b.id!=='string'||ids.has(b.id))throw Error('Ongeldig of dubbel blok.');ids.add(b.id)
   if(['paragraph','heading','quote'].includes(b.type)&&typeof b.text!=='string')throw Error('Een tekstblok bevat ongeldige tekst.')
+  if(b.type==='fiveAhead')validateFiveAhead(b,{publish})
   if(b.type==='heading'&&![2,3].includes(b.level))throw Error('Gebruik H2 of H3.')
   if(b.type==='list'&&(!Array.isArray(b.items)||b.items.some(i=>typeof i!=='string')))throw Error('Ongeldige lijst.')
   if(['image','imageCarousel'].includes(b.type)){
@@ -60,6 +62,7 @@ export function renderArticleContent(article){
   if(!b)return ''
   const size=['small','medium','large','full'].includes(b.size)?b.size:'large',align=['left','center','right'].includes(b.align)?b.align:'center'
   switch(b.type){
+   case 'fiveAhead':return renderFiveAhead(b)
    case 'paragraph':return `<p>${linkedText(b,b.text,inlineText)}</p>`
    case 'heading':{const section=sections.find(s=>s.blockId===b.id),match=matchHeading(b.text),tag=b.level===3?'h3':'h2';return `<${tag}${section?` id="${section.id}"`:''}${match?` class="article-match-section" data-match-section data-home="${logoSlug(match.home)}" data-away="${logoSlug(match.away)}" data-home-score="${match.homeScore}" data-away-score="${match.awayScore}"`:''}>${match?`${renderClubLogo(match.home)}<span>${linkedText(b,b.text)}<small data-section-round hidden></small></span>${renderClubLogo(match.away)}`:linkedText(b,b.text)}</${tag}>`}
    case 'quote':return `<blockquote><p>${linkedText(b,b.text)}</p>${b.source?`<cite>${escapeBlock(b.source)}</cite>`:''}</blockquote>`
@@ -73,6 +76,7 @@ export function renderArticleContent(article){
  }).join('')}</div>`
 }
 export function bindArticleContent(root){
+ bindFiveAhead(root)
  if(root.querySelector('[data-match-section]'))import('../public/articlePresentation.js').then(({bindArticlePresentation})=>bindArticlePresentation(root))
  if(root.querySelector('[data-article-player],[data-article-match]'))import('../public/articleEntities.js').then(({bindArticleEntities})=>bindArticleEntities(root)).catch(()=>{root.querySelectorAll('[data-match-action]').forEach(el=>el.textContent='Scores laden mislukt. Herlaad de pagina.')})
  root.querySelectorAll('[data-article-carousel]').forEach(el=>{
