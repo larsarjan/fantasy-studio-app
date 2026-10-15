@@ -3,6 +3,17 @@ import assert from 'node:assert/strict'
 import {JSDOM} from 'jsdom'
 import {analyticsPage,createAnalytics,CONSENT_KEY,readConsent} from './analytics.js'
 function setup(url='https://fantasyvoetbaltalk.nl/',enabled=true){const dom=new JSDOM('',{url});const a=createAnalytics({window:dom.window,document:dom.window.document,enabled});return {w:dom.window,a,events:()=>dom.window.dataLayer?.filter(e=>e[0]==='event')||[]}}
+test('Google command queue uses Arguments for consent, config and events, with one config',()=>{
+ const {w,a}=setup();a.consent(true);a.navigate();
+ for(const command of w.dataLayer){assert.equal(Object.prototype.toString.call(command),'[object Arguments]');assert.equal(Array.isArray(command),false)}
+ const configs=w.dataLayer.filter(c=>c[0]==='config');assert.equal(configs.length,1);assert.equal(configs[0][1],'G-TLBCVFX0Q1');assert.equal(configs[0][2].send_page_view,false)
+})
+test('full route sequence emits one pageview each and preserves safe campaign context',()=>{
+ const {w,a,events}=setup('https://fantasyvoetbaltalk.nl/?utm_source=fvt-test&utm_medium=social&utm_campaign=analytics-acceptance');a.consent(true)
+ for(const path of ['/nieuws','/nieuws/terugblik-speelronde-8-data-cijfers','/ranglijsten','/studio']){w.history.pushState({},'',path);a.navigate();a.navigate()}
+ const views=events().filter(c=>c[1]==='page_view');assert.equal(views.length,5);assert.equal(new Set(views.map(c=>c[2].page_path)).size,5)
+ const url=new URL(views[0][2].page_location);assert.equal(url.searchParams.get('utm_source'),'fvt-test');assert.equal(url.searchParams.get('utm_medium'),'social');assert.equal(url.searchParams.get('utm_campaign'),'analytics-acceptance')
+})
 test('no consent and refusal never load Google; explicit grant sends one pageview',()=>{const {w,a,events}=setup();a.navigate();assert.equal(w.document.scripts.length,0);a.consent(false);a.navigate();assert.equal(events().length,0);a.consent(true);assert.equal(w.document.scripts.length,1);assert.equal(events().length,1);a.navigate();assert.equal(events().length,1)})
 test('real navigation once; popup state and repeat renders excluded; admin disabled',()=>{const {w,a,events}=setup();a.consent(true);w.history.pushState({},'','/nieuws');a.navigate();a.navigate();w.history.pushState({popup:1},'');a.navigate();assert.equal(events().filter(e=>e[1]==='page_view').length,2);w.history.pushState({},'','/admin/analytics');a.navigate();a.track('login_success');assert.equal(events().filter(e=>e[1]==='page_view').length,2);assert.equal(w['ga-disable-G-TLBCVFX0Q1'],true)})
 test('revocation removes analytics cookies and suppresses future events; reload retains choice',()=>{const {w,a,events}=setup();a.consent(true);w.document.cookie='_ga=123; Path=/';a.consent(false);const count=events().length;a.track('youtube_click');a.navigate();assert.equal(events().length,count);assert.equal(w.document.cookie,'');assert.equal(readConsent(w.localStorage).analytics,false);assert.equal(JSON.parse(w.localStorage.getItem(CONSENT_KEY)).version,1)})

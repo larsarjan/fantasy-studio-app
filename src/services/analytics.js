@@ -21,7 +21,8 @@ export function analyticsPage(href) {
 export function createAnalytics({window:w,document:d,storage,enabled=false,now=Date.now}) {
   if(!storage){try{storage=w.localStorage}catch{storage={getItem:()=>null,setItem:()=>{}}}}
   let choice=readConsent(storage,now()),loaded=false,lastPath=null
-  const gtag=(...args)=>{w.dataLayer ||= [];w.dataLayer.push(args)}
+  // gtag.js consumes Arguments command objects, not ordinary arrays.
+  function gtag(){w.dataLayer ||= [];w.dataLayer.push(arguments)}
   const page=()=>analyticsPage(w.location.href)
   const allowed=()=>enabled && !w.navigator.webdriver && choice?.analytics===true && !!page()
   function navigate() {
