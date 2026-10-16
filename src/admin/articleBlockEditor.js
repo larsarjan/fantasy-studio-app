@@ -66,7 +66,7 @@ export async function mountBlockEditor(root,article,{readOnly=false,client,userI
   const card=button.closest('[data-block]'),n=content.blocks.findIndex(b=>b.id===card?.dataset.block),b=content.blocks[n],action=button.dataset.action;if(!b)return
   if(button.dataset.adviceAction){
    const action=button.dataset.adviceAction
-   if(action==='prepare'||action==='catalog'){busy=true;redraw();status('Spelerdata laden·');try{const data=await loadAdvice(b);if(disposed)return;adviceCatalogs.set(b.id,data.catalog);if(action==='prepare'){b.snapshot=data.snapshot;notify()}}catch(error){busy=false;redraw();status(error.message);return}busy=false;redraw(b.id);return}
+   if(action==='prepare'||action==='catalog'){busy=true;redraw();status('Spelerdata laden·');try{const data=await loadAdvice(b);if(disposed)return;adviceCatalogs.set(b.id,data.catalog);if(action==='prepare')b.snapshot=data.snapshot}catch(error){busy=false;redraw();status(error.message);return}busy=false;redraw(b.id);if(action==='prepare')notify();return}
    try{if(action==='clear')b.selections[Number(button.dataset.slot)]=null;else{const slot=Number(card.querySelector('[data-advice-slot]').value),list=action==='pick'?b.snapshot?.candidates:adviceCatalogs.get(b.id),player=list?.find(p=>p.id===button.dataset.playerId);if(!player)throw Error('Laad de spelers opnieuw.');selectAdvicePlayer(b,slot,player)}redraw(b.id);notify()}catch(error){status(error.message)}return
   }
   if(button.hasAttribute('data-five-prepare')){busy=true;redraw();status('Studio-data laden·');try{const snapshot=await prepareEditorFiveAhead(b);if(!disposed){b.snapshot=snapshot;notify()}}catch(error){busy=false;redraw();status(error.message);return}busy=false;redraw(b.id);return}
