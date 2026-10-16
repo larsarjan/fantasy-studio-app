@@ -1,3 +1,4 @@
+import '../playerAdvice.css'
 import '../fiveAhead.css'
 import {updateSeo} from '../platform/seo.js'
 import {editorialEnd} from '../services/articleEditorialEnd.js'
