@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite'
 import { execFileSync } from 'node:child_process'
 import { GET as videoResponse } from './api/latest-video.js'
+import { GET as rankingsResponse } from './api/public-rankings.js'
 import { loadEnv } from 'vite'
 
 export default defineConfig({
@@ -9,6 +10,10 @@ export default defineConfig({
     name: 'public-video-dev',
     configureServer(server) {
       Object.assign(process.env, loadEnv('development', process.cwd(), 'VITE_'))
+      server.middlewares.use('/api/public-rankings', async (request, response) => {
+        try { const result = await rankingsResponse(new Request(`http://localhost/api/public-rankings${request.url}`, {method:request.method})); response.statusCode=result.status; result.headers.forEach((v,k)=>response.setHeader(k,v)); response.end(await result.text()) }
+        catch { response.statusCode=503; response.end(JSON.stringify({error:'Rankings unavailable'})) }
+      })
       server.middlewares.use('/api/latest-video', async (request, response) => {
         try { const result = await videoResponse(new Request('http://localhost/api/latest-video', {headers:request.headers})); response.statusCode=result.status; result.headers.forEach((v,k)=>response.setHeader(k,v)); response.end(await result.text()) }
         catch { response.statusCode=503; response.end(JSON.stringify({error:'Video service unavailable'})) }

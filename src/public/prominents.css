@@ -4,3 +4,7 @@
 @media(max-width:380px){.prom-spotlights{grid-template-columns:1fr}.prom-top .prom-spotlight{display:block}.prom-hero h1{font-size:36px}}
 .prom-shirt svg{width:42px;height:42px;filter:drop-shadow(0 4px 4px #001f2c)}.prom-goalie{color:#f4c86d}.prom-profile-header{padding-bottom:12px}.prom-profile-header+.prom-filters{margin-top:12px}
 @media(max-width:750px){.prom-shirt svg{width:32px;height:32px}.prom-profile-header{padding-bottom:8px}}
+
+.prom-consensus .prom-team-layout{grid-template-columns:minmax(0,1fr)}.prom-consensus .prom-team-summary,.prom-consensus .prom-bench,.prom-consensus .prom-team-layout h3{display:none}.prom-panel{min-width:0}.prom-panel .prom-table-wrap{max-width:100%}
+
+@media(max-width:750px){.prom-public-stats td{display:block!important;min-width:0;overflow-wrap:anywhere}.prom-public-stats td:before{display:block;margin-bottom:5px}.prom-public-stats td:first-child{grid-column:1/-1;font-weight:650}}

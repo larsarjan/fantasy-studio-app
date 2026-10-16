@@ -63,6 +63,9 @@
     },
     "api/growth-analytics.js": {
       "maxDuration": 240
+    },
+    "api/public-rankings.js": {
+      "maxDuration": 120
     }
   }
 }

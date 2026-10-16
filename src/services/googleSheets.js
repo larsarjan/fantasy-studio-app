@@ -14,6 +14,8 @@ const SHEET_GIDS = {
   PLAYER_MATCH_STATS: '1473841294',
   // Vul deze waarden in nadat de nieuwe tabbladen afzonderlijk als CSV zijn gepubliceerd.
   ELITE_PLAYER_STATS: '1374530400',
+  ELITE_MANAGERS: '1065866082',
+  ELITE_TEAM_SNAPSHOTS: '1228402931',
   ELITE_TRANSFERS: '38559593',
   ELITE_SYNC_CONTROLE: '918754832',
   CHIP_GEBRUIK: '2111638371',
@@ -47,6 +49,11 @@ export function createSheetUrl(
    */
   const cacheBust =
     Date.now()
+
+  // Existing spreadsheet; only these two explicitly allowlisted raw tabs.
+  if (sheetName === 'ELITE_MANAGERS' || sheetName === 'ELITE_TEAM_SNAPSHOTS') {
+    return `https://docs.google.com/spreadsheets/d/1OqFPkXS200cj2l1C9Gz0q9IMMpRyn_ElBcBqDuHUXE4/export?format=csv&gid=${gid}&cacheBust=${cacheBust}`
+  }
 
   return (
     `${BASE_URL}` +

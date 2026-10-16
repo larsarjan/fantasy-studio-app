@@ -20,6 +20,18 @@ assert.match(safeHtml('<img src="blob:https://studio.test/123" alt="Screenshot">
 assert.match(safeHtml('<tr><td>Speler</td></tr>'), /<tr><td>Speler<\/td><\/tr>/); checks++
 assert.match(safeHtml('<th scope="col">Naam</th>'), /<th scope="col">Naam<\/th>/); checks++
 const files = ['src/main.js', ...['src/modules','src/platform','src/public','src/admin'].flatMap(dir => readdirSync(dir).filter(f => f.endsWith('.js')).map(f => `${dir}/${f}`))]
+// Static, authored markup has no interpolation/user input. Still require that
+// sanitization would preserve it; never exempt an entire file or dynamic sink.
+function safeStaticMarkup(expression) {
+  if(expression?.type==='ConditionalExpression')return safeStaticMarkup(expression.consequent)&&safeStaticMarkup(expression.alternate)
+  const value=expression?.type==='Literal'&&typeof expression.value==='string'?expression.value:expression?.type==='TemplateLiteral'&&!expression.expressions.length?expression.quasis[0].value.cooked:null
+  if(value===null)return false
+  const template=document.createElement('template');template.innerHTML=value
+  return safeHtml(template.innerHTML)===template.innerHTML
+}
+assert.equal(safeStaticMarkup({type:'Literal',value:'<button>Test</button>'}),true)
+assert.equal(safeStaticMarkup({type:'Literal',value:'<img src=x onerror="alert(1)">'}),false)
+assert.equal(safeStaticMarkup({type:'Identifier',name:'userInput'}),false)
 for (const file of files) {
   const ast = parse(readFileSync(file,'utf8'),{ecmaVersion:'latest',sourceType:'module'})
   function walk(node) {
@@ -29,7 +41,7 @@ for (const file of files) {
     if (node.type==='CallExpression' && node.callee?.property?.name==='insertAdjacentHTML') expression=node.arguments[1]
     if (expression) {
       const articleSanitizer = expression.callee?.name === 'articleBodyHtml' && ast.body.some(n => n.type === 'ImportDeclaration' && n.source.value === '../services/articleContent.js' && n.specifiers.some(i => i.imported?.name === 'articleBodyHtml' && i.local.name === 'articleBodyHtml'))
-      assert.ok(expression.callee?.name === 'safeHtml' || articleSanitizer, `${file}: unsafe HTML sink`); checks++
+      assert.ok(expression.callee?.name === 'safeHtml' || articleSanitizer || safeStaticMarkup(expression), `${file}: unsafe HTML sink`); checks++
     }
     Object.values(node).forEach(value => { if(Array.isArray(value)) value.forEach(walk); else if(value && typeof value==='object') walk(value) })
   }

@@ -26,6 +26,8 @@
     "test:ui-api": "node scripts/test-ui-server.mjs",
     "check": "npm test && npm run test:security && npm run build",
     "test:public": "node --test scripts/test-public-homepage.mjs",
+    "test:rankings": "node --test server/eliteRankingSource.test.js server/publicRankings.test.js server/rankingOfficialDetails.test.js src/services/publicRankingModel.test.js",
+    "test:rankings-ui": "node scripts/test-public-rankings-ui.mjs",
     "test:prominents": "node --test src/services/prominentModel.test.js src/services/prominentCollector.test.js && node scripts/test-prominent-database.mjs",
     "backfill:prominents": "node scripts/prominent-backfill.mjs",
     "test:prominents-live": "node scripts/test-prominent-live.mjs",
