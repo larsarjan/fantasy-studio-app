@@ -435,6 +435,14 @@
   }
 }
 
+.article-dreamteam .dreamteam-pitch-content,
+.article-dreamteam .dreamteam-line {
+  min-width: 0;
+}
+.article-dreamteam .dreamteam-player {
+  flex: 0 1 135px;
+  box-sizing: border-box;
+}
 .dreamteam-player-clickable,
 .dreamteam-table-player {
   cursor: pointer;
