@@ -6,6 +6,7 @@ import { hasPermission } from '../platform/access.js'
 import { esc, date } from '../public/contentUI.js'
 import { renderArticleContent,bindArticleContent } from '../services/articleBlocks.js'
 import '../articleBlocks.css'
+import '../dreamteam.css'
 
 export {esc,date}
 export const PAGE_SIZE=30

@@ -1,5 +1,6 @@
 import '../playerAdvice.css'
 import '../fiveAhead.css'
+import '../dreamteam.css'
 import {updateSeo} from '../platform/seo.js'
 import {editorialEnd} from '../services/articleEditorialEnd.js'
 import '../articleLayout.css'
