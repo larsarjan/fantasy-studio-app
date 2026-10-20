@@ -1,7 +1,7 @@
 ﻿import {buildAnalysis} from './analysisEngine.js'
 import {buildDifferentialAnalysis} from './differentialEngine.js'
 import {fixtureViewForClub,clubSchemaSummary} from './clubSchedule.js'
-import {kickoffTime} from './fixtureWindows.js'
+import {kickoffTime,roundWindows,clubWindowFixtures} from './fixtureWindows.js'
 import {normalizeClubName} from './historyAnalytics.js'
 export function prepareAdvice(options){
  const {subtype='purchase',season,startRound,horizon=5,fixtures=[],results=[],teamRatings=[]}=options
@@ -11,7 +11,8 @@ export function prepareAdvice(options){
  const rankMap=new Map(ranked.map((p,i)=>[String(p.id),{rank:i+1,score:subtype==='differential'?p.edgeScore:subtype==='budget'?p.value:p.buyScore}]))
  const catalog=all.map(p=>{
   const list=fixtures.filter(f=>f.season===season&&Number(f.round)>=startRound&&Number(f.round)<startRound+horizon&&[f.home,f.away].some(c=>normalizeClubName(c)===normalizeClubName(p.club))).sort((a,b)=>(kickoffTime(a)??Infinity)-(kickoffTime(b)??Infinity)).slice(0,15)
-  const rank=rankMap.get(String(p.id));return {season,startRound,horizon,id:String(p.id),name:String(p.name||p.id),club:p.club,position:p.position,price:p.price||null,expectedPoints:p.expectedPoints,formScore:p.formScore,ownership:p.ownership,score:rank?.score??null,rank:rank?.rank??null,scoreLabel:subtype==='budget'?'xP per miljoen':subtype==='differential'?'Differentialscore':'Aankoopscore',schemaValue:list.length?clubSchemaSummary(list,p.club,{results,teamRatings}).value:null,matches:list.map(f=>{const v=fixtureViewForClub(f,p.club,{results,teamRatings});return {round:Number(f.round),opponent:v.opponent,venue:v.venue,date:f.date||'',time:f.time||'',difficulty:v.difficulty}})}
+  const windows=roundWindows(list),context=windows.length?clubWindowFixtures({league:[],other:(options.other||[]).filter(f=>!f.season||f.season===season),club:p.club,window:{start:Math.min(...list.map(kickoffTime).filter(Number.isFinite))-4*86400000,end:windows.at(-1).end}}).map(x=>({competition:x.fixture.competition,opponent:x.fixture.opponent,date:x.fixture.date,time:x.fixture.time})):[]
+  const rank=rankMap.get(String(p.id));return {season,startRound,horizon,context,id:String(p.id),name:String(p.name||p.id),club:p.club,position:p.position,price:p.price||null,expectedPoints:p.expectedPoints,formScore:p.formScore,ownership:p.ownership,score:rank?.score??null,rank:rank?.rank??null,scoreLabel:subtype==='budget'?'xP per miljoen':subtype==='differential'?'Differentialscore':'Aankoopscore',schemaValue:list.length?clubSchemaSummary(list,p.club,{results,teamRatings}).value:null,matches:list.map(f=>{const v=fixtureViewForClub(f,p.club,{results,teamRatings});return {round:Number(f.round),opponent:v.opponent,venue:v.venue,date:f.date||'',time:f.time||'',difficulty:v.difficulty}})}
  })
  const byId=new Map(catalog.map(p=>[p.id,p]));return {catalog,snapshot:{subtype,season,startRound,horizon,preparedAt:new Date().toISOString(),sourceUpdatedAt:options.sourceUpdatedAt||null,candidates:ranked.slice(0,10).map(p=>byId.get(String(p.id)))}}
 }

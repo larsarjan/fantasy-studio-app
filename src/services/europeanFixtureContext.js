@@ -12,6 +12,7 @@ const COMPETITION_EMBLEMS=Object.freeze({
 })
 
 export const EUROPEAN_COMPETITIONS = Object.freeze({
+  KNVB: Object.freeze({code:'KNVB',name:'KNVB Beker',label:'KNVB BEKER',primary:'#713c08',accent:'#da8527',light:'#fff4e6',icon:'trophy'}),
   UCL: Object.freeze({ code:'UCL', name:'UEFA Champions League', label:'CHAMPIONS LEAGUE', primary:'#102B72', accent:'#2F6BFF', light:'#EAF1FF', icon:'starball' }),
   UEL: Object.freeze({ code:'UEL', name:'UEFA Europa League', label:'EUROPA LEAGUE', primary:'#171717', accent:'#F57C00', light:'#FFF2E3', icon:'trophy' }),
   UECL: Object.freeze({ code:'UECL', name:'UEFA Conference League', label:'CONFERENCE LEAGUE', primary:'#063D32', accent:'#2BBE68', light:'#EAF8EF', icon:'ring' }),
@@ -26,6 +27,7 @@ const escapeHtml=value=>text(value).replace(/[&<>"']/g,char=>({'&':'&amp;','<':'
 
 export function resolveEuropeanCompetition(value){
   const normalized=text(value).toLowerCase()
+  if(normalized==='knvb'||normalized==='knvb_beker')return EUROPEAN_COMPETITIONS.KNVB
   if(normalized==='ucl'||normalized.includes('champions'))return EUROPEAN_COMPETITIONS.UCL
   if(normalized==='uecl'||normalized.includes('conference'))return EUROPEAN_COMPETITIONS.UECL
   if(normalized==='uel'||normalized.includes('europa'))return EUROPEAN_COMPETITIONS.UEL
@@ -160,6 +162,7 @@ export function calculateProgrammeDensity(domesticFixtures,europeanFixtures,club
 }
 
 export function renderEuropeanCompetitionLogo(code,{variant='overlay'}={}){
+  if(code==='KNVB')return '<span class="competition-logo competition-logo--knvb" aria-hidden="true">KNVB</span>'
   const identity=EUROPEAN_COMPETITIONS[code]??EUROPEAN_COMPETITIONS.UECL
   const source=variant==='floating'?COMPETITION_EMBLEMS[identity.code]:COMPETITION_LOGOS[identity.code]
   return `<span class="competition-logo competition-logo--${identity.code.toLowerCase()} competition-logo--${variant}"><img src="${source}" alt="" aria-hidden="true"></span>`

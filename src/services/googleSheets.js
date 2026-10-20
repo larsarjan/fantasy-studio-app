@@ -24,6 +24,7 @@ const SHEET_GIDS = {
   TRANSFERS_2026_27: '813354455',
   TRANSFER_CLUB_OVERVIEW: '725320659',
   EUROPE_2026_27: '637872629',
+  KNVB_FIXTURES: '319573905',
 }
 
 export function hasPublishedSheet(sheetName) {

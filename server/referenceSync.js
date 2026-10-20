@@ -1,11 +1,11 @@
 import { createHash } from 'node:crypto'
-import { fetchSheet } from '../src/services/googleSheets.js'
+import { fetchSheet, hasPublishedSheet } from '../src/services/googleSheets.js'
 import { synchronizeDatabase } from '../src/services/database.js'
 import { TRANSFER_DEADLINE_ENABLED } from '../src/constants/featureFlags.js'
 
 import { referenceTables } from '../src/services/referenceSchema.js'
 export { referenceTables } from '../src/services/referenceSchema.js'
-export const referenceSheets = ['SPELERS','SPELERS_HISTORIE','WEDSTRIJDEN','TEAM_RATINGS','RESULTS','PLAYER_METADATA','PLAYER_MATCH_STATS','ELITE_PLAYER_STATS','ELITE_TRANSFERS','ELITE_SYNC_CONTROLE','CHIP_GEBRUIK','ELITE_FORMATIONS','ELITE_CLUB_EXPOSURE','EUROPE_2026_27', ...(TRANSFER_DEADLINE_ENABLED ? ['TRANSFERS_2026_27','TRANSFER_CLUB_OVERVIEW'] : [])]
+export const referenceSheets = ['SPELERS','SPELERS_HISTORIE','WEDSTRIJDEN','TEAM_RATINGS','RESULTS','PLAYER_METADATA','PLAYER_MATCH_STATS','ELITE_PLAYER_STATS','ELITE_TRANSFERS','ELITE_SYNC_CONTROLE','CHIP_GEBRUIK','ELITE_FORMATIONS','ELITE_CLUB_EXPOSURE','EUROPE_2026_27', ...(hasPublishedSheet('KNVB_FIXTURES')?['KNVB_FIXTURES']:[]), ...(TRANSFER_DEADLINE_ENABLED ? ['TRANSFERS_2026_27','TRANSFER_CLUB_OVERVIEW'] : [])]
 
 export function validateReferenceCounts(datasets, previous = {}) {
   for (const table of Object.values(referenceTables)) {

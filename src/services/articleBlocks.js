@@ -1,3 +1,5 @@
+import {dreamDefaults,validateDream} from './dreamTeamArticle.js'
+import {renderDreamArticle} from './dreamTeamArticlePresentation.js'
 import {adviceDefaults,validateAdvice} from './playerAdviceModel.js'
 import {renderPlayerAdvice} from './playerAdvicePresentation.js'
 import {renderFiveAhead,bindFiveAhead,validateFiveAhead} from './fiveAheadPresentation.js'
@@ -7,11 +9,11 @@ import {MEDIA_LAYOUTS,mediaLayout,matchHeading,articleSections} from './articleP
 import {renderClubLogo} from './clubLogos.js'
 import {logoSlug} from './clubIdentity.js'
 
-export const BLOCK_TYPES={playerAdvice:'Speleradvies',fiveAhead:'5 Vooruit clubschema�s',paragraph:'Tekst',heading:'Tussenkop',image:'Afbeelding',imageCarousel:'Afbeeldingscarrousel',quote:'Quote',list:'Lijst',match:'Wedstrijdscores',divider:'Scheiding'}
+export const BLOCK_TYPES={dreamTeam:'Dreamteam',playerAdvice:'Speleradvies',fiveAhead:'5 Vooruit clubschema�s',paragraph:'Tekst',heading:'Tussenkop',image:'Afbeelding',imageCarousel:'Afbeeldingscarrousel',quote:'Quote',list:'Lijst',match:'Wedstrijdscores',divider:'Scheiding'}
 export const escapeBlock=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))
 export const isBlockContent=value=>value?.version===1&&Array.isArray(value.blocks)
 export function newsImageUrl(value){try{const u=new URL(value);return u.protocol==='https:'&&!u.username&&!u.password?u.href:null}catch{return null}}
-export function newArticleBlock(type){return {id:crypto.randomUUID(),type,...(type==='playerAdvice'?adviceDefaults():type==='fiveAhead'?{season:'2026/2027',startRound:9,category:'top3',snapshot:null,analyses:{}}:type==='match'?{fixtureId:'',season:'',collapsedByDefault:true,showTopScorer:true,showLegend:true,showSubstitutes:true,playerLinks:true}:type==='imageCarousel'?{images:[],size:'large'}:type==='image'?{url:'',alt:'',caption:'',size:'large',align:'center'}:type==='list'?{items:[],ordered:false}:type==='heading'?{text:'',level:2}:{text:''})}}
+export function newArticleBlock(type){return {id:crypto.randomUUID(),type,...(type==='dreamTeam'?dreamDefaults():type==='playerAdvice'?adviceDefaults():type==='fiveAhead'?{season:'2026/2027',startRound:9,category:'top3',snapshot:null,analyses:{}}:type==='match'?{fixtureId:'',season:'',collapsedByDefault:true,showTopScorer:true,showLegend:true,showSubstitutes:true,playerLinks:true}:type==='imageCarousel'?{images:[],size:'large'}:type==='image'?{url:'',alt:'',caption:'',size:'large',align:'center'}:type==='list'?{items:[],ordered:false}:type==='heading'?{text:'',level:2}:{text:''})}}
 // A deliberately small inline syntax; raw HTML is always escaped.
 export function inlineText(text){
  const plain=value=>escapeBlock(value).replace(/\*\*([^*\n]+)\*\*/g,'<strong>$1</strong>').replace(/\*([^*\n]+)\*/g,'<em>$1</em>').replace(/\n/g,'<br>')
@@ -40,6 +42,7 @@ export function validateArticleBlocks(content,{publish=false}={}){
  for(const b of content.blocks){
   if(!b||!BLOCK_TYPES[b.type]||typeof b.id!=='string'||ids.has(b.id))throw Error('Ongeldig of dubbel blok.');ids.add(b.id)
   if(['paragraph','heading','quote'].includes(b.type)&&typeof b.text!=='string')throw Error('Een tekstblok bevat ongeldige tekst.')
+  if(b.type==='dreamTeam')validateDream(b,{publish})
   if(b.type==='playerAdvice')validateAdvice(b,{publish})
   if(b.type==='fiveAhead')validateFiveAhead(b,{publish})
   if(b.type==='heading'&&![2,3].includes(b.level))throw Error('Gebruik H2 of H3.')
@@ -65,6 +68,7 @@ export function renderArticleContent(article){
   if(!b)return ''
   const size=['small','medium','large','full'].includes(b.size)?b.size:'large',align=['left','center','right'].includes(b.align)?b.align:'center'
   switch(b.type){
+   case 'dreamTeam':return renderDreamArticle(b)
    case 'playerAdvice':return renderPlayerAdvice(b)
    case 'fiveAhead':return renderFiveAhead(b)
    case 'paragraph':return `<p>${linkedText(b,b.text,inlineText)}</p>`

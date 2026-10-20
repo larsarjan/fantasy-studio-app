@@ -1903,3 +1903,8 @@ export function getDreamTeamAvailableRounds(
 export {
   VALID_FORMATIONS,
 }
+// Editorial generation reuses the exact existing formation solver and tie-breaks.
+export function proposeEditorialDreamTeam(candidates,{formation='',ownershipLimit=null}={}) {
+ const pool=candidates.filter(p=>ownershipLimit===null||(Number.isFinite(p.selectedPct)&&p.selectedPct<=ownershipLimit));
+ return VALID_FORMATIONS.filter(f=>!formation||f.label===formation).map(f=>buildFantasyRulesFormationTeam({candidates:pool,formation:f,maximumBudget:Infinity,maximumPlayersPerClub:3})).filter(Boolean).sort(compareTeams)[0]||null;
+}

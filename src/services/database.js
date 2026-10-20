@@ -1,3 +1,4 @@
+import {normalizeKnvbFixtures} from './knvbFixtureContext.js'
 import { invalidateReferenceCaches } from './referenceRuntimeCache.js'
 import {
   players as fallbackPlayers,
@@ -1821,7 +1822,7 @@ export async function synchronizeDatabase(options = {}) {
 
   // Start independent published-sheet requests together. Each settles before
   // consumption so optional failures cannot become unhandled rejections.
-  const names = ['SPELERS','SPELERS_HISTORIE','WEDSTRIJDEN','TEAM_RATINGS','RESULTS','PLAYER_METADATA','PLAYER_MATCH_STATS','ELITE_PLAYER_STATS','ELITE_TRANSFERS','ELITE_SYNC_CONTROLE','CHIP_GEBRUIK','ELITE_FORMATIONS','ELITE_CLUB_EXPOSURE','EUROPE_2026_27', ...(TRANSFER_DEADLINE_ENABLED ? ['TRANSFERS_2026_27','TRANSFER_CLUB_OVERVIEW'] : [])]
+  const names = ['SPELERS','SPELERS_HISTORIE','WEDSTRIJDEN','TEAM_RATINGS','RESULTS','PLAYER_METADATA','PLAYER_MATCH_STATS','ELITE_PLAYER_STATS','ELITE_TRANSFERS','ELITE_SYNC_CONTROLE','CHIP_GEBRUIK','ELITE_FORMATIONS','ELITE_CLUB_EXPOSURE','EUROPE_2026_27', ...(hasPublishedSheet('KNVB_FIXTURES')?['KNVB_FIXTURES']:[]), ...(TRANSFER_DEADLINE_ENABLED ? ['TRANSFERS_2026_27','TRANSFER_CLUB_OVERVIEW'] : [])]
   const requests = new Map(names.filter(hasPublishedSheet).map(name => [name, (options.sheets ? Promise.resolve(options.sheets[name]) : fetchSheet(name)).then(value => { if (!Array.isArray(value)) throw new Error(`Tabblad ${name} ontbreekt.`); return { value } }).catch(error => ({ error }))]))
   const loadSheet = async name => { const result = await requests.get(name); if (result?.error) throw result.error; return result?.value ?? [] }
 
@@ -1970,7 +1971,8 @@ const results = resultRows
   const transferClubOverview = TRANSFER_DEADLINE_ENABLED
     ? transferSnapshot?.transferClubOverview?.length ? transferSnapshot.transferClubOverview : getTransferClubOverview()
     : database.transferClubOverview
-  const europeanFixtures = europeanRows === null ? getEuropeanFixtures() : europeanRows.map(normalizeEuropeanFixture).filter(Boolean)
+  const knvbRows = hasPublishedSheet('KNVB_FIXTURES') ? await loadSheet('KNVB_FIXTURES') : []
+  const europeanFixtures = [...(europeanRows === null ? getEuropeanFixtures().filter(f=>f.competition!=='KNVB') : europeanRows.map(normalizeEuropeanFixture).filter(Boolean)),...normalizeKnvbFixtures(knvbRows)]
 
     if (!players.length) {
       throw new Error('Tabblad SPELERS bevat geen bruikbare spelers.')
