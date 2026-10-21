@@ -75,3 +75,6 @@
 @media(max-width:600px){.fixture-context-zone{height:auto;min-height:0}.fixture-context-zone:empty{display:none}.fixtures-module>.fixture-toolbar{gap:8px;margin-bottom:20px}.fixture-toolbar>.fixture-sticky-legend{width:100%;min-height:52px}.fixture-toolbar .fixture-mode-switch{width:100%;justify-content:space-between}.fixture-toolbar .fixture-mode{padding:9px 10px;font-size:11px}.fixture-toolbar .sticky-europe-legend{gap:4px}.fixture-toolbar .sticky-schema-legend{flex-basis:110px}}
 .fixtures-module:has(.fixture-mode[data-mode="club"].active) .fixture-workspace:has(#fixture-detail>.empty){grid-template-columns:minmax(0,1fr)}
 .fixtures-module:has(.fixture-mode[data-mode="club"].active) #fixture-detail:has(>.empty){display:none}
+.fixture-context-compact[data-competition="KNVB"] .fixture-context-meta b{gap:7px;line-height:1.25;min-width:0;padding:4px 7px;color:#dce7f2}
+.fixture-context-compact[data-competition="KNVB"] .competition-logo--knvb{width:28px;height:28px;min-width:28px;flex-basis:28px;background:#fff;border-radius:4px;overflow:hidden}
+.compare-round-cell .fixture-context-compact[data-competition="KNVB"] .fixture-context-meta b{max-width:78px;flex-wrap:wrap;justify-content:center;text-align:center;font-size:9px}

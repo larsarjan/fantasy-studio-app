@@ -685,7 +685,7 @@ function renderTimelineFixture({fixture:f},club){
  if(f.competition==='ERE')return renderPremiumLeagueFixture(f,club)
  const venue=f.homeAway==='T'?'Thuis':f.homeAway==='U'?'Uit':'Onbekend'
  return `<button type="button" class="fixture-context-compact" data-competition="${escapeHtml(f.competition||'KNVB')}" data-europe-context-id="${escapeHtml(f.europeMatchId||f.id)}" data-europe-club="${escapeHtml(club)}">
- <span class="fixture-context-meta"><b>${EUROPEAN_COMPETITIONS[f.competition]?renderEuropeanCompetitionLogo(f.competition,{variant:'legend'}):''}${escapeHtml(f.competition||'KNVB')}</b><span>${escapeHtml(venue)}</span></span>
+ <span class="fixture-context-meta"><b>${EUROPEAN_COMPETITIONS[f.competition]?renderEuropeanCompetitionLogo(f.competition,{variant:'legend'}):''}${escapeHtml(f.competition==='KNVB'?'KNVB Beker':f.competition||'KNVB Beker')}</b><span>${escapeHtml(venue)}</span></span>
  <span class="fixture-context-opponent">${renderClubLogo(f.opponent)}<strong>${escapeHtml(f.opponent)}</strong></span>
  <small>${escapeHtml(formatDate(f))}</small>
  <small class="fixture-context-label">${f.competition==='KNVB'?'Bekerbelasting':'Europese belasting'}</small></button>`

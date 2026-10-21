@@ -1,6 +1,7 @@
 import { normalizeClubName } from './historyAnalytics.js'
 
 const COMPETITION_LOGOS=Object.freeze({
+  KNVB:new URL('../assets/competitions/knvb.png',import.meta.url).href,
   UCL:new URL('../assets/competitions/ucl.png',import.meta.url).href,
   UEL:new URL('../assets/competitions/uel.png',import.meta.url).href,
   UECL:new URL('../assets/competitions/uecl.png',import.meta.url).href,
@@ -12,7 +13,7 @@ const COMPETITION_EMBLEMS=Object.freeze({
 })
 
 export const EUROPEAN_COMPETITIONS = Object.freeze({
-  KNVB: Object.freeze({code:'KNVB',name:'KNVB Beker',label:'KNVB BEKER',primary:'#713c08',accent:'#da8527',light:'#fff4e6',icon:'trophy'}),
+  KNVB: Object.freeze({code:'KNVB',name:'KNVB Beker',label:'KNVB Beker',primary:'#713c08',accent:'#da8527',light:'#fff4e6',icon:'trophy'}),
   UCL: Object.freeze({ code:'UCL', name:'UEFA Champions League', label:'CHAMPIONS LEAGUE', primary:'#102B72', accent:'#2F6BFF', light:'#EAF1FF', icon:'starball' }),
   UEL: Object.freeze({ code:'UEL', name:'UEFA Europa League', label:'EUROPA LEAGUE', primary:'#171717', accent:'#F57C00', light:'#FFF2E3', icon:'trophy' }),
   UECL: Object.freeze({ code:'UECL', name:'UEFA Conference League', label:'CONFERENCE LEAGUE', primary:'#063D32', accent:'#2BBE68', light:'#EAF8EF', icon:'ring' }),
@@ -161,8 +162,10 @@ export function calculateProgrammeDensity(domesticFixtures,europeanFixtures,club
   return {count,label:count>=5?'Extreem druk':count===4?'Zeer druk':count===3?'Druk':'Normaal'}
 }
 
+export const competitionLabel=code=>code==='KNVB'||code==='KNVB_BEKER'?'KNVB Beker':code
+
 export function renderEuropeanCompetitionLogo(code,{variant='overlay'}={}){
-  if(code==='KNVB')return '<span class="competition-logo competition-logo--knvb" aria-hidden="true">KNVB</span>'
+  if(code==='KNVB')return `<span class="competition-logo competition-logo--knvb competition-logo--${variant}"><img src="${COMPETITION_LOGOS.KNVB}" alt="" aria-hidden="true"></span>`
   const identity=EUROPEAN_COMPETITIONS[code]??EUROPEAN_COMPETITIONS.UECL
   const source=variant==='floating'?COMPETITION_EMBLEMS[identity.code]:COMPETITION_LOGOS[identity.code]
   return `<span class="competition-logo competition-logo--${identity.code.toLowerCase()} competition-logo--${variant}"><img src="${source}" alt="" aria-hidden="true"></span>`
@@ -173,13 +176,13 @@ export function renderEuropeanCompetitionIcon(code){return renderEuropeanCompeti
 export function renderEuropeanPlacementOverlay(placement){
   const fixture=placement?.fixture,identity=EUROPEAN_COMPETITIONS[fixture?.competition]
   if(!fixture||!identity)return''
-  return `<span class="european-context is-overlay" data-europe-placement="${placement.placement}" data-europe-previous-id="${escapeHtml(placement.previousLeagueFixture?.fixtureId)}" data-europe-next-id="${escapeHtml(placement.nextLeagueFixture?.fixtureId)}" style="--europe-accent:${identity.accent};--europe-primary:${identity.primary}">${renderEuropeanCompetitionLogo(identity.code,{variant:'floating'})}<span class="european-context-badge is-${identity.code.toLowerCase()}" role="button" tabindex="0" aria-label="Open details van ${escapeHtml(identity.name)} tegen ${escapeHtml(fixture.opponent)}" data-europe-context-id="${escapeHtml(fixture.europeMatchId)}"><span class="european-context-identity"><span><small>${identity.code} · ${identity.label}</small></span></span><span class="european-context-match">${escapeHtml(fixture.opponent)} (${fixture.homeAway})</span></span></span>`
+  return `<span class="european-context is-overlay" data-europe-placement="${placement.placement}" data-europe-previous-id="${escapeHtml(placement.previousLeagueFixture?.fixtureId)}" data-europe-next-id="${escapeHtml(placement.nextLeagueFixture?.fixtureId)}" style="--europe-accent:${identity.accent};--europe-primary:${identity.primary}">${renderEuropeanCompetitionLogo(identity.code,{variant:'floating'})}<span class="european-context-badge is-${identity.code.toLowerCase()}" role="button" tabindex="0" aria-label="Open details van ${escapeHtml(identity.name)} tegen ${escapeHtml(fixture.opponent)}" data-europe-context-id="${escapeHtml(fixture.europeMatchId)}"><span class="european-context-identity"><span><small>${identity.code==='KNVB'?identity.name:identity.code+' · '+identity.label}</small></span></span><span class="european-context-match">${escapeHtml(fixture.opponent)} (${fixture.homeAway})</span></span></span>`
 }
 
 export function renderEuropeanCompareBadge(placement,club){
   const fixture=placement?.fixture,identity=EUROPEAN_COMPETITIONS[fixture?.competition]
   if(!fixture||!identity)return''
-  return `<span class="compare-europe-context" data-europe-placement="${placement.placement}" style="--europe-accent:${identity.accent};--europe-primary:${identity.primary}"><span class="compare-europe-badge" role="button" tabindex="0" aria-label="Open details van ${escapeHtml(identity.name)} tegen ${escapeHtml(fixture.opponent)}" data-europe-context-id="${escapeHtml(fixture.europeMatchId)}" data-europe-club="${escapeHtml(club||fixture.club)}">${renderEuropeanCompetitionLogo(identity.code,{variant:'compare'})}<span class="compare-europe-copy"><small>${identity.code}</small><strong>${escapeHtml(fixture.opponent)}</strong></span><b>${fixture.homeAway||'â€“'}</b></span></span>`
+  return `<span class="compare-europe-context" data-europe-placement="${placement.placement}" style="--europe-accent:${identity.accent};--europe-primary:${identity.primary}"><span class="compare-europe-badge" role="button" tabindex="0" aria-label="Open details van ${escapeHtml(identity.name)} tegen ${escapeHtml(fixture.opponent)}" data-europe-context-id="${escapeHtml(fixture.europeMatchId)}" data-europe-club="${escapeHtml(club||fixture.club)}">${renderEuropeanCompetitionLogo(identity.code,{variant:'compare'})}<span class="compare-europe-copy"><small>${competitionLabel(identity.code)}</small><strong>${escapeHtml(fixture.opponent)}</strong></span><b>${fixture.homeAway||'â€“'}</b></span></span>`
 }
 
 export function renderEuropeanFixtureCard(fixture,{compact=false}={}){
@@ -192,9 +195,9 @@ export function renderEuropeanFixtureCard(fixture,{compact=false}={}){
 export function renderEuropeanContextBadges(context,{interactive=false,placement='after'}={}){
   const rows=[...context.before.map(item=>({...item,relative:'ervoor'})),...context.after.map(item=>({...item,relative:'erna'}))]
   if(!rows.length)return''
-  const attributes=item=>interactive?` role="button" tabindex="0" aria-label="Open details van ${escapeHtml(item.fixture.competition)} tegen ${escapeHtml(item.fixture.opponent)}" data-europe-context-id="${escapeHtml(item.fixture.europeMatchId)}"`:''
+  const attributes=item=>interactive?` role="button" tabindex="0" aria-label="Open details van ${escapeHtml(competitionLabel(item.fixture.competition))} tegen ${escapeHtml(item.fixture.opponent)}" data-europe-context-id="${escapeHtml(item.fixture.europeMatchId)}"`:''
   const primaryIdentity=EUROPEAN_COMPETITIONS[rows[0].fixture.competition]??EUROPEAN_COMPETITIONS.UECL
-  return `<span class="european-context${interactive?' is-overlay':''}" data-europe-placement="${placement}" style="--europe-accent:${primaryIdentity.accent};--europe-primary:${primaryIdentity.primary}">${rows.map(item=>{const identity=EUROPEAN_COMPETITIONS[item.fixture.competition];return `<span class="european-context-badge is-${identity.code.toLowerCase()}" style="--europe-accent:${identity.accent};--europe-primary:${identity.primary}"${attributes(item)}><span class="european-context-identity"><span class="european-context-icon">${renderEuropeanCompetitionIcon(identity.code)}</span><span><small>${identity.code}</small><b>${identity.label}</b></span></span><span class="european-context-match">${escapeHtml(item.fixture.opponent)} (${item.fixture.homeAway})</span></span>`}).join('')}</span>`
+  return `<span class="european-context${interactive?' is-overlay':''}" data-europe-placement="${placement}" style="--europe-accent:${primaryIdentity.accent};--europe-primary:${primaryIdentity.primary}">${rows.map(item=>{const identity=EUROPEAN_COMPETITIONS[item.fixture.competition];return `<span class="european-context-badge is-${identity.code.toLowerCase()}" style="--europe-accent:${identity.accent};--europe-primary:${identity.primary}"${attributes(item)}><span class="european-context-identity"><span class="european-context-icon">${renderEuropeanCompetitionIcon(identity.code)}</span><span>${identity.code==='KNVB'?`<b>${identity.name}</b>`:`<small>${identity.code}</small><b>${identity.label}</b>`}</span></span><span class="european-context-match">${escapeHtml(item.fixture.opponent)} (${item.fixture.homeAway})</span></span>`}).join('')}</span>`
 }
 
 export function formatEuropeanDate(fixture){

@@ -256,3 +256,10 @@ const startup = databaseModule.slice(databaseModule.indexOf('export async functi
 assert.doesNotMatch(startup,/fetchSheet|synchronizeDatabase\(/)
 
 console.log('Europese fixture-contexttests geslaagd.')
+const cupFixture={competition:'KNVB',club:'FC Utrecht',opponent:'Kozakken Boys',homeAway:'U',date:'2026-10-29',time:'18:45',phase:'1ste ronde',europeMatchId:'manual-cup-test'}
+for(const html of [renderEuropeanFixtureCard(cupFixture),renderEuropeanCompareBadge({fixture:cupFixture},'FC Utrecht'),renderEuropeanPlacementOverlay({fixture:cupFixture}),renderEuropeanContextBadges({before:[],after:[{fixture:cupFixture}]},{interactive:true})]){
+ assert.match(html,/KNVB Beker/)
+ assert.doesNotMatch(html,/>KNVB<|KNVB · KNVB|KNVB BEKER/)
+ assert.match(html,/competitions\/knvb\.png/)
+}
+assert(existsSync(new URL('../assets/competitions/knvb.png',import.meta.url)))

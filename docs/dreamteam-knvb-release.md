@@ -9,3 +9,9 @@ Dreamteam is an additive CMS block: existing solver and pitch, best legal XI (ma
 Local validation: 176 regression tests; 18 reference pipeline tests; 16 CMS tests + 26 Storage checks; database/RLS/security suites; isolated Dreamteam SQL roundtrip and duplicate rejection. Current browser harness: editor serialize/reload identical; standard + differential 22 players; 1920/1366/820/390 no overflow or browser errors. Production build and diff check pass. No production test article/account was created.
 
 Legacy Apps Script files were archived in ignored test-results/dreamteam-knvb/obsolete-apps-script. They are not part of the app or release. If previously installed, remove only the syncKnvbFixtures trigger in Google Apps Script.
+
+Final acceptance: live Studio FC Utrecht/Kozakken Boys context and new unsaved 5 Vooruit preparation passed. Dreamteam + separate 10% differential snapshot saved/reloaded in temporary draft; free keeper analysis persisted. Publish denied 403, duplicate XI denied 400, rejected writes left snapshot intact. Test account, draft, profile, sessions and temporary role/permissions deleted; SQL counts zero.
+
+Presentation fixes: Dreamteam stylesheet loaded in CMS/public articles, narrow pitch cards fit all 22 players, analysis contrast explicit. KNVB labels use KNVB Beker with one badge. Logo matches supplied 400x400 image; local asset copied from https://pbs.twimg.com/profile_images/1100735945916248064/hFs16Vt6_400x400.png (official KNVB Beker profile); no external image request at runtime. Existing source/import/scoring architecture unchanged.
+
+A pre-existing draft was edited by its existing editor during acceptance (audit 2026-10-20T14:53:09Z, not the test account). Its current content hash is 9b2f4ecbc391159482d649b39d76a964. Other six content hashes remain unchanged, including the protected 53-block article. No existing article was a test mutation target.

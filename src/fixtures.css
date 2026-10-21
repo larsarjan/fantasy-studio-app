@@ -4476,3 +4476,7 @@
   .fixture-score-info:not(:hover):not(:focus-within) .fixture-score-tooltip { display: none; }
   .fixture-score-info:is(:hover, :focus-within) .fixture-score-tooltip { position: fixed; left: 16px; right: 16px; bottom: 16px; width: auto; max-height: 70vh; overflow-y: auto; }
 }
+.competition-logo--knvb{background:#fff;border-radius:4px;overflow:hidden}
+.european-fixture-card.is-knvb header{grid-template-columns:44px minmax(0,1fr);gap:4px 10px}
+.european-fixture-card.is-knvb header .competition-logo{grid-row:1 / span 2;box-sizing:border-box;width:44px;height:44px;padding:2px}
+.european-fixture-card.is-knvb header b{letter-spacing:0;line-height:1.3}
