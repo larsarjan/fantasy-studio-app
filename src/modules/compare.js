@@ -1,4 +1,6 @@
 import { safeHtml } from '../platform/html.js'
+import { calculatePlayerMatchProfile } from '../services/playerMatchStatsEngine.js'
+import { comparisonNumber, withComparisonStats } from '../services/playerComparisonStats.js'
 import {
   getEnrichedPlayers,
   getElitePlayerStats,
@@ -447,8 +449,7 @@ function formatValue(value, type) {
 }
 
 function numericValue(value) {
-  const number = Number(value)
-  return Number.isFinite(number) ? number : null
+  return comparisonNumber(value)
 }
 
 function playerOption(player) {
@@ -1614,7 +1615,9 @@ export function createCompareScreen() {
 }
 
 export function mountCompareScreen() {
-  const allPlayers = getEnrichedPlayers()
+  const allPlayers = getEnrichedPlayers().map(player => withComparisonStats(
+    player, calculatePlayerMatchProfile(player, { season: player.season }),
+  ))
   const seasons = uniqueValues(allPlayers, 'season')
 
   const allStatKeys = new Set(
