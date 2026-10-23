@@ -48,6 +48,7 @@ Validation: retention/replay equivalence, full forecast JSON, microseconds,
 rollback, repeatability and role isolation tests; 21 database checks; 178
 regression tests; security suites (39 + 97 + 155); production build passed.
 The live collector continues updating a 605-player cache and 87 evaluations.
-Visual authenticated browser acceptance remains pending: no browser surface
-was available. No new test account was created while that prerequisite was
-missing. This document does not claim a completed frontend release.
+Visual authenticated browser acceptance was explicitly waived by the user on
+23 October 2026 because no browser tool was available. No temporary test account
+was created. Release acceptance uses database, replay, API, regression, security
+and production-build checks; physical reclaim remains a separate open task.
