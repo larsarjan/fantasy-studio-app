@@ -1,6 +1,6 @@
 import { FANTASY_GAME_RULES, normalizeFantasyPosition, validateSquad, validateStartingLineup, getEffectiveSellingPrice } from './fantasyGameRulesEngine.js'
 import { createScreenshotImportResult } from './optimizer/screenshotTeamImport.js'
-import { availabilityPolicy, availabilityAdjustedPoints } from './availability.js'
+import { availabilityPolicy, availabilityAdjustedPoints, availabilitySaleDecision } from './availability.js'
 
 export const playerId = p => String(p?.id ?? p?.playerId ?? '')
 export const playerPrice = p => {
@@ -78,6 +78,11 @@ export function personalAdvice({ state, players, candidates, horizonCandidates =
       if (virtualOwned.filter(p => playerId(p) !== playerId(out) && p.club === incoming.club).length >= FANTASY_GAME_RULES.squad.maxPlayersPerClub) continue
       if (price === null || sale === null || (bankKnown && price > sale + Number(state.bank) - reservedCost + .0001)) continue
       const pointsCost = (state.plannedTransfers?.length ?? 0) >= Number(state.freeTransfers ?? 1) ? FANTASY_GAME_RULES.transfers.pointsCostPerExtraTransfer : 0
+      const ownedHorizon = horizon.get(playerId(out)) ?? out
+      // Compare against the undiscounted owner value to establish independent benefit.
+      const independentGain = Number(incoming.expectedPoints)*availabilityPolicy(incoming).factor - Number(ownedHorizon.expectedPoints) - pointsCost
+      const saleDecision = availabilitySaleDecision(out,{hasIndependentReason:independentGain>0.000001})
+      if (!saleDecision.sellAllowed) continue
       const grossGain = Number(incoming.expectedPoints)*availabilityPolicy(incoming).factor - availabilityAdjustedPoints(horizon.get(playerId(out))??out)
       const gain = grossGain - pointsCost
       if (gain > 0 && incoming.expectedMinutes > 0) transfers.push({ out, incoming, gain, grossGain, pointsCost, sale, cost: price - sale, budgetConfirmed: bankKnown, priceEstimated: raw?.sellingPrice == null && state.manualSellingPrices?.[playerId(out)] == null && state.purchasePrices?.[playerId(out)] == null && raw?.purchasePrice == null })

@@ -1,3 +1,4 @@
+import { availabilityPolicy } from '../availability.js'
 import {
   FANTASY_GAME_RULES,
   normalizeFantasyPosition,
@@ -418,6 +419,8 @@ function createPlayerCandidate(
       startRound,
       roundCount,
     )
+  const status = availabilityPolicy(player)
+  const factor = roundCount>1 && status.returnDays!==null && status.returnDays<=7 ? Math.max(.8,status.factor) : status.factor
 
   return {
     player,
@@ -434,11 +437,11 @@ function createPlayerCandidate(
 
     expectedPoints:
       projection
-        .expectedPoints,
+        .expectedPoints * factor,
 
     expectedPointsPerRound:
       projection
-        .expectedPointsPerRound,
+        .expectedPointsPerRound * factor,
 
     expectedMinutes:
       projection
@@ -756,7 +759,7 @@ function selectCaptaincy(
   starters,
 ) {
   const ranked =
-    [...starters].sort(
+    starters.filter(candidate => availabilityPolicy(candidate.player).captainEligible).sort(
       compareCandidates,
     )
 

@@ -1,3 +1,4 @@
+import { availabilityPolicy } from '../availability.js'
 import {
   FANTASY_GAME_RULES,
   calculateNextFreeTransfers,
@@ -517,6 +518,8 @@ function createIncomingCandidate(
   startRound,
   roundCount,
 ) {
+  const rawProjection=getPlayerPeriodProjection(player,startRound,roundCount)
+  const projection={...rawProjection,expectedPoints:rawProjection.expectedPoints*availabilityPolicy(player).factor}
   return {
     player,
 
@@ -545,12 +548,7 @@ function createIncomingCandidate(
         player,
       ),
 
-    projection:
-      getPlayerPeriodProjection(
-        player,
-        startRound,
-        roundCount,
-      ),
+    projection,
   }
 }
 
@@ -559,6 +557,7 @@ function isUsableIncomingCandidate(
 ) {
   return Boolean(
     candidate?.player &&
+    availabilityPolicy(candidate.player).buyEligible &&
     candidate.playerId &&
     candidate.position !==
       'unknown' &&

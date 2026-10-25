@@ -4,7 +4,7 @@ import { buildPlayerIntelligence, canonicalClubKey, canonicalClubName, clamp, cr
 import { buildStructuralFixtureIntelligence } from './structuralFixtureIntelligence.js'
 import { buildCompositeStories, selectEditorialStories } from './editorialIntelligence.js'
 import { normalizePosition } from './positionNormalization.js'
-import { availabilityPolicy, availabilityVersion } from './availability.js'
+import { availabilityPolicy, availabilitySaleDecision, availabilityVersion } from './availability.js'
 
 export const ANALYSIS_CONFIG = Object.freeze({
   talkingPointWeights: Object.freeze({ signal: .30, relevance: .25, surprise: .20, confidence: .15, recency: .10 }),
@@ -126,7 +126,9 @@ function buildPurchaseReason(player) {
 
 export function classifyPrimaryAction(player) {
   const a=availabilityPolicy(player)
-  if(!a.buyEligible||a.pct<=50) return a.returnDays!==null && a.returnDays>=0 && a.returnDays<=7 ? 'hold' : 'sell'
+  const sale=availabilitySaleDecision(player)
+  if(sale.affected) return sale.sellAllowed ? 'sell' : 'hold'
+  if(!a.buyEligible) return 'hold'
   if (!player.fixtureCount || player.availability < 45 || player.cautionScore >= 72) return 'sell'
   if (player.buyScore >= PURCHASE_ACTION_THRESHOLDS.buyScore && player.availability >= PURCHASE_ACTION_THRESHOLDS.buyAvailability && player.reliability >= PURCHASE_ACTION_THRESHOLDS.buyReliability) return 'buy'
   if (player.buyScore >= PURCHASE_ACTION_THRESHOLDS.considerScore && player.availability >= PURCHASE_ACTION_THRESHOLDS.considerAvailability) return 'consider'

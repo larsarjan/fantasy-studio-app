@@ -1,4 +1,5 @@
 import { safeHtml } from '../platform/html.js'
+import { availabilityBadge, availabilityDetail } from './availabilityUI.js'
 import { calculatePlayerMatchProfile } from '../services/playerMatchStatsEngine.js'
 import { comparisonNumber, withComparisonStats } from '../services/playerComparisonStats.js'
 import {
@@ -961,7 +962,8 @@ const playingChance =
             }
           </span>
 
-          <h3>${player.name}</h3>
+          <h3>${player.name} ${availabilityBadge(player)}</h3>
+          ${availabilityDetail(player)}
 
           <p>${player.club}</p>
         </div>

@@ -5,6 +5,14 @@ import {selectCaptainRecommendations,buildCaptainRadar} from './captainRadarEngi
 import {personalAdvice} from './personalSelection.js'
 import {classifyPrimaryAction} from './analysisEngine.js'
 const player=(id,extra={})=>({id,season:'2026/2027',name:'Zelfde naam',club:'Ajax',position:'Middenvelder',currentPrice:5,endPrice:5,radarScore:90,expectedPoints:10,expectedMinutes:90,fixtureCount:1,fixtureScore:7,formScore:7,captainScore:80,reliabilityScore:90,selectedPct:10,...extra})
+test('unknown is not 100 percent; 50 percent alone does not force sale; long absence does',()=>{
+ const p=player('risk',{cautionScore:20})
+ setAvailabilityRecords([{player_id:p.id,season:p.season,status_type:'unknown',availability_percentage:null}]);assert.equal(availabilityPolicy(p).pct,null);assert.equal(availabilityPolicy(p).factor,1);assert.match(availabilityPolicy(p).reason,/onbekend/)
+ setAvailabilityRecords([{player_id:p.id,season:p.season,status_type:'doubt',availability_percentage:50}]);assert.equal(classifyPrimaryAction(p),'hold')
+ setAvailabilityRecords([{player_id:p.id,season:p.season,status_type:'injury',availability_percentage:0,expected_return_date:new Date(Date.now()+40*86400000).toISOString().slice(0,10)}]);assert.equal(classifyPrimaryAction(p),'sell');assert.equal(availabilityPolicy(p).buyEligible,false)
+ setAvailabilityRecords([{player_id:p.id,season:p.season,status_type:'unknown',availability_percentage:25}]);assert.equal(availabilityPolicy(p).captainEligible,false);assert.equal(availabilityPolicy(p).buyEligible,false)
+ setAvailabilityRecords([])
+})
 test('stable IDs separate names, seasons and unmapped ESPN players',()=>{
  setAvailabilityRecords([{player_id:'a',season:'2026/2027',status_type:'injury',availability_percentage:0}])
  assert(availabilityPolicy(player('a')).out);assert.equal(playerAvailability(player('b')),null)

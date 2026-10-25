@@ -1,3 +1,4 @@
+import { availabilityPolicy } from '../availability.js'
 import {
   FANTASY_GAME_RULES,
   normalizeFantasyPosition,
@@ -474,7 +475,7 @@ const managerScore =
       ),
 
     expectedPoints:
-      projection.expectedPoints,
+      projection.expectedPoints * availabilityPolicy(player).factor,
 
     expectedMinutes:
       projection.expectedMinutes,
@@ -491,7 +492,7 @@ const managerScore =
     projection,
 
 managerScore:
-  managerScore.score,
+  managerScore.score * availabilityPolicy(player).factor,
 
 managerScoreDetails:
   managerScore,
@@ -1316,10 +1317,12 @@ export function optimizeSquadForPeriod({
 
   const allCandidates =
     sourcePlayers
+      .filter((player) => availabilityPolicy(player).buyEligible)
       .filter((player) => !excludedPlayerIds.has(String(player?.id ?? player?.playerId ?? '').trim()))
       .filter((player) => {
         if (!Number.isFinite(normalizedMinimumAvailability)) return true
         const value = [
+          availabilityPolicy(player).status?.availability_percentage,
           player?.chanceOfPlaying,
           player?.playingChance,
           player?.availability?.value,

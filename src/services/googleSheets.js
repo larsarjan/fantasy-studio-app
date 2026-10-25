@@ -5,6 +5,7 @@ const BASE_URL =
   `https://docs.google.com/spreadsheets/d/e/${PUBLISHED_SHEET_ID}/pub`
 
 const SHEET_GIDS = {
+  PLAYER_AVAILABILITY: '847908298',
   SPELERS: '0',
   SPELERS_HISTORIE: '1818115160',
   WEDSTRIJDEN: '987182802',

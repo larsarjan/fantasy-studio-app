@@ -1,4 +1,6 @@
 import { renderPlayerAvatar } from '../services/playerPhotos.js'
+import { availabilityBadge } from './availabilityUI.js'
+import { availabilityRecords, availabilityReady } from '../services/availability.js'
 import { safeHtml } from '../platform/html.js'
 import { managerTeamState, managerSettings, getManagerTeamState, getManagerSettings, restoreManagerState } from '../services/managerState.js'
 export { getManagerTeamState, getManagerSettings, restoreManagerState } from '../services/managerState.js'
@@ -321,6 +323,7 @@ function createPlayerCard({
       ${isHighlighted ? '<span class="optimizer-player-new">Nieuw</span>' : ''}
 
       ${renderPlayerAvatar(getCandidatePlayer(candidate), { size: compact ? 32 : 48 })}
+      ${availabilityBadge(getCandidatePlayer(candidate))}
 
       <strong class="optimizer-player-name">
         ${name}
@@ -3115,6 +3118,7 @@ const strategyDescription =
         players,
         databaseSummary,
         sentAt: Date.now(),
+        availability: { records: availabilityRecords(), ready: availabilityReady() },
       })
     })
   }

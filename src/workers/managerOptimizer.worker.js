@@ -1,5 +1,11 @@
 import { runManagerOptimizerCore } from '../services/optimizer/managerOptimizer.js'
 import { compactOptimizerResult } from '../services/optimizer/optimizerTransport.js'
+import { setAvailabilityRecords, setAvailabilityUnavailable } from '../services/availability.js'
+
+export function initializeWorkerAvailability(snapshot) {
+  setAvailabilityRecords(snapshot?.records ?? [])
+  if (snapshot?.ready === false) setAvailabilityUnavailable()
+}
 
 const PROGRESS_INTERVAL_MS = 250
 
@@ -70,6 +76,7 @@ if (typeof self !== 'undefined') self.addEventListener('message', (event) => {
   if (message?.type !== 'run-manager-optimizer') return
 
   const { jobId, request, players, databaseSummary, sentAt } = message
+  initializeWorkerAvailability(message.availability)
   const startedAt = Date.now()
   const workerStartupMs = Number.isFinite(Number(sentAt))
     ? Math.max(0, startedAt - Number(sentAt))

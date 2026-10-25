@@ -15,16 +15,27 @@ export function playerAvailability(player, { namespace = 'studio' } = {}) {
   }
   return records.get(availabilityKey(player)) || player?.availabilityStatus || null
 }
-export const statusLabels = { available:'Beschikbaar', injury:'Blessure', suspension:'Geschorst', doubt:'Twijfelgeval', unavailable:'Afwezig' }
+export const statusLabels = { available:'Beschikbaar', injury:'Blessure', suspension:'Geschorst', doubt:'Twijfelgeval', unavailable:'Afwezig', unknown:'Onbekend' }
 export function availabilityPolicy(player, now = new Date()) {
-  const status = playerAvailability(player), pct = status?.availability_percentage ?? 100
+  const status = playerAvailability(player), pct = status ? status.availability_percentage ?? null : 100
+  const unknown = Boolean(status && (status.status_type === 'unknown' || pct === null))
   const suspended = status?.status_type === 'suspension', out = pct === 0
   const recent = status?.returned_date && pct === 100 && status.status_type === 'available' && (now - new Date(status.returned_date)) / 86400000 >= 0 && (now - new Date(status.returned_date)) / 86400000 <= 7
   const factor = suspended || out ? 0 : pct === 25 ? .1 : pct === 50 ? .4 : pct === 75 ? .85 : 1
-  const returnDays = status?.expected_return_date ? Math.ceil((new Date(status.expected_return_date) - now) / 86400000) : null
-  const reason = status && (suspended || pct < 100) ? `${statusLabels[status.status_type]} (${out?'OUT':pct+'%'}). ${status.reason || 'Reden nog niet ingevuld.'}${status.expected_return_date ? ' Verwacht terug: '+status.expected_return_date+'.' : ' Terugkeer onbekend.'}` : recent ? 'Recent teruggekeerd; controleer de minutenopbouw.' : ''
-  return { status, pct, suspended, out, recent, factor, returnDays, captainEligible: ready && !suspended && pct > 25, buyEligible: ready && !suspended && !out, reason,
-    sellPenalty: suspended || pct < 100 ? (returnDays !== null && returnDays >= 0 && returnDays <= 7 ? .5 : returnDays !== null && returnDays > 21 ? 5 : 2) * (1-factor) : 0 }
+  const rawReturnDays = status?.expected_return_date ? Math.ceil((new Date(status.expected_return_date) - now) / 86400000) : null
+  const returnDays = rawReturnDays !== null && Number.isFinite(rawReturnDays) && rawReturnDays >= 0 ? rawReturnDays : null
+  const stale = Boolean(status?.source_mode === 'automatic' && status.observed_at && now-new Date(status.observed_at)>48*3600000)
+  const reason = unknown ? 'Inzetbaarheid onbekend; geen bevestiging dat de speler fit is.' : status && (suspended || pct < 100) ? `${statusLabels[status.status_type]} (${out?'OUT':pct+'%'}). ${status.reason || 'Reden nog niet ingevuld.'}${status.expected_return_date ? ' Verwacht terug: '+status.expected_return_date+'.' : ' Terugkeer onbekend.'}` : recent ? 'Recent teruggekeerd; controleer de minutenopbouw.' : ''
+  return { status, pct, unknown, stale, suspended, out, recent, factor, returnDays, captainEligible: ready && !suspended && (pct === null || pct > 25), buyEligible: ready && !suspended && !out && pct !== 25, reason: reason+(stale?' Bronstatus is langer dan 48 uur niet opnieuw waargenomen.':''),
+    sellPenalty: suspended || (!unknown && pct < 100) ? (returnDays !== null && returnDays <= 7 ? .5 : returnDays !== null && returnDays > 21 ? 5 : 2) * (1-factor) : 0 }
+}
+// A risk discount is not, by itself, an instruction to sell an owned player.
+// Callers supply independent football/transfer context, never the discounted gain.
+export function availabilitySaleDecision(player, {hasIndependentReason = false} = {}) {
+  const policy = availabilityPolicy(player)
+  const affected = policy.suspended || (!policy.unknown && policy.pct < 100)
+  const standaloneSell = affected && (policy.out || policy.suspended) && policy.returnDays !== null && policy.returnDays > 21
+  return {affected, standaloneSell, sellAllowed: !affected || standaloneSell || hasIndependentReason || player.cautionScore>=72 || player.fixtureCount===0}
 }
 export function availabilityAdjustedPoints(player) {
   const p = availabilityPolicy(player)

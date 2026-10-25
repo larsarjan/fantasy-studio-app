@@ -2,7 +2,9 @@
 import {PGlite} from '@electric-sql/pglite'
 import {createServer} from 'node:http'
 import {readFileSync,readdirSync,writeFileSync,mkdirSync} from 'node:fs'
+import {referenceTables} from '../src/services/referenceSchema.js'
 const dataset=JSON.parse(readFileSync(process.env.AVAILABILITY_TEST_DATA||'test-results/personal-source.json','utf8'))
+for(const table of Object.values(referenceTables))dataset[table]??=[]
 const db=new PGlite(),actor='00000000-0000-4000-8000-000000000001'
 await db.exec(`create role anon;create role authenticated;create role service_role bypassrls;create schema auth;create schema vault;
 create table vault.decrypted_secrets(name text,decrypted_secret text);create table auth.users(id uuid primary key);create table auth.sessions(id uuid primary key,user_id uuid references auth.users(id) on delete cascade);
@@ -15,11 +17,24 @@ await db.query("insert into players(id,import_id,payload) select ordinality::tex
 await db.exec(`select set_config('request.jwt.claim.sub','${actor}',false);set role authenticated`)
 const fixturePlayers=dataset.players.slice(0,3)
 const writeStatus=(p,status_type,pct)=>db.query('select public.availability_save($1,0)',[JSON.stringify({player_id:String(p.id),season:p.season,status_type,availability_percentage:pct,reason:'Uitsluitend lokale acceptatiefixture',start_date:'2026-01-01',source_name:'Lokale test',is_manual_override:true,notes:'Interne lokale testnotitie'})])
-await writeStatus(fixturePlayers[0],'injury',0);await writeStatus(fixturePlayers[1],'suspension',0);await writeStatus(fixturePlayers[2],'doubt',75)
+if(!process.env.AVAILABILITY_TEST_RUNTIME_PATH){await writeStatus(fixturePlayers[0],'injury',0);await writeStatus(fixturePlayers[1],'suspension',0);await writeStatus(fixturePlayers[2],'doubt',75)}
 await db.query('select public.availability_sources($1)',[JSON.stringify({key:'fixture-club',name:'Lokale connectorfixture',approved:true})])
 await db.exec('reset role;set role service_role')
 for(const external of ['fixture-1','fixture-2'])await db.query('select public.availability_propose($1,$2,$3)',['fixture-club',external,JSON.stringify({player_id:String(fixturePlayers[0].id),season:fixturePlayers[0].season,status_type:'doubt',availability_percentage:50,reason:'Lokaal bronvoorstel'})])
+if(process.env.AVAILABILITY_TEST_RUNTIME_PATH){
+ const runtime=JSON.parse(readFileSync(process.env.AVAILABILITY_TEST_RUNTIME_PATH,'utf8'))
+ await db.exec('reset role')
+ // Restore only identity evidence for current source rows absent from an older UI fixture.
+ for(const r of runtime)await db.query("insert into players(id,import_id,payload) select $1,'00000000-0000-4000-8000-000000000010',$2 where not exists(select 1 from players where season=$3 and payload->>'id'=$4 and payload->>'club'=$5)",['runtime-'+r.player_id,JSON.stringify({id:r.player_id,season:r.season,club:r.club}),r.season,r.player_id,r.club])
+ await db.exec('set role service_role')
+ await db.query('select public.availability_sheet_sync($1)',[JSON.stringify(runtime)])
+}
 await db.exec('reset role;set role authenticated')
+// Optional bounded real-data pool for a local UI smoke calculation, not a performance benchmark.
+if(process.env.AVAILABILITY_TEST_SMALL_POOL==='true'){
+ const limits={Doelman:6,Verdediger:12,Middenvelder:12,Spits:8,Aanvaller:8},seen={},clubs={}
+ dataset.players=[...dataset.players].filter(p=>Number(p.expectedMinutes)>0).sort((a,b)=>Number(a.endPrice)-Number(b.endPrice)).filter(p=>{const key=p.position,clubKey=key+'|'+p.club;if((seen[key]||0)>=(limits[key]||0)||(clubs[clubKey]||0)>=2)return false;seen[key]=(seen[key]||0)+1;clubs[clubKey]=(clubs[clubKey]||0)+1;return true})
+}
 const signatures={availability_list:['admin_mode'],availability_save:['data','expected_revision'],availability_history:['player','player_season','admin_mode'],availability_sources:['data'],availability_proposals:['proposal','decision','expected_revision']}
 mkdirSync('test-results/availability',{recursive:true});writeFileSync('test-results/availability/fixture-players.json',JSON.stringify(fixturePlayers))
 writeFileSync('test-results/availability/harness.html',readFileSync('scripts/availability-ui-harness.html','utf8'))

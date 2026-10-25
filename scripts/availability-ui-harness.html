@@ -1,4 +1,4 @@
-<!doctype html><html lang="nl"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Lokale beschikbaarheidstest</title><body style="margin:0;background:#0d1623;color:#e6edf5;font-family:Arial,sans-serif"><header style="padding:16px"><strong>LOKALE ACCEPTATIETEST — geen productiestatussen</strong><nav id="test-nav"><button data-mode="admin">Admin overzicht</button><button data-mode="studio">Studio overzicht</button><button data-mode="players">Spelerslijst</button><button data-mode="selection">Mijn selectie</button><button data-mode="captain">Captain Radar</button></nav></header><main id="page-content" style="padding:20px;min-width:0"></main><script type="module">
+<!doctype html><html lang="nl"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Lokale beschikbaarheidstest</title><body style="margin:0;background:#0d1623;color:#e6edf5;font-family:Arial,sans-serif"><header style="padding:16px"><strong>LOKALE ACCEPTATIETEST — geen productiestatussen</strong><nav id="test-nav"><button data-mode="admin">Admin overzicht</button><button data-mode="studio">Studio overzicht</button><button data-mode="players">Spelerslijst</button><button data-mode="selection">Mijn selectie</button><button data-mode="captain">Captain Radar</button><button data-mode="compare">Vergelijken</button><button data-mode="optimizer">Optimizer</button><button data-mode="analysis">Advies</button></nav></header><main id="page-content" style="padding:20px;min-width:0"></main><script type="module">
 // Intercept every Supabase request before importing the real application modules.
 const originalFetch=window.fetch.bind(window)
 window.fetch=(input,init={})=>{
@@ -10,7 +10,7 @@ const {initializeDatabase,getPlayers,getFixtures}=await import('/src/services/da
 const {safeHtml}=await import('/src/platform/html.js')
 const {refreshAvailability}=await import('/src/platform/availabilityRepository.js')
 const {mountAvailabilityPage}=await import('/src/modules/availabilityPage.js')
-await import('/src/players.css');await import('/src/personal.css');await import('/src/captainRadar.css');await import('/src/playerPhotos.css')
+await import('/src/style.css');await import('/src/players.css');await import('/src/personal.css');await import('/src/captainRadar.css');await import('/src/playerPhotos.css')
 await initializeDatabase();await refreshAvailability()
 const selected=getPlayers().slice(0,3)
 const {restoreManagerState}=await import('/src/modules/optimizer.js')
@@ -21,7 +21,7 @@ async function render(mode){
  if(mode==='admin'||mode==='studio'){
   root.className='availability-page';await mountAvailabilityPage(root,{players:getPlayers(),fixtures:getFixtures(),admin:mode==='admin',access:{permissions:['admin.access','availability.view','availability.manage']}})
  }else{
-  root.className='';const modules={players:['/src/modules/players.js','createPlayersScreen','mountPlayersScreen'],selection:['/src/modules/selection.js','createSelectionScreen','mountSelectionScreen'],captain:['/src/modules/captainRadar.js','createCaptainRadarScreen','mountCaptainRadarScreen']}
+  root.className='';const modules={compare:['/src/modules/compare.js','createCompareScreen','mountCompareScreen'],optimizer:['/src/modules/optimizer.js','createOptimizerScreen','mountOptimizerScreen'],analysis:['/src/modules/analysis.js','createAnalysisScreen','mountAnalysisScreen'],players:['/src/modules/players.js','createPlayersScreen','mountPlayersScreen'],selection:['/src/modules/selection.js','createSelectionScreen','mountSelectionScreen'],captain:['/src/modules/captainRadar.js','createCaptainRadarScreen','mountCaptainRadarScreen']}
   const [path,create,mount]=modules[mode],module=await import(path);root.innerHTML=safeHtml(module[create]());await module[mount]()
  }
  document.body.dataset.ready=mode
