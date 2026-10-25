@@ -21,5 +21,6 @@ export async function collectAvailabilitySheet({ fetchRows = () => fetchSheet('P
     result.push({player_id:r.Fantasy_Player_ID,season:r.Season,club:r.Fantasy_Club,status_type:r.Status_Type,availability_percentage:pct,reason:r.Reason||'',expected_return_date:r.Expected_Return||null,source_url:r.Source_URL,source_updated_at:r.Source_Updated_At||null,observed_at:r.Last_Seen_At,source_hash:r.Source_Hash,match_method:r.Match_Status})
   }
   if(!result.length)throw Error('Geen gevalideerde actuele matches; niets gepubliceerd.')
+  result.summary={sourceRows:rows.length,activeRows:current.length,skipped:current.length-result.length}
   return result
 }

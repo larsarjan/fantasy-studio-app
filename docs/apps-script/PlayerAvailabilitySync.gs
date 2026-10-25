@@ -42,7 +42,7 @@ function syncPlayerAvailability() {
       else if(row.Last_Seen_At!==previous[i].Last_Seen_At){sheet.getRange(i+2,15,1,2).setValues([[row.Last_Seen_At,row.Last_Synced_At]]);}
     });
     SpreadsheetApp.flush();
-    props.setProperty('AVAILABILITY_LAST_SUCCESS',JSON.stringify({at:now,count:source.length,matches:plan.counts}));
+    props.setProperty('AVAILABILITY_LAST_SUCCESS',JSON.stringify({at:now,count:source.length,matches:plan.counts,changed:plan.changes.length}));
     return plan.counts;
   } finally {lock.releaseLock();}
 }
@@ -70,3 +70,48 @@ function testPlayerAvailabilityPilot() {
   console.log('AV_PILOT_PASS sheet-only; no trigger; no backend; no deployment');
   return {status:'PASS',source:success.count,matched:matched,unmatched:result.unmatched||0,ambiguous:result.ambiguous||0,rows:rows.length};
 }
+
+// Sole scheduler entry point. Do not add a separate source or backend schedule.
+function syncPlayerAvailabilityFullChain() {
+  var lock=LockService.getDocumentLock();
+  if(!lock||!lock.tryLock(1000))return {status:'WAIT',reason:'chain-lock'};
+  try {
+    var props=PropertiesService.getScriptProperties(), token=props.getProperty('AVAILABILITY_BACKEND_TOKEN');
+    if(!token||token.length>200)throw Error('Configureer AVAILABILITY_BACKEND_TOKEN veilig in Script Properties');
+    var last=Number(props.getProperty('AVAILABILITY_FULL_LAST_ATTEMPT')||0);
+    if(Date.now()-last<3600000){console.log('AV_FULL_WAIT hourly-limit');return {status:'WAIT',reason:'hourly-limit',written:0};}
+    props.setProperty('AVAILABILITY_FULL_LAST_ATTEMPT',String(Date.now()));
+    var success=JSON.parse(props.getProperty('AVAILABILITY_LAST_SUCCESS')||'null');
+    // Retry an unconfirmed published snapshot before creating a newer one.
+    // Otherwise CSV publication lag could cause every hourly run to chase a new timestamp.
+    var pending=props.getProperty('AVAILABILITY_FULL_PENDING_AT');
+    var retryPending=success&&pending===success.at&&Date.now()-Date.parse(success.at)<=7200000;
+    var sourceResult=retryPending?{skipped:'pending-publication'}:syncPlayerAvailability();
+    if(!sourceResult)throw Error('Bronimport niet uitgevoerd; vorige runtime behouden');
+    success=JSON.parse(props.getProperty('AVAILABILITY_LAST_SUCCESS')||'null');
+    if(!success||!Number.isFinite(Date.parse(success.at))||Date.parse(success.at)>Date.now()+300000||Date.now()-Date.parse(success.at)>(retryPending?7200000:3600000)||!Number.isInteger(success.count)||success.count<1)throw Error('Geen recente geslaagde bronimport');
+    var rows=avReadSheet_(SpreadsheetApp.getActive().getSheetByName('PLAYER_AVAILABILITY'));
+    var observed=rows.filter(function(r){return String(r.Active).toLowerCase()==='true'&&r.Last_Seen_At===success.at;});
+    if(observed.length!==success.count)throw Error('Sheet read-back onvolledig; backend niet aangeroepen');
+    var counts=success.matches,matched=(counts.exact||0)+(counts.alias||0)+(counts.manual||0);
+    var result={source:success.count,matched:matched,unmatched:counts.unmatched||0,ambiguous:counts.ambiguous||0,sheetChanged:sourceResult.skipped?0:success.changed||0,observedAt:success.at};
+    console.log('AV_FULL_SOURCE rows='+result.source);
+    console.log('AV_FULL_MATCH matched='+matched+' unmatched='+result.unmatched+' ambiguous='+result.ambiguous);
+    console.log('AV_FULL_SHEET changed='+result.sheetChanged+' readback='+observed.length);
+    props.setProperty('AVAILABILITY_FULL_PENDING_AT',success.at);
+    var response=UrlFetchApp.fetch('https://fantasyvoetbaltalk.nl/api/availability-sync',{method:'post',contentType:'application/json',headers:{'x-sync-token':token},payload:JSON.stringify({expectedObservedAt:success.at,expectedMatched:matched}),muteHttpExceptions:true,followRedirects:false});
+    if(response.getResponseCode()!==200)throw Error('Backend afgewezen; vorige runtime behouden; herstel bij volgende uur-run');
+    var backend=JSON.parse(response.getContentText());
+    if(!Number.isInteger(backend.written)||backend.written<0||!Number.isInteger(backend.read)||backend.written>backend.read||!Number.isInteger(backend.unchanged)||backend.unchanged!==backend.read-backend.written||!Number.isInteger(backend.skipped)||backend.skipped<0||backend.observedMatched!==matched||backend.observedAt!==success.at||backend.errors!==0)throw Error('Backendresultaat niet bevestigd');
+    result.written=backend.written;result.unchanged=backend.unchanged;result.skipped=backend.skipped;result.errors=0;result.status='PASS';
+    props.setProperty('AVAILABILITY_FULL_LAST_SUCCESS',JSON.stringify(result));
+    props.setProperty('AVAILABILITY_FULL_PENDING_AT','');
+    console.log('AV_FULL_BACKEND written='+result.written+' unchanged='+result.unchanged+' skipped='+result.skipped+' errors=0');
+    console.log('AV_FULL_PASS');return result;
+  } catch(error) {
+    // Do not log responses or credentials; one bounded summary per failed execution.
+    console.log('AV_FULL_FAIL no-reset; completion-not-confirmed');
+    throw Error('Availability-keten niet voltooid; controleer bron, Sheet en backendconfiguratie. Geen reset uitgevoerd.');
+  } finally {lock.releaseLock();}
+}
+function testPlayerAvailabilityFullChain() {return syncPlayerAvailabilityFullChain();}

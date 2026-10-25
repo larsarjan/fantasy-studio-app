@@ -23,3 +23,16 @@ test('sync is disabled by default, authenticated server only, and rejects user d
  assert.equal((await h(request({'x-sync-token':'test'}))).status,200);assert.equal(writes,1)
  assert.equal((await createAvailabilitySyncHandler({env:{},clientFactory})(request())).status,503)
 })
+
+test('full-chain expectation rejects delayed Sheet publication before writes and recovers',async()=>{
+ let writes=0,observed='2026-10-23T10:00:00Z'
+ const expected='2026-10-23T11:00:00Z'
+ const h=createAvailabilitySyncHandler({env:{AVAILABILITY_SHEET_ENABLED:'true',VITE_SUPABASE_URL:'https://example.supabase.co',SUPABASE_SERVICE_ROLE_KEY:'test'},clientFactory:()=>({rpc:async name=>name==='reference_check_scheduler'?{data:true}:(writes++,{data:0})}),collect:async()=>[{observed_at:observed}]})
+ const request=body=>new Request('https://studio.test/api/availability-sync',{method:'POST',headers:{'x-sync-token':'test'},body:JSON.stringify(body)})
+ const input={expectedObservedAt:expected,expectedMatched:1}
+ assert.equal((await h(request(input))).status,409);assert.equal(writes,0)
+ for(const bad of [null,[],{expectedMatched:1},{...input,expectedMatched:0},{...input,expectedObservedAt:'bad'}])assert.equal((await h(request(bad))).status,400)
+ observed=expected
+ const response=await h(request(input));assert.equal(response.status,200)
+ const result=await response.json();assert.equal(result.written,0);assert.equal(result.unchanged,1);assert.equal(result.observedMatched,1);assert.equal(result.observedAt,expected);assert.equal(result.errors,0)
+})
