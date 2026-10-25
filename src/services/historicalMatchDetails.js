@@ -20,7 +20,7 @@ export function resolveHistoricalMatch(result, fixtures, players, stats) {
     const side = clubKey(club) === clubKey(fixture.home) ? 'home' : clubKey(club) === clubKey(fixture.away) ? 'away' : null
     const match = buildPlayerMatch({ player: { ...player, club: side ? club : '' }, matchStat: stat, fixture })
     match.fixture.venue = side
-    match.recordedGoalsConceded = stat.goalsConceded == null ? null : Number(stat.goalsConceded)
+    match.recordedGoalsConceded = match.statistieken?.tegendoelpunten ?? match.goalsConceded
     if (!match.played) continue
     seen.add(String(stat.playerId))
     groups[side ?? 'unassigned'].push({ player: { ...player, club: side ? club : '' }, match })

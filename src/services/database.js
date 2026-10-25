@@ -1,4 +1,5 @@
 import {normalizeKnvbFixtures} from './knvbFixtureContext.js'
+import { playerGoalsConceded } from './playerGoalsConceded.js'
 import { invalidateReferenceCaches } from './referenceRuntimeCache.js'
 import {
   players as fallbackPlayers,
@@ -1039,7 +1040,7 @@ function mapPlayerMatchStat(
       ),
 
     goalsConceded:
-      cleanNumber(
+      playerGoalsConceded(
         firstValue(
           record,
           [
@@ -1047,8 +1048,7 @@ function mapPlayerMatchStat(
             'Tegendoelpunten',
           ],
         ),
-      ) ??
-      0,
+      ),
 
     saves:
       cleanNumber(

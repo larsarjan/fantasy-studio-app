@@ -1423,12 +1423,17 @@ function syncEspnMatchStatsForRound(
             ),
         )
 
+      let completeHistory
       roundHistory.forEach(
         (historyItem) => {
           const historyStats =
-            createEspnFixtureStats(
-              historyItem.stats,
-            )
+            resolveEspnMatchFacts(livePlayer, historyItem.fixture, () => {
+              if (completeHistory) return completeHistory
+              const response = UrlFetchApp.fetch(`https://fantasy.espngoal.nl/api/element-summary/${Number(espnPlayer.id)}/`, { muteHttpExceptions: true })
+              if (response.getResponseCode() !== 200) throw Error('Volledige fixturestatistieken ontbreken; import niet opgeslagen')
+              completeHistory = JSON.parse(response.getContentText()).history
+              return completeHistory
+            })
 
           const ownFixtureId =
             espnFixtureToOwnFixture.get(
@@ -1803,6 +1808,24 @@ function createEspnFixtureStats(stats) {
   ;(Array.isArray(stats) ? stats : []).forEach((stat) => {
     const identifier = String(stat.identifier ?? '').trim()
     if (identifier) result[identifier] = Number(result[identifier] ?? 0) + Number(stat.value ?? 0)
+  })
+  return result
+}
+
+// explain contains point-bearing entries, NOT all match facts (one conceded
+// goal or one/two saves can be absent). Use the provider's on-field counts.
+// Round totals are only fixture facts when exactly one fixture is present.
+function resolveEspnMatchFacts(livePlayer, fixtureId, loadHistory) {
+  const fixtures = Array.isArray(livePlayer.explain) ? livePlayer.explain : []
+  const single = fixtures.length === 1 && Number(fixtures[0].fixture) === Number(fixtureId)
+  const matches = single ? [livePlayer.stats] : (loadHistory() || []).filter(row => Number(row.fixture) === Number(fixtureId))
+  if (matches.length !== 1 || !matches[0]) throw Error('Geen unieke volledige fixturestatistiek; import niet opgeslagen')
+  const facts = matches[0], result = {}
+  const fields = ['minutes','goals_scored','assists','clean_sheets','goals_conceded','saves','penalties_saved','penalties_missed','own_goals','yellow_cards','red_cards','bonus']
+  fields.forEach(key => {
+    const value = facts[key]
+    if (value === null || value === undefined || value === '' || !Number.isInteger(Number(value)) || Number(value) < 0) throw Error('Onvolledige fixturestatistiek: ' + key + '; import niet opgeslagen')
+    result[key] = Number(value)
   })
   return result
 }

@@ -1,4 +1,5 @@
 import { registerReferenceCache } from './referenceRuntimeCache.js'
+import { playerGoalsConceded } from './playerGoalsConceded.js'
 import {
   getFixtures,
   getPlayerMatchStats,
@@ -853,7 +854,7 @@ export function buildPlayerMatch({
       ),
 
     tegendoelpunten:
-      toNumber(
+      playerGoalsConceded(
         matchStat.goalsConceded,
       ),
 
@@ -1030,7 +1031,7 @@ export function buildPlayerMatch({
       ),
 
     goalsConceded:
-      toNumber(
+      playerGoalsConceded(
         matchStat.goalsConceded,
       ),
 
